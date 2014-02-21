@@ -1,2 +1,2 @@
-Felleprosjektet-2014
+Fellesprosjektet-2014
 ====================
