@@ -19,14 +19,22 @@ public class DBConnection {
 	private String url;
 	private Connection conn;
 	
-	public DBConnection(String propName) throws IOException, FileNotFoundException {
+	public DBConnection(String propName) {
 		properties = new Properties();
-		properties.load(new FileInputStream(new File(propName)));
+		try {
+			properties.load(new FileInputStream(new File(propName)));
+		} catch (IOException e) {
+			throw new RuntimeException("Could not load properties-file!");
+		}
 		url = properties.getProperty("url");
 	}
 	
-	public void init() throws SQLException {
-		conn = DriverManager.getConnection(url, properties.getProperty("user"), properties.getProperty("password"));
+	public void init() {
+		try {
+			conn = DriverManager.getConnection(url, properties.getProperty("user"), properties.getProperty("password"));
+		} catch (SQLException e) {
+			throw new RuntimeException("Klarte ikke åpne kobling til databasen!");
+		}
 	}
 	
 	/*
@@ -63,9 +71,14 @@ public class DBConnection {
 	 * Ikke bruk semikolon
 	 */
 	
-	public ResultSet smallSELECT(String sql) throws SQLException {
-		Statement st = conn.createStatement();
-		return st.executeQuery(sql);
+	public ResultSet smallSELECT(String sql) {
+		Statement st;
+		try {
+			st = conn.createStatement();
+			return st.executeQuery(sql);
+		} catch (SQLException e) {
+			throw new RuntimeException("Klarte ikke utføre SELECT-query!");
+		}
 	}
 	
 	/*
@@ -73,9 +86,15 @@ public class DBConnection {
 	 * Ikke bruk semikolon
 	 */
 	
-	public void smallUPDATEorINSERT(String sql) throws SQLException {
-		Statement st = conn.createStatement();
-		st.executeUpdate(sql);
+	public void smallUPDATEorINSERT(String sql) {
+		Statement st;
+		try {
+			st = conn.createStatement();
+			st.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new RuntimeException("Klarte ikke utføre UPDATE/INSERT-query!");
+		}
+		
 	}
 	
 	public void close() throws SQLException {
@@ -90,18 +109,12 @@ public class DBConnection {
 		try {
 			DBConnection connection = new DBConnection("src/db/props.properties");
 			connection.init();
-			ResultSet rs = connection.smallSELECT("SELECT * from ansatt");
+			ResultSet rs = connection.smallSELECT("SELECT * from employee");
 			while (rs.next()) {
 				System.out.println(rs.getString(1) + ": " + rs.getString(2));
 			}
 			rs.close();
 			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
