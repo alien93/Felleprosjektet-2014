@@ -5,13 +5,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -62,36 +63,55 @@ public class LogInPanel extends JPanel{
 		add(logInButton, gc);
 		
 		logInButton.addActionListener(new ActionListener(){
-
 			public void actionPerformed(ActionEvent ae) {
-				try {
-					DBConnection connection = new DBConnection("src/db/props.properties");
-					connection.init();
-					ResultSet rs = connection.smallSELECT("SELECT Username, Password from employee");
-					while (rs.next()) {
-						if (rs.getString(1).equals(getUsername()) && rs.getString(2).equals(getPassword())){
-							rs.close();
-							SwingUtilities.getWindowAncestor(LogInPanel.this).dispose(); // Close login window
-							user = new Person(getUsername());
-							break;
-						}
-						else if (rs.isLast()) {
-							JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord!", "Feil", JOptionPane.PLAIN_MESSAGE);
-						}
-					}
-					rs.close();
-					
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (SQLException e) {
-					e.printStackTrace();
+				loginAttempt();
+			}
+		});
+		usernameField.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) { }
+			public void keyReleased(KeyEvent e) { }
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					loginAttempt();
 				}
 			}
-			
-			
 		});
+		passwordField.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) { }
+			public void keyReleased(KeyEvent e) { }
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					loginAttempt();
+				}
+			}
+		});
+	}
+	
+	public void loginAttempt() {
+		try {
+			DBConnection connection = new DBConnection("src/db/props.properties");
+			connection.init();
+			ResultSet rs = connection.smallSELECT("SELECT Username, Password from employee");
+			while (rs.next()) {
+				if (rs.getString(1).equals(getUsername()) && rs.getString(2).equals(getPassword())){
+					rs.close();
+					SwingUtilities.getWindowAncestor(LogInPanel.this).dispose(); // Close login window
+					user = new Person(getUsername());
+					break;
+				}
+				else if (rs.isLast()) {
+					JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord!", "Feil", JOptionPane.PLAIN_MESSAGE);
+				}
+			}
+			rs.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getUsername(){
