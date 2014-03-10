@@ -1,5 +1,8 @@
 package gui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,7 +18,12 @@ public class MainFrame extends JFrame {
 		super("Avtalebok");
 		setSize(1024, 768);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				dispose();
+                loginGUI();
+            }
+		});
 		loginGUI();
 		
 	}
