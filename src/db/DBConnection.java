@@ -90,7 +90,7 @@ public class DBConnection {
 		try {
 			DBConnection connection = new DBConnection("src/db/props.properties");
 			connection.init();
-			ResultSet rs = connection.smallSELECT("SELECT * from ansatt");
+			ResultSet rs = connection.smallSELECT("SELECT * from employee");
 			while (rs.next()) {
 				System.out.println(rs.getString(1) + ": " + rs.getString(2));
 			}
@@ -108,5 +108,5 @@ public class DBConnection {
 		}
 	}
 
-	
+
 }
