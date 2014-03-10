@@ -1,8 +1,11 @@
 package panels;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -10,9 +13,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import models.Person;
+import renderers.PersonRenderer;
 
 public class Participants extends JPanel {
 
@@ -35,6 +40,16 @@ public class Participants extends JPanel {
 		attendButton = new JButton(">");
 		undoAttendButton = new JButton("<");
 		
+		searchResult.setCellRenderer(new PersonRenderer()); // Add list renderers
+		attendingList.setCellRenderer(new PersonRenderer());
+		
+		JScrollPane searchResultPane = new JScrollPane(searchResult); // Add lists to scrollpanes
+		JScrollPane attendingListPane = new JScrollPane(attendingList);
+		
+		searchResultPane.setPreferredSize(new Dimension(150, 150)); // Set pane sizes
+		attendingListPane.setPreferredSize(new Dimension(150, 150));
+		
+		// Add elements to grid //
 		GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.gridwidth = 3;
 		add(searchInput, inputConstraint);
@@ -57,13 +72,15 @@ public class Participants extends JPanel {
 		GridBagConstraints searchListConstraint = new GridBagConstraints();
 		searchListConstraint.gridx = 0;
 		searchListConstraint.gridy = 2;
-		add(searchResult, searchListConstraint);
+		searchListConstraint.gridheight = 2;
+		add(searchResultPane, searchListConstraint);
 		
 		
 		GridBagConstraints attendingListConstraint = new GridBagConstraints();
 		attendingListConstraint.gridx = 2;
 		attendingListConstraint.gridy = 2;
-		add(attendingList, attendingListConstraint);
+		attendingListConstraint.gridheight = 2;
+		add(attendingListPane, attendingListConstraint);
 		
 		GridBagConstraints attendButtonConstraint = new GridBagConstraints();
 		attendButtonConstraint.gridx = 1;
@@ -80,7 +97,7 @@ public class Participants extends JPanel {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		JFrame frame = new JFrame("Møtedeltagere");
+		JFrame frame = new JFrame("Mï¿½tedeltagere");
 		frame.getContentPane().add(new Participants());
 		frame.pack();
 		frame.setVisible(true);
