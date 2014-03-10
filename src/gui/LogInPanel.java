@@ -20,12 +20,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import db.DBConnection;
+import models.Person;
 
 public class LogInPanel extends JPanel{
 	
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JButton logInButton;
+	private Person user;
 	
 	public LogInPanel() {
 		setLayout(new GridBagLayout()); // Set layout
@@ -65,12 +67,12 @@ public class LogInPanel extends JPanel{
 				try {
 					DBConnection connection = new DBConnection("src/db/props.properties");
 					connection.init();
-					ResultSet rs = connection.smallSELECT("SELECT * from employee");
+					ResultSet rs = connection.smallSELECT("SELECT Username, Password from employee");
 					while (rs.next()) {
 						if (rs.getString(1).equals(getUsername()) && rs.getString(2).equals(getPassword())){
 							rs.close();
 							SwingUtilities.getWindowAncestor(LogInPanel.this).dispose(); // Close login window
-							// TODO Set user
+							user = new Person(getUsername());
 							break;
 						}
 						else if (rs.isLast()) {
@@ -101,5 +103,8 @@ public class LogInPanel extends JPanel{
 		return passwordField.getText();
 	}
 	
+	public Person getUser() {
+		return user;
+	}
 
 }
