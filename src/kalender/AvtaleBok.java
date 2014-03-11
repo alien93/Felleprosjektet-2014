@@ -20,7 +20,7 @@ public class AvtaleBok extends JPanel {
 	
 	private JButton prevWeek, nextWeek, newAppointment, addRemove;
 	private AvtaleBokModel model;
-	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"};
+	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
 	private GridBagConstraints constraints;
 	
 	public AvtaleBok() {
@@ -77,7 +77,7 @@ public class AvtaleBok extends JPanel {
 			add(weekDay, constraints);
 		}
 		
-		constraints.gridx = 3;
+		constraints.gridx = 5;
 		constraints.gridy = 3;
 		JButton newAppointment = new JButton("Ny avtale");
 		newAppointment.addActionListener(new ActionListener() {
@@ -87,7 +87,7 @@ public class AvtaleBok extends JPanel {
 		});
 		add(newAppointment, constraints);
 		
-		constraints.gridx = 4;
+		constraints.gridx = 6;
 		constraints.gridy = 3;
 		JButton addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
