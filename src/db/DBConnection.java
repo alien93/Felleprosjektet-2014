@@ -2,7 +2,6 @@ package db;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -98,28 +97,9 @@ public class DBConnection {
 	}
 	
 	public void close() throws SQLException {
-		conn.close();
+		if (conn != null)
+			conn.close();
 	}
 	
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			DBConnection connection = new DBConnection("src/db/props.properties");
-			connection.init();
-			ResultSet rs = connection.smallSELECT("SELECT * from employee");
-			while (rs.next()) {
-				System.out.println(rs.getString(1) + ": " + rs.getString(2));
-			}
-			rs.close();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	
 }
