@@ -23,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
-import panels.Participants;
 import models.Person;
 
 import com.toedter.calendar.JCalendar;

@@ -1,5 +1,11 @@
 package models;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import javax.swing.DefaultListModel;
+
+import db.DBConnection;
 
 
 public class Appointment {
@@ -60,11 +66,25 @@ public class Appointment {
 		return participants;
 	}
 	
-	public void setStatus(Person currentUser){
+	public void setStatus(Person user){
 		
 	}
-	public String getStatus(Person currentUser){
+	public String getStatus(Person user){
+		try {
+			DBConnection connection = new DBConnection("src/db/props.properties");
+			connection.init();
+			ResultSet rs = connection.smallSELECT(
+					"SELECT Status FROM (employeeapointmentalarm AS EAA) " +
+					"WHERE AppointmentNumber = " + this.id + " AND Username = '" + user.getUsername()+"'");
+			return rs.getString("Status");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return null;
+	}
+	public String getStatus(){
+		return this.currentUserStatus;
 	}
 	void addEmployee(Person employee){
 		this.participants.add(employee);

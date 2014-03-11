@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import appointment.Appointment;
+import models.Appointment;
 
 import models.Person;
 
@@ -79,6 +79,21 @@ public class ObjectFactory {
 				System.err.println("Kunne ikke lukke alle ressurser!");
 			}
 		}
+	}
+	
+	public static String getStatus(Person user , Appointment app){
+		try {
+			DBConnection connection = new DBConnection("src/db/props.properties");
+			connection.init();
+			ResultSet rs = connection.smallSELECT(
+					"SELECT Status FROM (employeeapointmentalarm AS EAA) " +
+					"WHERE AppointmentNumber = " + app.getId() + " AND Username = '" + user.getUsername()+"'");
+			return rs.getString("Status");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	
