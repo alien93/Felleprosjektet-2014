@@ -12,7 +12,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 
-import appointment.Appointment;
+import models.Appointment;
 
 import renderers.AvtaleRenderer;
 
@@ -42,10 +42,6 @@ public class AvtaleList extends JList{
 			}
 			rs.close();
 			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
