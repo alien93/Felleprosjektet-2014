@@ -1,4 +1,4 @@
-package kalender;
+package gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,6 +15,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import models.AvtaleBokModel;
+
 
 public class AvtaleBok extends JPanel {
 	
