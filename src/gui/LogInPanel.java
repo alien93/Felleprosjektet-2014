@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -19,6 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import db.DBConnection;
 import models.Person;
@@ -89,15 +93,18 @@ public class LogInPanel extends JPanel{
 	
 	public void loginAttempt() {
 		try {
-			DBConnection connection = new DBConnection("src/db/props.properties");
-			connection.init();
-			ResultSet rs = connection.smallSELECT("SELECT Username, Password from employee");
+			DBConnection connection = new DBConnection("src/db/props.properties"); // Connect to database
+			connection.init(); // Initialize connection
+			ResultSet rs = connection.smallSELECT("SELECT Username, Password from employee"); // Get credentials from database
+			// Using Apache commons codec to easily convert password to sha1 and compare with database
+			String username = usernameField.getText();
+			String sha1password = DigestUtils.sha1Hex(passwordField.getText());
 			while (rs.next()) {
-				if (rs.getString(1).equals(getUsername()) && rs.getString(2).equals(getPassword())){
-					rs.close();
+				if (rs.getString(1).equals(username) && rs.getString(2).equals(sha1password)) { // Check user and pass
+					rs.close(); // Close connection
 					SwingUtilities.getWindowAncestor(LogInPanel.this).dispose(); // Close login window
-					user = new Person(getUsername());
-					break;
+					user = new Person(username); // Set user
+					break; // Break loop
 				}
 				else if (rs.isLast()) {
 					JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord!", "Feil", JOptionPane.PLAIN_MESSAGE);
@@ -112,15 +119,6 @@ public class LogInPanel extends JPanel{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public String getUsername(){
-		return usernameField.getText();
-	}
-	
-	public String getPassword(){
-		//TODO kryptering
-		return passwordField.getText();
 	}
 	
 	public Person getUser() {
