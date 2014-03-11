@@ -22,18 +22,18 @@ import db.DBConnection;
 public class AvtaleList extends JList{
 	private String date;
 	
-	public AvtaleList(String date, Person employee){
-		this(date, new Person[]{employee});
+	public AvtaleList(String date, String employee){
+		this(date, new String[]{employee});
 	}
-	public AvtaleList(String date, Person[] employees){
+	public AvtaleList(String date, String[] employees){
 		this.date = date;
 		this.setCellRenderer(new AvtaleRenderer());
 		this.setModel(new DefaultListModel<Appointment>());
 		
 		//Hente avtaler fra databasen
 		String employeesString = "";
-		for (Person employee : employees){
-			employeesString += " (EEA.Username = "+employee.getUsername();
+		for (String employee : employees){
+			employeesString += "EAA.Username = '"+employee+"' ";
 			if(!employee.equals(employees[employees.length-1]))employeesString += " OR ";
 		}
 		
@@ -42,7 +42,8 @@ public class AvtaleList extends JList{
 			connection.init();
 			ResultSet rs = connection.smallSELECT(	
 					"SELECT AP.* FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
-					"WHERE (DATE(AP.StartTime)  = " + "'" +this.date+ "' AND "+employeesString+"))");
+					"WHERE (DATE(AP.StartTime)  = " + "'" +this.date+"'" +
+							"AND ("+employeesString+"))");
 			System.out.println("Connected");
 			while (rs.next()) {
 				((DefaultListModel<Appointment>) this.getModel()).addElement(new Appointment(
@@ -59,10 +60,11 @@ public class AvtaleList extends JList{
 	
 	public static void main(String[] args){
 		JFrame frame = new JFrame("testlist");
-		AvtaleList liste = new AvtaleList("2014-03-10", );
+		AvtaleList liste = new AvtaleList("2014-03-10", "Anders");
 		frame.setContentPane(liste);
 		frame.setVisible(true);
 		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
 
