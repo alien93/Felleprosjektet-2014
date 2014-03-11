@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,15 +19,14 @@ import com.toedter.calendar.JCalendar;
 public class AppointmentPanel extends JPanel {
 	
 	private JTextField nameField;
-	private JCalendar dateField;
-	private JComboBox dateBox;
+	private JTextField dateField;
+	private JButton dateButton;
 	public AppointmentPanel(){
 		setLayout(new GridBagLayout());
 		nameField= new JTextField("Navn");
-		dateField= new JCalendar();
-		dateBox= new JComboBox();
-		add(dateBox);
-		dateField.setPreferredSize(new Dimension(500,500));
+		dateField = new JTextField("Dato");
+		dateButton= new JButton();
+
 		
 		
 		GridBagConstraints nameFieldConstraint = new GridBagConstraints();
@@ -39,6 +39,10 @@ public class AppointmentPanel extends JPanel {
 		dateFieldConstraint.gridy = 1;
 		add(dateField, dateFieldConstraint);
 		
+		GridBagConstraints dateButtonConstraint = new GridBagConstraints();
+		dateButtonConstraint.gridx = 1;
+		dateButtonConstraint.gridy = 1;
+		add(dateButton,dateButtonConstraint);
 	}
 	
 	public static void main(String[] args) {
