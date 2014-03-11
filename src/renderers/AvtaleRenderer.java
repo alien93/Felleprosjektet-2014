@@ -1,12 +1,19 @@
 package renderers;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
 
 import appointment.Appointment;
 
@@ -16,13 +23,36 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 	JLabel tidText = new JLabel("");
 	JLabel romText = new JLabel("");
 	JLabel vertText = new JLabel("");
+	Border line;
 	
 	public AvtaleRenderer(){
+		setLayout(new GridBagLayout());
 		setSize(200, 100);
-		add(nameText);
-		add(tidText);
-		add(romText);
-		add(vertText);
+		
+		GridBagConstraints gc = new GridBagConstraints();
+		gc.insets = new Insets(1, 5, 1, 5); // Padding
+		gc.anchor = GridBagConstraints.EAST; // Alignment
+		
+		gc.gridx = 0; // Column
+		gc.gridy = 0; // Row
+		gc.fill = GridBagConstraints.HORIZONTAL;
+		add(nameText, gc);
+		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 16));
+		
+		gc.gridx = 0; // Column
+		gc.gridy = 1; // Row
+		gc.fill = GridBagConstraints.HORIZONTAL;
+		add(tidText, gc);
+		
+		gc.gridx = 1; // Column
+		gc.gridy = 1; // Row
+		gc.fill = GridBagConstraints.HORIZONTAL;
+		add(romText, gc);
+		
+		gc.gridx = 0; // Column
+		gc.gridy = 2; // Row
+		gc.fill = GridBagConstraints.HORIZONTAL;
+		add(vertText, gc);
 		
 	}
 	
@@ -37,16 +67,11 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		
 	
 		avtaler.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		 if (isSelected && hasFocus) {
-			 setBackground(avtaler.getSelectionBackground());
-             setForeground(avtaler.getSelectionForeground());
-         }
-         else {
-               setBackground(avtaler.getBackground());
-               setForeground(avtaler.getForeground());
-           }
-         setOpaque(true);
-         return this;
+		
+		line = BorderFactory.createRaisedBevelBorder();
+		setBackground(new Color(255, 200, 200));
+		setBorder(line);
+        return this;
 	}
 
 }

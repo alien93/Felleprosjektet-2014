@@ -9,6 +9,7 @@ public class Appointment {
 	private String startTime;
 	private String endTime;
 	private int meetingRoomNr;
+	private String currentUserStatus;
 	private ArrayList<Person>participants;
 	
 	public Appointment(int id, String name, String startTime, String endTime, int meetingRoomNr){
@@ -60,8 +61,12 @@ public class Appointment {
 		return participants;
 	}
 	
-	void setStatus(){
+	public void setStatus(Person currentUser){
 		
+	}
+	public String getStatus(Person currentUser){
+		String status;
+		return status;
 	}
 	void addEmployee(Person employee){
 		this.participants.add(employee);
