@@ -25,14 +25,20 @@ public class Appointment {
 	public String getName(){
 		return name;
 	}
-	public String getStartTime(){
+	public String getStartTimeAndDate(){
 		return startTime;
+	}
+	public String getStartTime(){
+		return startTime.substring(11);
 	}
 	public void setStartTime(String startTime){
 		this.startTime = startTime;
 	}
-	public String getEndTime(){
+	public String getEndTimeAndDate(){
 		return endTime;
+	}
+	public String getEndTime(){
+		return endTime.substring(11);
 	}
 	public void setEndTime(String endTime){
 		this.endTime = endTime;
@@ -57,11 +63,11 @@ public class Appointment {
 	void setStatus(){
 		
 	}
-	void addEmployee(){
-		
+	void addEmployee(Person employee){
+		this.participants.add(employee);
 	}
-	void removeEmployee(){
-		
+	void removeEmployee(Person employee){
+		this.participants.remove(employee);
 	}
 	
 	void saveAppointment(){
