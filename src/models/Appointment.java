@@ -1,7 +1,6 @@
-package appointment;
+package models;
 import java.util.ArrayList;
 
-import models.Person;
 
 public class Appointment {
 	private int id;
@@ -9,6 +8,7 @@ public class Appointment {
 	private String startTime;
 	private String endTime;
 	private int meetingRoomNr;
+	private String currentUserStatus;
 	private ArrayList<Person>participants;
 	
 	public Appointment(int id, String name, String startTime, String endTime, int meetingRoomNr){
@@ -25,14 +25,20 @@ public class Appointment {
 	public String getName(){
 		return name;
 	}
-	public String getStartTime(){
+	public String getStartTimeAndDate(){
 		return startTime;
+	}
+	public String getStartTime(){
+		return startTime.substring(11);
 	}
 	public void setStartTime(String startTime){
 		this.startTime = startTime;
 	}
-	public String getEndTime(){
+	public String getEndTimeAndDate(){
 		return endTime;
+	}
+	public String getEndTime(){
+		return endTime.substring(11);
 	}
 	public void setEndTime(String endTime){
 		this.endTime = endTime;
@@ -54,14 +60,17 @@ public class Appointment {
 		return participants;
 	}
 	
-	void setStatus(){
+	public void setStatus(Person currentUser){
 		
 	}
-	void addEmployee(){
-		
+	public String getStatus(Person currentUser){
+		return null;
 	}
-	void removeEmployee(){
-		
+	void addEmployee(Person employee){
+		this.participants.add(employee);
+	}
+	void removeEmployee(Person employee){
+		this.participants.remove(employee);
 	}
 	
 	void saveAppointment(){

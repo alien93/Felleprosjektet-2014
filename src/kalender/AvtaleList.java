@@ -1,5 +1,6 @@
 package kalender;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,9 +9,10 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
 import javax.swing.JList;
 
-import appointment.Appointment;
+import models.Appointment;
 
 import renderers.AvtaleRenderer;
 
@@ -34,22 +36,23 @@ public class AvtaleList extends JList{
 			System.out.println("Connected");
 			while (rs.next()) {
 				((DefaultListModel<Appointment>) this.getModel()).addElement(new Appointment(
-						rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(6)
+						rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5)
 						));
+				
 			}
 			rs.close();
 			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public static void main(String[] args){
+		JFrame frame = new JFrame("testlist");
 		AvtaleList liste = new AvtaleList("2014-03-10");
+		frame.setContentPane(liste);
+		frame.setVisible(true);
+		frame.pack();
 		
 	}
 

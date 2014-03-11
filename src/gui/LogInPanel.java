@@ -110,10 +110,6 @@ public class LogInPanel extends JPanel{
 			}
 			rs.close();
 			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
