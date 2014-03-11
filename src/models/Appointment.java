@@ -16,6 +16,11 @@ public class Appointment {
 	private int meetingRoomNr;
 	private String currentUserStatus;
 	private ArrayList<Person>participants;
+
+	public static final String DECLINED = "declined";
+	public static final String CONFIRMED = "confirmed";
+	public static final String NOT_RESPONDED = "not responded";
+	public static final String HOST = "host";
 	
 	public Appointment(int id, String name, String startTime, String endTime, int meetingRoomNr){
 		this(id);
@@ -66,23 +71,10 @@ public class Appointment {
 		return participants;
 	}
 	
-	public void setStatus(Person user){
-		
+	public void setStatus(String status){
+		this.currentUserStatus = status;
 	}
-	public String getStatus(Person user){
-		try {
-			DBConnection connection = new DBConnection("src/db/props.properties");
-			connection.init();
-			ResultSet rs = connection.smallSELECT(
-					"SELECT Status FROM (employeeapointmentalarm AS EAA) " +
-					"WHERE AppointmentNumber = " + this.id + " AND Username = '" + user.getUsername()+"'");
-			return rs.getString("Status");
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+	
 	public String getStatus(){
 		return this.currentUserStatus;
 	}

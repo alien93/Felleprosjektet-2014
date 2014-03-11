@@ -18,6 +18,7 @@ import models.Person;
 import renderers.AvtaleRenderer;
 
 import db.DBConnection;
+import db.ObjectFactory;
 
 public class AvtaleList extends JList{
 	private String date;
@@ -44,11 +45,10 @@ public class AvtaleList extends JList{
 					"SELECT AP.* FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 					"WHERE (DATE(AP.StartTime)  = " + "'" +this.date+"'" +
 							"AND ("+employeesString+"))");
-			System.out.println("Connected");
 			while (rs.next()) {
-				((DefaultListModel<Appointment>) this.getModel()).addElement(new Appointment(
-						rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5)
-						));
+				Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5));
+				app.setStatus(ObjectFactory.getStatus(employees[0], app));
+				((DefaultListModel<Appointment>) this.getModel()).addElement(app);
 				
 			}
 			rs.close();
