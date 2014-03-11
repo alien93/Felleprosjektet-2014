@@ -73,14 +73,18 @@ public class Appointment {
 		try {
 			DBConnection connection = new DBConnection("src/db/props.properties");
 			connection.init();
-			ResultSet rs = connection.smallSELECT(SELECT Status);
-			return rs.getString(1);
-			rs.close();
+			ResultSet rs = connection.smallSELECT(
+					"SELECT Status FROM (employeeapointmentalarm AS EAA) " +
+					"WHERE AppointmentNumber = " + this.id + " AND Username = '" + user.getUsername()+"'");
+			return rs.getString("Status");
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public String getStatus(){
+		return this.currentUserStatus;
 	}
 	void addEmployee(Person employee){
 		this.participants.add(employee);

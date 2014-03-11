@@ -28,7 +28,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 	
 	public AvtaleRenderer(){
 		setLayout(new GridBagLayout());
-		setSize(200, 100);
+		setSize(500, 100);
 		
 		GridBagConstraints gc = new GridBagConstraints();
 		gc.insets = new Insets(1, 5, 1, 5); // Padding

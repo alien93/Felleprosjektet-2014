@@ -81,6 +81,21 @@ public class ObjectFactory {
 		}
 	}
 	
+	public static String getStatus(Person user , Appointment app){
+		try {
+			DBConnection connection = new DBConnection("src/db/props.properties");
+			connection.init();
+			ResultSet rs = connection.smallSELECT(
+					"SELECT Status FROM (employeeapointmentalarm AS EAA) " +
+					"WHERE AppointmentNumber = " + app.getId() + " AND Username = '" + user.getUsername()+"'");
+			return rs.getString("Status");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	
 
 }
