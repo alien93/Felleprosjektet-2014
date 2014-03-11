@@ -7,11 +7,12 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
-import models.Person;
+import appointment.Appointment;
 
 
 public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointment>{
-
+	
+	
 	@Override
 	public Component getListCellRendererComponent(JList<? extends Appointment> avtaler, Appointment avtale,
 			int index, boolean isSelected, boolean hasFocus) {
