@@ -1,7 +1,6 @@
-package appointment;
+package models;
 import java.util.ArrayList;
 
-import models.Person;
 
 public class Appointment {
 	private int id;
@@ -65,8 +64,7 @@ public class Appointment {
 		
 	}
 	public String getStatus(Person currentUser){
-		String status;
-		return status;
+		return null;
 	}
 	void addEmployee(Person employee){
 		this.participants.add(employee);

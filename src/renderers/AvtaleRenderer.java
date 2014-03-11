@@ -15,7 +15,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 
-import appointment.Appointment;
+import models.Appointment;
+
 
 
 public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointment>{
