@@ -77,36 +77,17 @@ public class DBConnection {
 		Statement st = conn.createStatement();
 		st.executeUpdate(sql);
 	}
+
 	
-	public void close() throws SQLException {
-		conn.close();
-	}
-	
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+	public void close() {
 		try {
-			DBConnection connection = new DBConnection("src/db/props.properties");
-			connection.init();
-			ResultSet rs = connection.smallSELECT("SELECT * from ansatt");
-			while (rs.next()) {
-				System.out.println(rs.getString(1) + ": " + rs.getString(2));
+			if (conn != null) {
+				conn.close();
 			}
-			rs.close();
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Klarte ikke lukke kobling til databasen!");
 		}
 	}
-
+	
 	
 }

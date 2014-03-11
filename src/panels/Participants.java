@@ -7,6 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.sql.Array;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +24,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import models.Appointment;
+
+import db.DBConnection;
+
 import models.Person;
 import renderers.PersonRenderer;
 
@@ -32,12 +40,13 @@ public class Participants extends JPanel {
 	private JList<Person> attendingList;
 	private JButton attendButton;
 	private JButton undoAttendButton;
+	private JButton saveButton;
 	private DefaultListModel<Person> unattendingEmployeesModel;
 	private DefaultListModel<Person> attendingEmployeesModel;
 	private ArrayList<Person> unattendingEmployees;
 	private ArrayList<Person> attendingEmployees;
 
-	public Participants() {
+	public Participants(final Appointment ap) {
 		setLayout(new GridBagLayout());
 
 		searchInput = new JTextField(25);
@@ -47,6 +56,7 @@ public class Participants extends JPanel {
 		attendingList = new JList<Person>();
 		attendButton = new JButton(">");
 		undoAttendButton = new JButton("<");
+		saveButton = new JButton("Lagre");
 
 		searchResult.setCellRenderer(new PersonRenderer()); // Add list renderers
 		attendingList.setCellRenderer(new PersonRenderer());
@@ -113,6 +123,62 @@ public class Participants extends JPanel {
 				updateAttendingEmployeesModel();
 			}
 		});
+		saveButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				DBConnection con = new DBConnection("src/db/props.properties");
+				con.init();
+				ResultSet old = getOldAttendingList(con);
+				deleteParticipantsNotOnAttending(con, old);
+				saveParticipantsOnAttending(con, old);
+				con.close();
+			}
+
+			private ResultSet getOldAttendingList(DBConnection con2) {
+				PreparedStatement prs;
+				try {
+					prs = con2.prepareStatement("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + ap.getId());
+					return prs.executeQuery();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			private void deleteParticipantsNotOnAttending(DBConnection con2, ResultSet old) {
+				PreparedStatement prs;
+				try {
+					prs = con2.prepareStatement("DELETE FROM employeeappointmentalarm WHERE Username = ?");
+					while (old.next()) {
+						if (!attendingEmployeesModel.contains(old.getString(1))) {
+							prs.setString(1, old.getString(1));
+							prs.executeUpdate();
+						}
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} 
+				
+			}
+
+			private void saveParticipantsOnAttending(DBConnection con2, ResultSet old) {
+				PreparedStatement prs;
+				try {
+					prs = con2.prepareStatement("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status,Hide,Edited)" +
+												"VALUES (?,?,?,?,?)");
+					old.beforeFirst();
+					while (old.next()) {
+						if (attendingEmployeesModel.contains(old.getString(1))) {
+							
+						}
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		});
 
 		// Add elements to grid //
 		GridBagConstraints inputConstraint = new GridBagConstraints();
@@ -152,6 +218,10 @@ public class Participants extends JPanel {
 		undoAttendConstraint.gridx = 1;
 		undoAttendConstraint.gridy = 3;
 		add(undoAttendButton, undoAttendConstraint);
+		
+		GridBagConstraints saveButtonConstraint = new GridBagConstraints();
+		saveButtonConstraint.gridy = 4;
+		add(saveButton, saveButtonConstraint);
 	}
 
 	public void updateUnattendingEmployeesModel() {
@@ -172,7 +242,7 @@ public class Participants extends JPanel {
 	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Møtedeltagere");
-		frame.setContentPane(new Participants());
+		frame.setContentPane(new Participants(new Appointment(6)));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
