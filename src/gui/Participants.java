@@ -73,6 +73,7 @@ public class Participants extends JPanel {
 		searchResult.setModel(unattendingEmployeesModel); // Set JList models
 		attendingList.setModel(attendingEmployeesModel);
 
+		// Push employees who's allready attending into attendingEmployeesAtLoad
 		DBConnection con = new DBConnection("src/db/props.properties");
 		con.init();
 		PreparedStatement prs;
@@ -139,16 +140,16 @@ public class Participants extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				DBConnection con = new DBConnection("src/db/props.properties");
 				con.init();
-				deleteParticipantsNotOnAttending(con, attendingEmployeesAtLoad);
+				deleteParticipantsNotOnAttending(con);
 				saveParticipantsOnAttending(con);
 				con.close();
 			}
 
-			private void deleteParticipantsNotOnAttending(DBConnection con2, ArrayList<Person> old) {
+			private void deleteParticipantsNotOnAttending(DBConnection con2) {
 				PreparedStatement prs;
 				try {
 					prs = con2.prepareStatement("DELETE FROM employeeappointmentalarm WHERE Username = ? AND AppointmentNumber = ?");
-					for (Person p : old) {
+					for (Person p : attendingEmployeesAtLoad) {
 						if (!attendingEmployees.contains(p)) { 	// If a person in attendingEmployeesAtLoad isn't in attendingEmployees
 							prs.setString(1, p.getUsername());	// it has been unattended
 							prs.setInt(2, ap.getId());
@@ -166,8 +167,8 @@ public class Participants extends JPanel {
 				potentialEmployeesToAdd.removeAll(attendingEmployeesAtLoad);	// Do not insert the ones already in the database
 				PreparedStatement prs;
 				try {
-					prs = con2.prepareStatement("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status,Hide,Edited)" +
-												"VALUES (?,?,?,?,?)");
+					prs = con2.prepareStatement("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status)" +
+												"VALUES (?,?,?)");
 					for (Person p : potentialEmployeesToAdd) {
 						prs.setString(1, p.getUsername());
 						prs.setInt(2, ap.getId());
