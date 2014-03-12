@@ -49,6 +49,10 @@ public class AppointmentPanel extends JPanel {
 	private JComboBox roomPropertyComponent;
 	private JComboBox alarmPropertyComponent;
 	private JScrollPane participantsPane;
+	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
+	private final String[] minuteStrings = { "00","15","30","45"};
+	private final String[] alarms = { "På","Av"};
+
 	
 
 	
@@ -116,10 +120,6 @@ public class AppointmentPanel extends JPanel {
 		add(alarmLabel,alarmLabelConstraint);
 		
 		
-		String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
-		String[] minuteStrings = { "00","15","30","45"};
-
-		
 		starTimeHourPropertyComponent= new JComboBox(hourStrings);
 		GridBagConstraints starTimePropertyComponentConstraint= new GridBagConstraints();
 		starTimePropertyComponentConstraint.gridx=1;
@@ -164,7 +164,6 @@ public class AppointmentPanel extends JPanel {
 		add(roomPropertyComponent, roomPropertyComponentConstraint);
 		
 		
-		String[] alarms = { "På","Av"};
 		alarmPropertyComponent = new JComboBox(alarms);
 		GridBagConstraints alarmPropertyComponentConstraint = new GridBagConstraints();
 		alarmPropertyComponentConstraint.gridx=1;
@@ -189,7 +188,8 @@ public class AppointmentPanel extends JPanel {
 	class dateChooserListener implements PropertyChangeListener  {
 		public void propertyChangeListener(PropertyChangeEvent ae){
 			  /* if ("date".equals(ae.getPropertyName())) {
-	                System.out.println(ae.getPropertyName()
+	                System.out.print 
+	              ln(ae.getPropertyName()
 	                    + ": " + (Date) ae.getNewValue());
 	            }
 	            */
