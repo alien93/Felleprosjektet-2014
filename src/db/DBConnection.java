@@ -59,6 +59,11 @@ public class DBConnection {
 	 * 	
 	 * 	Samme som ved insert, bare med: "UPDATE Ansatt SET Passord = ? WHERE BrukerNavn = ?"
 	 * 
+	 * DELETE
+	 *
+	 * 	Samme som ved insert, bare med: "DELETE FROM employeeappointmentalarm WHERE Username = ?"
+	 * 	
+	 * 	VIKTIG Å HUSKE WHERE !!
 	 */
 	
 	public PreparedStatement prepareStatement(String sql) throws SQLException {

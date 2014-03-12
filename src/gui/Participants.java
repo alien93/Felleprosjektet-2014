@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,11 +21,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-
 import models.Appointment;
 
 import db.DBConnection;
+import db.ObjectFactory;
 
 import models.Person;
 import renderers.PersonRenderer;
@@ -45,6 +43,8 @@ public class Participants extends JPanel {
 	private DefaultListModel<Person> attendingEmployeesModel;
 	private ArrayList<Person> unattendingEmployees;
 	private ArrayList<Person> attendingEmployees;
+	private ArrayList<Person> attendingEmployeesAtLoad;
+	private ArrayList<Person> potentialEmployeesToAdd;
 
 	public Participants(final Appointment ap) {
 		setLayout(new GridBagLayout());
@@ -69,28 +69,36 @@ public class Participants extends JPanel {
 		
 		unattendingEmployeesModel = new DefaultListModel<Person>(); // Create models
 		attendingEmployeesModel = new DefaultListModel<Person>();
+		attendingEmployeesAtLoad = new ArrayList<Person>();
 		searchResult.setModel(unattendingEmployeesModel); // Set JList models
 		attendingList.setModel(attendingEmployeesModel);
 
-		// ONLY USED FOR TESTING //
+		DBConnection con = new DBConnection("src/db/props.properties");
+		con.init();
+		PreparedStatement prs;
+		try {
+			prs = con.prepareStatement("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + ap.getId());
+			ResultSet rsAtLoad = prs.executeQuery();
+			while (rsAtLoad.next()) {
+				attendingEmployeesAtLoad.add(new Person(rsAtLoad.getString(1)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		con.close();
+		
+		// Adding lists containing all unattending and attending employees
 		unattendingEmployees = new ArrayList<Person>();
 		attendingEmployees = new ArrayList<Person>();
-		Person p1 = new Person("Per");
-		Person p2 = new Person("Kari");
-		Person p3 = new Person("Ola");
-		Person p4 = new Person("Jon");
-		Person p5 = new Person("Silje");
-		unattendingEmployees.add(p1);
-		unattendingEmployees.add(p2);
-		unattendingEmployees.add(p3);
-		unattendingEmployees.add(p4);
-		unattendingEmployees.add(p5);
-		attendingEmployees.add(p2);
-		attendingEmployees.add(p3);
+
+		unattendingEmployees = ObjectFactory.getAllEmployees();
+		attendingEmployees = new ArrayList<Person>(attendingEmployeesAtLoad);
+		potentialEmployeesToAdd = new ArrayList<Person>();
 		
 		unattendingEmployees.removeAll(attendingEmployees); // Remove all attending employees from not attending list
 		updateAttendingEmployeesModel(); // Update attending employees model
 		updateUnattendingEmployeesModel(); // Update unattending employees model
+		
 		
 		// Actionlisteners //
 		searchInput.addKeyListener(new KeyListener() {
@@ -107,6 +115,8 @@ public class Participants extends JPanel {
 				for (Person p : selectedEmployees) {
 					attendingEmployees.add(p); // Add employee to attending list
 					unattendingEmployees.remove(p); // Remove employee from unattending list
+					if (!potentialEmployeesToAdd.contains(p))
+							potentialEmployeesToAdd.add(p);
 				}
 				updateUnattendingEmployeesModel(); // Update models
 				updateAttendingEmployeesModel();
@@ -129,30 +139,19 @@ public class Participants extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				DBConnection con = new DBConnection("src/db/props.properties");
 				con.init();
-				ResultSet old = getOldAttendingList(con);
-				deleteParticipantsNotOnAttending(con, old);
-				saveParticipantsOnAttending(con, old);
+				deleteParticipantsNotOnAttending(con, attendingEmployeesAtLoad);
+				saveParticipantsOnAttending(con);
 				con.close();
 			}
 
-			private ResultSet getOldAttendingList(DBConnection con2) {
+			private void deleteParticipantsNotOnAttending(DBConnection con2, ArrayList<Person> old) {
 				PreparedStatement prs;
 				try {
-					prs = con2.prepareStatement("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + ap.getId());
-					return prs.executeQuery();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			private void deleteParticipantsNotOnAttending(DBConnection con2, ResultSet old) {
-				PreparedStatement prs;
-				try {
-					prs = con2.prepareStatement("DELETE FROM employeeappointmentalarm WHERE Username = ?");
-					while (old.next()) {
-						if (!attendingEmployeesModel.contains(old.getString(1))) {
-							prs.setString(1, old.getString(1));
+					prs = con2.prepareStatement("DELETE FROM employeeappointmentalarm WHERE Username = ? AND AppointmentNumber = ?");
+					for (Person p : old) {
+						if (!attendingEmployees.contains(p)) { 	// If a person in attendingEmployeesAtLoad isn't in attendingEmployees
+							prs.setString(1, p.getUsername());	// it has been unattended
+							prs.setInt(2, ap.getId());
 							prs.executeUpdate();
 						}
 					}
@@ -162,16 +161,18 @@ public class Participants extends JPanel {
 				
 			}
 
-			private void saveParticipantsOnAttending(DBConnection con2, ResultSet old) {
+			private void saveParticipantsOnAttending(DBConnection con2) {
+				potentialEmployeesToAdd.removeAll(unattendingEmployees);		// Do not insert the ones who was unattended again
+				potentialEmployeesToAdd.removeAll(attendingEmployeesAtLoad);	// Do not insert the ones already in the database
 				PreparedStatement prs;
 				try {
 					prs = con2.prepareStatement("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status,Hide,Edited)" +
 												"VALUES (?,?,?,?,?)");
-					old.beforeFirst();
-					while (old.next()) {
-						if (attendingEmployeesModel.contains(old.getString(1))) {
-							
-						}
+					for (Person p : potentialEmployeesToAdd) {
+						prs.setString(1, p.getUsername());
+						prs.setInt(2, ap.getId());
+						prs.setString(3, "not_responded");
+						prs.executeUpdate();
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();
