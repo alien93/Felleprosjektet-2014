@@ -157,7 +157,9 @@ public class Participants extends JPanel {
 						}
 					}
 				} catch (SQLException e) {
+					con2.close();
 					e.printStackTrace();
+					throw new RuntimeException();
 				} 
 				
 			}
@@ -176,7 +178,9 @@ public class Participants extends JPanel {
 						prs.executeUpdate();
 					}
 				} catch (SQLException e) {
+					con2.close();
 					e.printStackTrace();
+					throw new RuntimeException();
 				}
 				
 			}
