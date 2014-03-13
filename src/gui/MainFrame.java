@@ -58,6 +58,8 @@ public class MainFrame extends JFrame {
 	
 	private void mainGUI() {
 		setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
+		AvtaleBok calendar = new AvtaleBok();
+		add(calendar);
 		
 		// TODO Add calendar panel here
 	}

@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -115,7 +116,8 @@ public class AvtaleBok extends JPanel {
 			JPanel panel = new JPanel();
 			panel.setBackground(Color.WHITE);
 			panel.setBorder(new LineBorder(Color.BLACK));
-			panel.setSize(150, 600);
+			panel.setPreferredSize(new Dimension(200, 600));
+			panel.setMinimumSize(new Dimension(150, 300));
 			add(panel, constraints);
 			panel.add(appList[i], constraints);
 		}
