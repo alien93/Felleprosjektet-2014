@@ -51,10 +51,11 @@ public class AppointmentPanel extends JPanel {
 	private JLabel emailLabel;
 	protected JTextField emailField;
 	protected JButton addExternal;
-	private JScrollPane participantsPane;
+	protected JScrollPane participantsPane;
 	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
 	private final String[] minuteStrings = { "00","15","30","45"};
 	private final String[] alarms = { "På","Av"};
+	protected JDateChooser dateChooser;
 	
 	public AppointmentPanel(final JFrame jf){
 		setLayout(new GridBagLayout());
@@ -75,7 +76,7 @@ public class AppointmentPanel extends JPanel {
 		emailField = new JTextField("");
 		
 		
-		JDateChooser dateChooser = new JDateChooser();
+		dateChooser = new JDateChooser();
 		dateChooser.getDateEditor().addPropertyChangeListener(new dateChooserListener());
 		//nameField.setSize(100,10);
 		calender.add(dateChooser);
@@ -124,6 +125,8 @@ public class AppointmentPanel extends JPanel {
 		GridBagConstraints roomLabelConstraint= new GridBagConstraints();
 		roomLabelConstraint.gridx=0;
 		roomLabelConstraint.gridy=4;
+		roomLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		roomLabelConstraint.anchor=GridBagConstraints.NORTH;
 		add(roomLabel,roomLabelConstraint);
 		
 		GridBagConstraints alarmLabelConstraint = new GridBagConstraints();
@@ -203,7 +206,7 @@ public class AppointmentPanel extends JPanel {
 		participantsPaneConstraint.gridy=0;
 		participantsPaneConstraint.fill=GridBagConstraints.VERTICAL;
 		participantsPaneConstraint.gridwidth=2;
-		participantsPaneConstraint.gridheight=6;
+		participantsPaneConstraint.gridheight=4;
 
 		/*
 		participantsPaneConstraint.gridwidth=GridBagConstraints.REMAINDER;
@@ -222,13 +225,18 @@ public class AppointmentPanel extends JPanel {
 		
 		GridBagConstraints saveButtonConstraints = new GridBagConstraints();
 		saveButtonConstraints.gridx=3;
-		saveButtonConstraints.gridy=7;
+		saveButtonConstraints.gridy=9;
 		add(saveButton,saveButtonConstraints);
 		
 		addButton = new JButton("Legg til/fjern");
 		GridBagConstraints addButtonConstraints = new GridBagConstraints();
-		addButtonConstraints.gridx=4;
-		addButtonConstraints.gridy=6;
+		addButtonConstraints.gridx=3;
+		addButtonConstraints.gridy=4;
+		addButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
+		addButtonConstraints.gridwidth=3;
+		//addButtonConstraints.anchor=GridBagConstraints.WEST;
+		//addButtonConstraints.fill= GridBagConstraints.VERTICAL;
+		//addButtonConstraints.gridwidth=1;
 		add(addButton,addButtonConstraints);
 		
 		
@@ -236,17 +244,44 @@ public class AppointmentPanel extends JPanel {
 		shallButton = new JButton("Skal");
 		GridBagConstraints shallButtonConstraints = new GridBagConstraints();
 		shallButtonConstraints.gridx = 3;
-		shallButtonConstraints.gridy=6;
+		shallButtonConstraints.gridy=5;
+		shallButtonConstraints.weightx=0.5;
+		shallButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
+		
 		add(shallButton,shallButtonConstraints);
 		
 		shallNotButton = new JButton("Skal ikke");
 		GridBagConstraints shallNotButtonConstraints = new GridBagConstraints();
 		shallNotButtonConstraints.gridx=4;
-		shallNotButtonConstraints.gridy= 7;
+		shallNotButtonConstraints.gridy= 5;
+		shallNotButtonConstraints.weightx=0.5;
+		shallNotButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
 		add(shallNotButton,shallNotButtonConstraints);
 		
 		GridBagConstraints emailLabelConstraint = new GridBagConstraints();
-		//emailLabelConstraint.gridx=
+		emailLabelConstraint.gridx=0;
+		emailLabelConstraint.gridy=8;
+		emailLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		emailLabelConstraint.gridwidth=2;
+		add(emailLabel,emailLabelConstraint);
+		
+		GridBagConstraints emailFieldConstraint = new GridBagConstraints();
+		emailFieldConstraint.gridx=2;
+		emailFieldConstraint.gridy=8;
+		emailFieldConstraint.fill=GridBagConstraints.HORIZONTAL;
+		emailFieldConstraint.gridwidth=2;
+		add(emailField,emailFieldConstraint);
+		
+		GridBagConstraints addExternalConstraint = new GridBagConstraints();
+		addExternalConstraint.gridx=4;
+		addExternalConstraint.gridy=8;
+		addExternalConstraint.fill=GridBagConstraints.HORIZONTAL;
+		addExternalConstraint.gridwidth=3;
+		//addExternalConstraint.fill=GridBagConstraints.HORIZONTAL;
+		//addExternalConstraint.anchor=GridBagConstraints.SOUTH;
+		add(addExternal,addExternalConstraint);
+		
+		
 		
 		
 	}
