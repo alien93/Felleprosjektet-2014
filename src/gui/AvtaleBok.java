@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
+import models.Appointment;
 import models.AvtaleBokModel;
 import models.Person;
 
@@ -33,7 +34,7 @@ public class AvtaleBok extends JPanel {
 	private JLabel ukeLabel;
 	private Person user;
 	
-	public AvtaleBok(Person person) {
+	public AvtaleBok(final JFrame frame, Person person) {
 		user = person;
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
@@ -67,10 +68,9 @@ public class AvtaleBok extends JPanel {
 		
 		addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
-			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Du trykka paa den andre knappen :D");
+				new Participants(frame, new Appointment(6));
+				updateAvtaleBok();
 			}
 		});
 		

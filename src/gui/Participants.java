@@ -15,40 +15,35 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import models.Appointment;
 
+import models.Appointment;
 import db.DBConnection;
 import db.ObjectFactory;
-
 import models.Person;
 import renderers.PersonRenderer;
 
-public class Participants extends JPanel {
+public class Participants extends JDialog {
 
 	private JTextField searchInput;
-	private JLabel searchResultLabel;
-	private JLabel attendingLabel;
-	private JList<Person> searchResult;
-	private JList<Person> attendingList;
-	private JButton attendButton;
-	private JButton undoAttendButton;
-	private JButton saveButton;
-	private DefaultListModel<Person> unattendingEmployeesModel;
-	private DefaultListModel<Person> attendingEmployeesModel;
-	private ArrayList<Person> unattendingEmployees;
-	private ArrayList<Person> attendingEmployees;
-	private ArrayList<Person> attendingEmployeesAtLoad;
-	private ArrayList<Person> potentialEmployeesToAdd;
+	private JLabel searchResultLabel, attendingLabel;
+	private JList<Person> searchResult, attendingList;
+	private JButton attendButton, undoAttendButton, saveButton;
+	private DefaultListModel<Person> unattendingEmployeesModel, attendingEmployeesModel;
+	private ArrayList<Person> unattendingEmployees, attendingEmployees, attendingEmployeesAtLoad, potentialEmployeesToAdd;
+	private JScrollPane searchResultPane, attendingListPane;
 
-	public Participants(final Appointment ap) {
+	public Participants(final JFrame frame, final Appointment ap) {
+		super(frame, "Legg til brukere", true);
 		setLayout(new GridBagLayout());
-
+		setSize(600, 400);
+		setLocationRelativeTo(null);
+		
 		searchInput = new JTextField(25);
 		searchResultLabel = new JLabel("Employees");
 		attendingLabel = new JLabel("Added");
@@ -61,8 +56,8 @@ public class Participants extends JPanel {
 		searchResult.setCellRenderer(new PersonRenderer()); // Add list renderers
 		attendingList.setCellRenderer(new PersonRenderer());
 		
-		JScrollPane searchResultPane = new JScrollPane(searchResult); // Add lists to scrollpanes
-		JScrollPane attendingListPane = new JScrollPane(attendingList);
+		searchResultPane = new JScrollPane(searchResult); // Add lists to scrollpanes
+		attendingListPane = new JScrollPane(attendingList);
 
 		searchResultPane.setPreferredSize(new Dimension(150, 150)); // Set pane sizes
 		attendingListPane.setPreferredSize(new Dimension(150, 150));
@@ -142,6 +137,7 @@ public class Participants extends JPanel {
 				saveParticipantsOnAttending(con);
 				con.commit();
 				con.close();
+				dispose();
 			}
 
 			private void deleteParticipantsNotOnAttending(DBConnection con2) {
@@ -225,8 +221,11 @@ public class Participants extends JPanel {
 		add(undoAttendButton, undoAttendConstraint);
 		
 		GridBagConstraints saveButtonConstraint = new GridBagConstraints();
+		saveButtonConstraint.gridx = 1;
 		saveButtonConstraint.gridy = 4;
 		add(saveButton, saveButtonConstraint);
+		
+		setVisible(true);
 	}
 
 	public void updateUnattendingEmployeesModel() {
@@ -243,14 +242,5 @@ public class Participants extends JPanel {
 		for (Person p : attendingEmployees) {
 			attendingEmployeesModel.addElement(p);
 		}
-	}
-	
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("Møtedeltagere");
-		frame.setContentPane(new Participants(new Appointment(6)));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);		
 	}
 }
