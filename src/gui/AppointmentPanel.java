@@ -14,6 +14,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,7 +29,7 @@ import models.Person;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
-public class AppointmentPanel extends JPanel {
+public class AppointmentPanel extends JDialog {
 	
 	protected JTextField nameField;
 	private JLabel nameLabel;
@@ -57,6 +58,9 @@ public class AppointmentPanel extends JPanel {
 	private final String[] alarms = { "På","Av"};
 	
 	public AppointmentPanel(final JFrame jf){
+		super(jf, "Avtale", true);
+		
+		setSize(600, 400);
 		setLayout(new GridBagLayout());
 		nameField= new JTextField("                            ");
 		nameLabel= new JLabel("Name");
@@ -216,7 +220,7 @@ public class AppointmentPanel extends JPanel {
 		saveButton = new JButton("Lagre");
 		saveButton.addActionListener((new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jf.setVisible(false);
+				dispose();
 			}
 		}));
 		
@@ -248,7 +252,7 @@ public class AppointmentPanel extends JPanel {
 		GridBagConstraints emailLabelConstraint = new GridBagConstraints();
 		//emailLabelConstraint.gridx=
 		
-		
+		setVisible(true);
 	}
 	
 	

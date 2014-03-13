@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,7 +35,7 @@ public class AvtaleBok extends JPanel {
 	private JLabel ukeLabel;
 	private Person user;
 	
-	public AvtaleBok(final JFrame frame, Person person) {
+	public AvtaleBok(Person person, final MainFrame frame) {
 		user = person;
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
@@ -62,7 +63,7 @@ public class AvtaleBok extends JPanel {
 		newAppointment = new JButton("Ny avtale");
 		newAppointment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Du trykka paa knappen ;)");
+				new AppointmentPanel(frame);
 			}
 		});
 		

@@ -29,6 +29,7 @@ public class MainFrame extends JFrame {
 				int confirm = JOptionPane.showOptionDialog(null, "Er du sikker på at du vil logge ut?", "Bekreftelse", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 				if (confirm == 0) { // If user is sure,
 					setVisible(false);
+					
 					loginGUI();
 				}
 			}
@@ -41,15 +42,10 @@ public class MainFrame extends JFrame {
 
 	private void loginGUI() {
 		user = null;
-		LogInPanel loginPanel = new LogInPanel(user);
-		loginDialog = new JDialog(this, "Innlogging", true);
-		loginDialog.setSize(300, 150);
-		loginDialog.setLocationRelativeTo(null); // Place in center of screen
-		loginDialog.add(loginPanel);
-		loginDialog.setVisible(true);
+		LogInPanel loginDialog = new LogInPanel(user, this);
 		
-		if(loginPanel.getUser() != null) { // After dialog is dismissed we can set the user
-			user = loginPanel.getUser(); // Set user
+		if(loginDialog.getUser() != null) { // After dialog is dismissed we can set the user
+			user = loginDialog.getUser(); // Set user
 			mainGUI(); // Open main window
 		}
 		else {
@@ -59,7 +55,7 @@ public class MainFrame extends JFrame {
 	
 	private void mainGUI() {
 		setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
-		AvtaleBok calendar = new AvtaleBok(this, user);
+		AvtaleBok calendar = new AvtaleBok(user, this);
 		add(calendar);
 		
 		setVisible(true);
