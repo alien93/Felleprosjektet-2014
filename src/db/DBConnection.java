@@ -23,6 +23,7 @@ public class DBConnection {
 		try {
 			properties.load(new FileInputStream(new File(propName)));
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Could not load properties-file!");
 		}
 		url = properties.getProperty("url");
@@ -36,6 +37,7 @@ public class DBConnection {
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
+			e.printStackTrace();
 			throw new RuntimeException("Klarte ikke åpne kobling til databasen!");
 		}
 	}
@@ -96,6 +98,7 @@ public class DBConnection {
 			st = conn.createStatement();
 			st.executeUpdate(sql);
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Klarte ikke utføre UPDATE/INSERT-query!");
 		}
 	}
