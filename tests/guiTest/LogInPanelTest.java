@@ -31,13 +31,13 @@ public class LogInPanelTest extends JFCTestCase {
 		getHelper();
 		TestHelper.cleanUp(this);
 		super.tearDown();
-		
 	}
 	
-	public void TestUserAndPasswordEmpty() {
+	public void testEmptyTextFields() {
 		//det andre parameteret er navnet på komponentet som skal finnes
-		NamedComponentFinder finder = new NamedComponentFinder(JComponent.class, "UsernameField" );
+		NamedComponentFinder finder = new NamedComponentFinder(JTextField.class, "UsernameField");
 		JTextField usernameField = (JTextField) finder.find(loginPanel, 0);
+		System.out.println("naa fcket du opp azz");
 		assertNotNull( "Could not find the username textfield", usernameField );
 	}
 }
