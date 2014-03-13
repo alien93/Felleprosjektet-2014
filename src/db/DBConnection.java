@@ -38,12 +38,12 @@ public class DBConnection {
 					e1.printStackTrace();
 				}
 			e.printStackTrace();
-			throw new RuntimeException("Klarte ikke åpne kobling til databasen!");
+			throw new RuntimeException("Klarte ikke ï¿½pne kobling til databasen!");
 		}
 	}
 	
 	/*
-	 * Bruk PreparedStatements når du skal gjøre større updates/selections
+	 * Bruk PreparedStatements nï¿½r du skal gjï¿½re stï¿½rre updates/selections
 	 * 
 	 * Bruk:
 	 * 
@@ -69,7 +69,7 @@ public class DBConnection {
 	 *
 	 * 	Samme som ved insert, bare med: "DELETE FROM employeeappointmentalarm WHERE Username = ?"
 	 * 	
-	 * 	VIKTIG Å HUSKE WHERE !!
+	 * 	VIKTIG ï¿½ HUSKE WHERE !!
 	 */
 	
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
@@ -77,7 +77,7 @@ public class DBConnection {
 	}
 	
 	/*
-	 * Bruk smallSELECT når du skal SELECT få rader
+	 * Bruk smallSELECT nï¿½r du skal SELECT fï¿½ rader
 	 * Ikke bruk semikolon
 	 */
 	
@@ -94,7 +94,7 @@ public class DBConnection {
 	}
 	
 	/*
-	 * bruk smallUPDATEorINSERT når du skal oppdatere få rader
+	 * bruk smallUPDATEorINSERT nï¿½r du skal oppdatere fï¿½ rader
 	 * Ikke bruk semikolon
 	 */
 	
