@@ -92,8 +92,7 @@ public class LogInPanel extends JPanel{
 		ResultSet rs = null;
 		DBConnection connection = null;
 		try {
-			connection = new DBConnection("src/db/props.properties"); // Connect to database
-			connection.init(); // Initialize connection
+			connection = new DBConnection("src/db/props.properties", true); // Connect to database
 			String username = usernameField.getText();
 			String sha1password = DigestUtils.sha1Hex(passwordField.getText());
 			rs = connection.smallSELECT("SELECT Username, Password FROM employee WHERE Username = '" + username + "'"); // Get credentials from database
@@ -116,11 +115,11 @@ public class LogInPanel extends JPanel{
 			try {
 				if (rs != null)
 					rs.close();
-				if (connection != null)
-					connection.close();
+				connection.close();
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
+				throw new RuntimeException();
 			}
 		}
 	}

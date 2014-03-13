@@ -88,7 +88,8 @@ public class DBConnection {
 			return st.executeQuery(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new RuntimeException("Klarte ikke utføre SELECT-query!");
+			close();
+			throw new RuntimeException();
 		}
 	}
 	
@@ -104,7 +105,6 @@ public class DBConnection {
 			st.executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new RuntimeException("Klarte ikke utføre UPDATE/INSERT-query!");
 		}
 	}
 	
@@ -117,10 +117,8 @@ public class DBConnection {
 					conn.rollback();
 				} catch (SQLException e1) {
 					e1.printStackTrace();
-					throw new RuntimeException("Transaction-error, rollback IKKE utført!");
 				}
 			e.printStackTrace();
-			throw new RuntimeException("Transaction-error, rollback utført!");
 		}
 	}
 
@@ -131,6 +129,7 @@ public class DBConnection {
 				conn.close();
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Klarte ikke lukke kobling til databasen!");
 		}
 	}
