@@ -20,7 +20,6 @@ public class ObjectFactory {
 		try {
 			pst = con.prepareStatement("SELECT username from employee");
 			rs = pst.executeQuery();
-			con.commit();
 			
 			while (rs.next()) {
 				retList.add(new Person(rs.getString(1)));
