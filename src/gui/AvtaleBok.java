@@ -18,6 +18,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import models.AvtaleBokModel;
+import models.Person;
 
 
 public class AvtaleBok extends JPanel {
@@ -29,8 +30,10 @@ public class AvtaleBok extends JPanel {
 	private JLabel[] dateLabels = new JLabel[7];
 	private AvtaleList[] appList = new AvtaleList[7];
 	private JLabel ukeLabel;
+	private Person user;
 	
-	public AvtaleBok() {
+	public AvtaleBok(Person person) {
+		user = person;
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
 		constraints = new GridBagConstraints();
@@ -140,15 +143,5 @@ public class AvtaleBok extends JPanel {
 			appList[i].fetchApps("Anders"); //TODO
 		}
 		ukeLabel.setText("Uke " + model.getWeek());
-		
-		
-	}
-	
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.add(new AvtaleBok());
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }
