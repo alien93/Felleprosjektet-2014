@@ -23,6 +23,7 @@ public class AvtaleBok extends JPanel {
 	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
+	private AvtaleList[] appLists = new AvtaleList[7];
 	private JLabel ukeLabel;
 	
 	public AvtaleBok() {
