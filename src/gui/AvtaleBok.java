@@ -1,22 +1,25 @@
 package gui;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import models.AvtaleBokModel;
+import models.Person;
 
 
 public class AvtaleBok extends JPanel {
@@ -26,12 +29,16 @@ public class AvtaleBok extends JPanel {
 	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
+	private AvtaleList[] appList = new AvtaleList[7];
 	private JLabel ukeLabel;
+	private Person user;
 	
-	public AvtaleBok() {
+	public AvtaleBok(Person person) {
+		user = person;
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
 		constraints = new GridBagConstraints();
+		constraints.insets = new Insets(0, 0, 50, 0); // Padding
 		
 
 		prevWeek = new JButton("<<");
@@ -51,14 +58,14 @@ public class AvtaleBok extends JPanel {
 		});
 		
 
-		JButton newAppointment = new JButton("Ny avtale");
+		newAppointment = new JButton("Ny avtale");
 		newAppointment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Du trykka paa knappen ;)");
 			}
 		});
 		
-		JButton addRemove = new JButton("Legg til/ fjern ansatt");
+		addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
 			
 			@Override
@@ -69,29 +76,20 @@ public class AvtaleBok extends JPanel {
 		
 		
 
-		constraints.gridx = 1;
+		constraints.gridx = 2;
 		constraints.gridy = 0;
 		add(prevWeek, constraints);
 		
-		constraints.gridx = 2;
+		constraints.gridx = 3;
 		constraints.gridy = 0;
 		ukeLabel = new JLabel("Uke " + model.getWeek());
 		add(ukeLabel, constraints);
 		
-		constraints.gridx = 3;
+		constraints.gridx = 4;
 		constraints.gridy = 0;
 		add(nextWeek, constraints);
 		
-		constraints.gridx = 5;
-		constraints.gridy = 3;
-		add(newAppointment, constraints);
 		
-		constraints.gridx = 6;
-		constraints.gridy = 3;
-		
-		add(addRemove, constraints);
-		
-
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
 		for (int i = 0; i < days.length; i++) {
@@ -102,12 +100,34 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i] = new JLabel(new SimpleDateFormat("dd.MM.yy").format(dates));
+			appList[i] = new AvtaleList(new SimpleDateFormat("yyyy-MM-dd").format(dates), "Anders");//TODO: Generell user
+
+			constraints.insets = new Insets(0, 0, 0, 0); // Padding
 			constraints.gridy = 2;
-			add(dateLabels[i], constraints);
 			JLabel weekDay = new JLabel(days[i]);
-			constraints.gridy = 1;
 			add(weekDay, constraints);
+			constraints.gridy = 3;
+
+			constraints.insets = new Insets(0, 0, 10, 0); // Padding
+			add(dateLabels[i], constraints);
+			constraints.gridy = 4;
+			JPanel panel = new JPanel();
+			panel.setBackground(Color.WHITE);
+			panel.setBorder(new LineBorder(Color.BLACK));
+			panel.setPreferredSize(new Dimension(180, 600));
+			panel.setMinimumSize(new Dimension(150, 300));
+			add(panel, constraints);
+			panel.add(appList[i], constraints);
 		}
+		
+		constraints.gridx = 5;
+		constraints.gridy = 5;
+		add(newAppointment, constraints);
+		
+		constraints.gridx = 6;
+		constraints.gridy = 5;
+		
+		add(addRemove, constraints);
 		
 		updateAvtaleBok();
 	}
@@ -123,17 +143,9 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i].setText((new SimpleDateFormat("dd.MM.yy").format(dates)));
+			appList[i].setDate(new SimpleDateFormat("yyyy-MM-dd").format(dates));
+			appList[i].fetchApps("Anders"); //TODO
 		}
 		ukeLabel.setText("Uke " + model.getWeek());
-		
-		
-	}
-	
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.add(new AvtaleBok());
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }

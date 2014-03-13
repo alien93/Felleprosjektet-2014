@@ -36,7 +36,9 @@ public class LogInPanel extends JPanel{
 		setVisible(true);
 		
 		usernameField = new JTextField(15);
+		usernameField.setName("UsernameField");
 		passwordField = new JPasswordField(15);
+		passwordField.setName("passwordField");
 		logInButton = new JButton("Logg inn");
 		
 		GridBagConstraints gc = new GridBagConstraints();

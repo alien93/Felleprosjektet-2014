@@ -15,12 +15,12 @@ import db.ObjectFactory;
 
 public class AvtaleList extends JList{
 	private String date;
-	
+
 	public AvtaleList(){
 		this.setCellRenderer(new AvtaleRenderer());
 		this.setModel(new DefaultListModel<Appointment>());
 	}
-	
+
 	public AvtaleList(String date, String employee){
 		this(date, new String[]{employee});
 	}
@@ -28,22 +28,24 @@ public class AvtaleList extends JList{
 		this.date = date;
 		this.setCellRenderer(new AvtaleRenderer());
 		this.setModel(new DefaultListModel<Appointment>());
-		
+
 		fetchApps(employees);
-		
+
 	}
-	
+
 	public void setDate(String date){
 		this.date = date;
 	}
-	
+
 	public void fetchApps(String[] employees){
+		((DefaultListModel<Appointment>) this.getModel()).clear();
 		//Hente avtaler fra databasen
 		String employeesString = "";
 		for (String employee : employees){
 			employeesString += "EAA.Username = '"+employee+"' ";
 			if(!employee.equals(employees[employees.length-1]))employeesString += " OR ";
 		}
+
 		DBConnection connection = null;
 		ResultSet rs = null;
 		try {
@@ -65,23 +67,17 @@ public class AvtaleList extends JList{
 			try {
 				if (rs != null)
 					rs.close();
+
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new RuntimeException();
 			}
 		}
 	}
-	
-	public static void main(String[] args){
-		JFrame frame = new JFrame("testlist");
-		AvtaleList liste = new AvtaleList("2014-03-10", "Anders");
-		frame.setContentPane(liste);
-		frame.setVisible(true);
-		frame.pack();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+	public void fetchApps(String employee){
+		fetchApps(new String[]{employee});
 	}
+
 
 }

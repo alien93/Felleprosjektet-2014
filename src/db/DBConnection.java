@@ -31,19 +31,14 @@ public class DBConnection {
 			conn = DriverManager.getConnection(url, properties.getProperty("user"), properties.getProperty("password"));
 			conn.setAutoCommit(autoCommit);
 		} catch (SQLException e) {
-			if (conn != null)
-				try {
-					conn.close();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
+			close();
 			e.printStackTrace();
-			throw new RuntimeException("Klarte ikke �pne kobling til databasen!");
+			throw new RuntimeException("Klarte ikke åpne kobling til databasen!");
 		}
 	}
 	
 	/*
-	 * Bruk PreparedStatements n�r du skal gj�re st�rre updates/selections
+	 * Bruk PreparedStatements n���r du skal gj���re st���rre updates/selections
 	 * 
 	 * Bruk:
 	 * 
@@ -69,7 +64,7 @@ public class DBConnection {
 	 *
 	 * 	Samme som ved insert, bare med: "DELETE FROM employeeappointmentalarm WHERE Username = ?"
 	 * 	
-	 * 	VIKTIG � HUSKE WHERE !!
+	 * 	VIKTIG ��� HUSKE WHERE !!
 	 */
 	
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
@@ -77,7 +72,7 @@ public class DBConnection {
 	}
 	
 	/*
-	 * Bruk smallSELECT n�r du skal SELECT f� rader
+	 * Bruk smallSELECT n���r du skal SELECT f��� rader
 	 * Ikke bruk semikolon
 	 */
 	
@@ -94,7 +89,7 @@ public class DBConnection {
 	}
 	
 	/*
-	 * bruk smallUPDATEorINSERT n�r du skal oppdatere f� rader
+	 * bruk smallUPDATEorINSERT n���r du skal oppdatere f��� rader
 	 * Ikke bruk semikolon
 	 */
 	

@@ -25,7 +25,9 @@ public class AvtaleBokModel {
 	}
 	
 	public void setWeek(int week) {
-		this.week = week;
+		if (week < 1) this.week = 52;
+		else if(week > 52) this.week = 1;
+		else this.week = week;
 		currentDate.set(GregorianCalendar.WEEK_OF_YEAR, week);
 	}
 	
