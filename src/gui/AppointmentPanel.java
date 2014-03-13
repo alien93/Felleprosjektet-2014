@@ -30,32 +30,31 @@ import com.toedter.calendar.JDateChooser;
 
 public class AppointmentPanel extends JPanel {
 	
-	private JTextField nameField;
+	protected JTextField nameField;
 	private JLabel nameLabel;
 	private JLabel dateLabel;
-	private JCalendar calender;
+	protected JCalendar calender;
 	private JLabel startTimeLabel;
 	private JLabel endTimeLabel;
 	private JLabel roomLabel;
 	private JLabel alarmLabel;
-	private JButton saveButton;
-	private JButton addButton;
-	private JButton	shallButton;
-	private JButton shallNotButton;
-	private JComboBox starTimeHourPropertyComponent;
-	private JComboBox starTimeMinutesPropertyComponent;
-	private JComboBox endTimeHourPropertyComponent;
-	private JComboBox  endTimeMinutePropertyComponent;
-	private JComboBox roomPropertyComponent;
-	private JComboBox alarmPropertyComponent;
+	protected JButton saveButton;
+	protected JButton addButton;
+	protected JButton	shallButton;
+	protected JButton shallNotButton;
+	protected JComboBox starTimeHourPropertyComponent;
+	protected JComboBox starTimeMinutesPropertyComponent;
+	protected JComboBox endTimeHourPropertyComponent;
+	protected JComboBox  endTimeMinutePropertyComponent;
+	protected JComboBox roomPropertyComponent;
+	protected JComboBox alarmPropertyComponent;
+	private JLabel emailLabel;
+	protected JTextField emailField;
+	protected JButton addExternal;
 	private JScrollPane participantsPane;
 	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
 	private final String[] minuteStrings = { "00","15","30","45"};
 	private final String[] alarms = { "På","Av"};
-
-	
-
-	
 	
 	public AppointmentPanel(final JFrame jf){
 		setLayout(new GridBagLayout());
@@ -71,6 +70,10 @@ public class AppointmentPanel extends JPanel {
 		addButton= new  JButton("Legg til/fjern");
 		shallButton= new JButton("Skal");
 		shallNotButton = new JButton("Skal ikke");
+		emailLabel = new JLabel("Epost til ekstern deltager");
+		addExternal= new JButton("Legg til");
+		emailField = new JTextField("");
+		
 		
 		JDateChooser dateChooser = new JDateChooser();
 		dateChooser.getDateEditor().addPropertyChangeListener(new dateChooserListener());
@@ -241,6 +244,11 @@ public class AppointmentPanel extends JPanel {
 		shallNotButtonConstraints.gridx=4;
 		shallNotButtonConstraints.gridy= 7;
 		add(shallNotButton,shallNotButtonConstraints);
+		
+		GridBagConstraints emailLabelConstraint = new GridBagConstraints();
+		//emailLabelConstraint.gridx=
+		
+		
 	}
 	
 	
