@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -12,6 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import models.AvtaleBokModel;
 
@@ -106,8 +109,15 @@ public class AvtaleBok extends JPanel {
 			JLabel weekDay = new JLabel(days[i]);
 			constraints.gridy = 1;
 			add(weekDay, constraints);
+
+			
 			constraints.gridy = 3;
-			add(appList[i], constraints);
+			JPanel panel = new JPanel();
+			panel.setBackground(Color.WHITE);
+			panel.setBorder(new LineBorder(Color.BLACK));
+			panel.setSize(150, 600);
+			add(panel, constraints);
+			panel.add(appList[i], constraints);
 		}
 		
 		updateAvtaleBok();
