@@ -7,8 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -32,7 +30,8 @@ public class LogInPanel extends JPanel{
 	private JButton logInButton;
 	private Person user;
 	
-	public LogInPanel() {
+	public LogInPanel(Person user) {
+		this.user = user;
 		setLayout(new GridBagLayout()); // Set layout
 		setVisible(true);
 		
@@ -92,28 +91,38 @@ public class LogInPanel extends JPanel{
 	}
 	
 	public void loginAttempt() {
+		ResultSet rs = null;
+		DBConnection connection = null;
 		try {
-			DBConnection connection = new DBConnection("src/db/props.properties"); // Connect to database
-			connection.init(); // Initialize connection
-			ResultSet rs = connection.smallSELECT("SELECT Username, Password from employee"); // Get credentials from database
-			// Using Apache commons codec to easily convert password to sha1 and compare with database
+			connection = new DBConnection("src/db/props.properties", true); // Connect to database
 			String username = usernameField.getText();
 			String sha1password = DigestUtils.sha1Hex(passwordField.getText());
-			while (rs.next()) {
+			rs = connection.smallSELECT("SELECT Username, Password FROM employee WHERE Username = '" + username + "'"); // Get credentials from database
+			// Using Apache commons codec to easily convert password to sha1 and compare with database
+			if (rs.next()) {
 				if (rs.getString(1).equals(username) && rs.getString(2).equals(sha1password)) { // Check user and pass
-					rs.close(); // Close connection
 					SwingUtilities.getWindowAncestor(LogInPanel.this).dispose(); // Close login window
 					user = new Person(username); // Set user
-					break; // Break loop
 				}
 				else if (rs.isLast()) {
 					JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord!", "Feil", JOptionPane.PLAIN_MESSAGE);
 				}
 			}
-			rs.close();
-			
+			else {
+				JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord!", "Feil", JOptionPane.PLAIN_MESSAGE);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				connection.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+				throw new RuntimeException();
+			}
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package gui;
 
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -8,9 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 
 import models.Appointment;
-
 import renderers.AvtaleRenderer;
-
 import db.DBConnection;
 import db.ObjectFactory;
 
@@ -50,30 +49,29 @@ public class AvtaleList extends JList{
 		DBConnection connection = null;
 		ResultSet rs = null;
 		try {
-			connection = new DBConnection("src/db/props.properties");
-			connection.init();
+			connection = new DBConnection("src/db/props.properties", true);
 			rs = connection.smallSELECT(	
 					"SELECT AP.* FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 							"WHERE (DATE(AP.StartTime)  = " + "'" +this.date+"'" +
-							"AND ("+employeesString+"))");
-			if (rs.next()) {
+									"AND ("+employeesString+"))");
+			while (rs.next()) {
 				Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5));
 				app.setStatus(ObjectFactory.getStatus(employees[0], app));
 				((DefaultListModel<Appointment>) this.getModel()).addElement(app);
-
+				
 			}
-
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
-				if (connection != null)
-					connection.close();
-			}
-			catch (SQLException e) {
+
+				connection.close();
+			} catch (SQLException e) {
 				e.printStackTrace();
+				throw new RuntimeException();
 			}
 		}
 	}

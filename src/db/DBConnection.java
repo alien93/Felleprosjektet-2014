@@ -18,26 +18,27 @@ public class DBConnection {
 	private String url;
 	private Connection conn;
 	
-	public DBConnection(String propName) {
+	public DBConnection(String propName, boolean autoCommit) {
 		properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File(propName)));
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Could not load properties-file!");
 		}
 		url = properties.getProperty("url");
-	}
-	
-	public void init() {
 		try {
 			conn = DriverManager.getConnection(url, properties.getProperty("user"), properties.getProperty("password"));
+			conn.setAutoCommit(autoCommit);
 		} catch (SQLException e) {
+			close();
 			e.printStackTrace();
+			throw new RuntimeException("Klarte ikke Ã¥pne kobling til databasen!");
 		}
 	}
 	
 	/*
-	 * Bruk PreparedStatements når du skal gjøre større updates/selections
+	 * Bruk PreparedStatements nï¿½ï¿½ï¿½r du skal gjï¿½ï¿½ï¿½re stï¿½ï¿½ï¿½rre updates/selections
 	 * 
 	 * Bruk:
 	 * 
@@ -59,6 +60,11 @@ public class DBConnection {
 	 * 	
 	 * 	Samme som ved insert, bare med: "UPDATE Ansatt SET Passord = ? WHERE BrukerNavn = ?"
 	 * 
+	 * DELETE
+	 *
+	 * 	Samme som ved insert, bare med: "DELETE FROM employeeappointmentalarm WHERE Username = ?"
+	 * 	
+	 * 	VIKTIG ï¿½ï¿½ï¿½ HUSKE WHERE !!
 	 */
 	
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
@@ -66,7 +72,7 @@ public class DBConnection {
 	}
 	
 	/*
-	 * Bruk smallSELECT når du skal SELECT få rader
+	 * Bruk smallSELECT nï¿½ï¿½ï¿½r du skal SELECT fï¿½ï¿½ï¿½ rader
 	 * Ikke bruk semikolon
 	 */
 	
@@ -77,12 +83,13 @@ public class DBConnection {
 			return st.executeQuery(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new RuntimeException("Klarte ikke utføre SELECT-query!");
+			close();
+			throw new RuntimeException();
 		}
 	}
 	
 	/*
-	 * bruk smallUPDATEorINSERT når du skal oppdatere få rader
+	 * bruk smallUPDATEorINSERT nï¿½ï¿½ï¿½r du skal oppdatere fï¿½ï¿½ï¿½ rader
 	 * Ikke bruk semikolon
 	 */
 	
@@ -92,14 +99,34 @@ public class DBConnection {
 			st = conn.createStatement();
 			st.executeUpdate(sql);
 		} catch (SQLException e) {
-			throw new RuntimeException("Klarte ikke utføre UPDATE/INSERT-query!");
+			e.printStackTrace();
 		}
-		
 	}
 	
-	public void close() throws SQLException {
-		if (conn != null)
-			conn.close();
+	public void commit() {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			if (conn != null)
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			e.printStackTrace();
+		}
+	}
+
+	
+	public void close() {
+		try {
+			if (conn != null) {
+				conn.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Klarte ikke lukke kobling til databasen!");
+		}
 	}
 	
 
