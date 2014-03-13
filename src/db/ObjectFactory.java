@@ -89,7 +89,10 @@ public class ObjectFactory {
 					"SELECT Status FROM employeeappointmentalarm " +
 					"WHERE AppointmentNumber = " + app.getId() + " AND Username = '" + username+"'");
 			rs.next();
-			return rs.getString("Status");
+			String status = rs.getString("Status");
+			rs.close();
+			connection.close();
+			return status;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

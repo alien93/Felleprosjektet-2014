@@ -32,7 +32,7 @@ public class DBConnection {
 		try {
 			conn = DriverManager.getConnection(url, properties.getProperty("user"), properties.getProperty("password"));
 		} catch (SQLException e) {
-			throw new RuntimeException("Klarte ikke åpne kobling til databasen!");
+			e.printStackTrace();
 		}
 	}
 	
