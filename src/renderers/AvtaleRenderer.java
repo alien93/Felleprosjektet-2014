@@ -2,6 +2,7 @@ package renderers;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,7 +29,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 	
 	public AvtaleRenderer(){
 		setLayout(new GridBagLayout());
-		setSize(500, 100);
+		setPreferredSize(new Dimension(175, 60));
 		
 		GridBagConstraints gc = new GridBagConstraints();
 		gc.insets = new Insets(1, 5, 1, 5); // Padding
@@ -38,22 +39,25 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		gc.gridy = 0; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(nameText, gc);
-		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 16));
+		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 14));
 		
 		gc.gridx = 0; // Column
 		gc.gridy = 1; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(tidText, gc);
+		tidText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
 		
 		gc.gridx = 1; // Column
-		gc.gridy = 1; // Row
+		gc.gridy = 2; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(romText, gc);
+		romText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
 		
 		gc.gridx = 0; // Column
 		gc.gridy = 2; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(vertText, gc);
+		vertText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
 		
 	}
 	
@@ -62,7 +66,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 			int index, boolean isSelected, boolean hasFocus) {
 
 		nameText.setText(avtale.getName());
-		tidText.setText(avtale.getStartTime() + " - " + avtale.getEndTime());
+		tidText.setText(avtale.getStartTime().substring(0, 5) + " - " + avtale.getEndTime().substring(0, 5));
 		romText.setText("Rom: " + String.valueOf(avtale.getMeetingRoomNr()));
 		vertText.setText("Vert: " + "TODO");
 		
