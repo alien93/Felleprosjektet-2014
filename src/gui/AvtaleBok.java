@@ -4,12 +4,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -51,14 +48,14 @@ public class AvtaleBok extends JPanel {
 		});
 		
 
-		JButton newAppointment = new JButton("Ny avtale");
+		newAppointment = new JButton("Ny avtale");
 		newAppointment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Du trykka paa knappen ;)");
 			}
 		});
 		
-		JButton addRemove = new JButton("Legg til/ fjern ansatt");
+		addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
 			
 			@Override
