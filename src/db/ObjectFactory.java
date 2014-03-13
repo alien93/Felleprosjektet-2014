@@ -86,16 +86,23 @@ public class ObjectFactory {
 			ResultSet rs = connection.smallSELECT(
 					"SELECT Status FROM employeeappointmentalarm " +
 					"WHERE AppointmentNumber = " + app.getId() + " AND Username = '" + username+"'");
-			rs.next();
-			String status = rs.getString("Status");
-			rs.close();
-			connection.close();
+			if (rs.next()) {
+				String status = rs.getString("Status");
+			}
+			else {
+				throw new RuntimeException("Gir ikke tilbake noen status!");
+			}
 			return status;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new RuntimeException("Klarte ikke hente status!");
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			connection.close();
 		}
-		return "";
 	}
 	
 	
