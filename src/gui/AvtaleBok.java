@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
@@ -37,6 +38,7 @@ public class AvtaleBok extends JPanel {
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
 		constraints = new GridBagConstraints();
+		constraints.insets = new Insets(0, 0, 50, 0); // Padding
 		
 
 		prevWeek = new JButton("<<");
@@ -74,29 +76,20 @@ public class AvtaleBok extends JPanel {
 		
 		
 
-		constraints.gridx = 1;
+		constraints.gridx = 2;
 		constraints.gridy = 0;
 		add(prevWeek, constraints);
 		
-		constraints.gridx = 2;
+		constraints.gridx = 3;
 		constraints.gridy = 0;
 		ukeLabel = new JLabel("Uke " + model.getWeek());
 		add(ukeLabel, constraints);
 		
-		constraints.gridx = 3;
+		constraints.gridx = 4;
 		constraints.gridy = 0;
 		add(nextWeek, constraints);
 		
-		constraints.gridx = 5;
-		constraints.gridy = 3;
-		add(newAppointment, constraints);
 		
-		constraints.gridx = 6;
-		constraints.gridy = 3;
-		
-		add(addRemove, constraints);
-		
-
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
 		for (int i = 0; i < days.length; i++) {
@@ -108,22 +101,33 @@ public class AvtaleBok extends JPanel {
 			}
 			dateLabels[i] = new JLabel(new SimpleDateFormat("dd.MM.yy").format(dates));
 			appList[i] = new AvtaleList(new SimpleDateFormat("yyyy-MM-dd").format(dates), "Anders");//TODO: Generell user
-			constraints.gridy = 2;
-			add(dateLabels[i], constraints);
-			JLabel weekDay = new JLabel(days[i]);
-			constraints.gridy = 1;
-			add(weekDay, constraints);
 
-			
+			constraints.insets = new Insets(0, 0, 0, 0); // Padding
+			constraints.gridy = 2;
+			JLabel weekDay = new JLabel(days[i]);
+			add(weekDay, constraints);
 			constraints.gridy = 3;
+
+			constraints.insets = new Insets(0, 0, 10, 0); // Padding
+			add(dateLabels[i], constraints);
+			constraints.gridy = 4;
 			JPanel panel = new JPanel();
 			panel.setBackground(Color.WHITE);
 			panel.setBorder(new LineBorder(Color.BLACK));
-			panel.setPreferredSize(new Dimension(200, 600));
+			panel.setPreferredSize(new Dimension(180, 600));
 			panel.setMinimumSize(new Dimension(150, 300));
 			add(panel, constraints);
 			panel.add(appList[i], constraints);
 		}
+		
+		constraints.gridx = 5;
+		constraints.gridy = 5;
+		add(newAppointment, constraints);
+		
+		constraints.gridx = 6;
+		constraints.gridy = 5;
+		
+		add(addRemove, constraints);
 		
 		updateAvtaleBok();
 	}
