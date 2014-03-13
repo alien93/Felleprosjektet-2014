@@ -74,8 +74,7 @@ public class Participants extends JPanel {
 		attendingList.setModel(attendingEmployeesModel);
 
 		// Push employees who's allready attending into attendingEmployeesAtLoad
-		DBConnection con = new DBConnection("src/db/props.properties");
-		con.init();
+		DBConnection con = new DBConnection("src/db/props.properties", true);
 		PreparedStatement prs;
 		try {
 			prs = con.prepareStatement("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + ap.getId());
@@ -138,10 +137,10 @@ public class Participants extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				DBConnection con = new DBConnection("src/db/props.properties");
-				con.init();
+				DBConnection con = new DBConnection("src/db/props.properties", false);
 				deleteParticipantsNotOnAttending(con);
 				saveParticipantsOnAttending(con);
+				con.commit();
 				con.close();
 			}
 

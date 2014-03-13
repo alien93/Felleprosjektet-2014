@@ -18,20 +18,26 @@ public class DBConnection {
 	private String url;
 	private Connection conn;
 	
-	public DBConnection(String propName) {
+	public DBConnection(String propName, boolean autoCommit) {
 		properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File(propName)));
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Could not load properties-file!");
 		}
 		url = properties.getProperty("url");
-	}
-	
-	public void init() {
 		try {
 			conn = DriverManager.getConnection(url, properties.getProperty("user"), properties.getProperty("password"));
+			conn.setAutoCommit(autoCommit);
 		} catch (SQLException e) {
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			e.printStackTrace();
 			throw new RuntimeException("Klarte ikke åpne kobling til databasen!");
 		}
 	}
@@ -81,7 +87,9 @@ public class DBConnection {
 			st = conn.createStatement();
 			return st.executeQuery(sql);
 		} catch (SQLException e) {
-			throw new RuntimeException("Klarte ikke utføre SELECT-query!");
+			e.printStackTrace();
+			close();
+			throw new RuntimeException();
 		}
 	}
 	
@@ -96,9 +104,22 @@ public class DBConnection {
 			st = conn.createStatement();
 			st.executeUpdate(sql);
 		} catch (SQLException e) {
-			throw new RuntimeException("Klarte ikke utføre UPDATE/INSERT-query!");
+			e.printStackTrace();
 		}
-		
+	}
+	
+	public void commit() {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			if (conn != null)
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			e.printStackTrace();
+		}
 	}
 
 	
@@ -108,6 +129,7 @@ public class DBConnection {
 				conn.close();
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Klarte ikke lukke kobling til databasen!");
 		}
 	}

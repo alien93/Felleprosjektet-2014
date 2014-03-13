@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -27,10 +28,11 @@ public class AvtaleList extends JList{
 		this.setModel(new DefaultListModel<Appointment>());
 		
 		//Hente avtaler fra databasen
+		DBConnection connection = null;
+		ResultSet rs = null;
 		try {
-			DBConnection connection = new DBConnection("src/db/props.properties");
-			connection.init();
-			ResultSet rs = connection.smallSELECT(	
+			connection = new DBConnection("src/db/props.properties", true);
+			rs = connection.smallSELECT(	
 					"SELECT * from appointment " +
 					"WHERE DATE(StartTime)  = " + "'" +this.date+ "'");
 			System.out.println("Connected");
@@ -40,10 +42,18 @@ public class AvtaleList extends JList{
 						));
 				
 			}
-			rs.close();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	

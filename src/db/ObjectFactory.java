@@ -13,10 +13,9 @@ public class ObjectFactory {
 
 	public static ArrayList<Person> getAllEmployees() {
 		ArrayList<Person> retList = new ArrayList<Person>();
-		DBConnection con = new DBConnection("src/db/props.properties");
+		DBConnection con = new DBConnection("src/db/props.properties", true);
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		con.init();
 		
 		try {
 			pst = con.prepareStatement("SELECT username from employee");
@@ -46,10 +45,9 @@ public class ObjectFactory {
 	
 	public static void getEmployeeAppointments(Person employee) {
 		ArrayList<Appointment> retList = new ArrayList<Appointment>();
-		DBConnection con = new DBConnection("src/db/props.properties");
+		DBConnection con = new DBConnection("src/db/props.properties", true);
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		con.init();
 		
 		try {
 			pst = con.prepareStatement("SELECT AP.*" +
@@ -59,10 +57,10 @@ public class ObjectFactory {
 			
 			while (rs.next()) {
 				Appointment ap = new Appointment(rs.getInt("AppointmentNumber"),
-						rs.getString("AppointmentName"),
-						rs.getString("StartTime"),
-						rs.getString("EndTime"),
-						rs.getInt("RoomNumber"));
+												rs.getString("AppointmentName"),
+												rs.getString("StartTime"),
+												rs.getString("EndTime"),
+												rs.getInt("RoomNumber"));
 				retList.add(ap);
 			}
 		} catch (SQLException e) {
