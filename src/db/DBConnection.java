@@ -76,6 +76,7 @@ public class DBConnection {
 			st = conn.createStatement();
 			return st.executeQuery(sql);
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Klarte ikke utføre SELECT-query!");
 		}
 	}

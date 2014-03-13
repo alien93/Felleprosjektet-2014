@@ -1,5 +1,11 @@
 package models;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import javax.swing.DefaultListModel;
+
+import db.DBConnection;
 
 
 public class Appointment {
@@ -10,6 +16,11 @@ public class Appointment {
 	private int meetingRoomNr;
 	private String currentUserStatus;
 	private ArrayList<Person>participants;
+
+	public static final String DECLINED = "declined";
+	public static final String CONFIRMED = "confirmed";
+	public static final String NOT_RESPONDED = "not responded";
+	public static final String HOST = "host";
 	
 	public Appointment(int id, String name, String startTime, String endTime, int meetingRoomNr){
 		this(id);
@@ -60,11 +71,12 @@ public class Appointment {
 		return participants;
 	}
 	
-	public void setStatus(Person currentUser){
-		
+	public void setStatus(String status){
+		this.currentUserStatus = status;
 	}
-	public String getStatus(Person currentUser){
-		return null;
+	
+	public String getStatus(){
+		return this.currentUserStatus;
 	}
 	void addEmployee(Person employee){
 		this.participants.add(employee);
