@@ -59,6 +59,11 @@ public class DBConnection {
 	 * 	
 	 * 	Samme som ved insert, bare med: "UPDATE Ansatt SET Passord = ? WHERE BrukerNavn = ?"
 	 * 
+	 * DELETE
+	 *
+	 * 	Samme som ved insert, bare med: "DELETE FROM employeeappointmentalarm WHERE Username = ?"
+	 * 	
+	 * 	VIKTIG Å HUSKE WHERE !!
 	 */
 	
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
@@ -95,10 +100,16 @@ public class DBConnection {
 		}
 		
 	}
+
 	
-	public void close() throws SQLException {
-		if (conn != null)
-			conn.close();
+	public void close() {
+		try {
+			if (conn != null) {
+				conn.close();
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("Klarte ikke lukke kobling til databasen!");
+		}
 	}
 	
 
