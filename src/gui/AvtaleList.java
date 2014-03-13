@@ -70,15 +70,5 @@ public class AvtaleList extends JList{
 	public void fetchApps(String employee){
 		fetchApps(new String[]{employee});
 	}
-	
-	public static void main(String[] args){
-		JFrame frame = new JFrame("testlist");
-		AvtaleList liste = new AvtaleList("2014-03-10", "Anders");
-		frame.setContentPane(liste);
-		frame.setVisible(true);
-		frame.pack();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-	}
 
 }
