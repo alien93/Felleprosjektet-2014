@@ -80,14 +80,16 @@ public class ObjectFactory {
 	}
 	
 	public static String getStatus(String username , Appointment app){
+		DBConnection connection = null;
+		ResultSet rs = null;
+		String status;
 		try {
-			DBConnection connection = new DBConnection("src/db/props.properties");
-			connection.init();
-			ResultSet rs = connection.smallSELECT(
+			connection = new DBConnection("src/db/props.properties", true);
+			rs = connection.smallSELECT(
 					"SELECT Status FROM employeeappointmentalarm " +
 					"WHERE AppointmentNumber = " + app.getId() + " AND Username = '" + username+"'");
 			if (rs.next()) {
-				String status = rs.getString("Status");
+				status = rs.getString("Status");
 			}
 			else {
 				throw new RuntimeException("Gir ikke tilbake noen status!");
@@ -99,7 +101,11 @@ public class ObjectFactory {
 			throw new RuntimeException("Klarte ikke hente status!");
 		} finally {
 			if (rs != null) {
-				rs.close();
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 			connection.close();
 		}
