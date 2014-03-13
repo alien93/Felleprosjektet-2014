@@ -23,7 +23,7 @@ public class AvtaleBok extends JPanel {
 	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
-	private AvtaleList[] appLists = new AvtaleList[7];
+	private AvtaleList[] appList = new AvtaleList[7];
 	private JLabel ukeLabel;
 	
 	public AvtaleBok() {
@@ -100,11 +100,14 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i] = new JLabel(new SimpleDateFormat("dd.MM.yy").format(dates));
+			appList[i] = new AvtaleList(new SimpleDateFormat("yyyy-MM-dd").format(dates), "Anders");//TODO: Generell user
 			constraints.gridy = 2;
 			add(dateLabels[i], constraints);
 			JLabel weekDay = new JLabel(days[i]);
 			constraints.gridy = 1;
 			add(weekDay, constraints);
+			constraints.gridy = 3;
+			add(appList[i], constraints);
 		}
 		
 		updateAvtaleBok();
@@ -121,6 +124,8 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i].setText((new SimpleDateFormat("dd.MM.yy").format(dates)));
+			appList[i].setDate(new SimpleDateFormat("yyyy-MM-dd").format(dates));
+			appList[i].fetchApps("Anders"); //TODO
 		}
 		ukeLabel.setText("Uke " + model.getWeek());
 		

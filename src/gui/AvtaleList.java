@@ -39,7 +39,8 @@ public class AvtaleList extends JList{
 	}
 	
 	public void fetchApps(String[] employees){
-		//Hente avtaler fra databasen
+			((DefaultListModel<Appointment>) this.getModel()).clear();
+			//Hente avtaler fra databasen
 			String employeesString = "";
 			for (String employee : employees){
 				employeesString += "EAA.Username = '"+employee+"' ";
@@ -64,6 +65,9 @@ public class AvtaleList extends JList{
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+	}
+	public void fetchApps(String employee){
+		fetchApps(new String[]{employee});
 	}
 	
 	public static void main(String[] args){
