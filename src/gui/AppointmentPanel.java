@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+
 import models.Appointment;
 import models.Person;
 
@@ -292,6 +294,24 @@ public class AppointmentPanel extends JDialog {
 		setVisible(true);
 	}
 	
+	public AppointmentPanel(final JFrame jf, Appointment app){
+		this(jf);
+		
+		this.nameField.setEditable(false);
+		this.dateChooser.getDateEditor().setEnabled(false);
+		//this.dateChooser.getDateEditor().se
+		this.starTimeHourPropertyComponent.setEnabled(false);
+		this.starTimeMinutesPropertyComponent.setEnabled(false);
+		this.endTimeHourPropertyComponent.setEnabled(false);
+		this.endTimeMinutePropertyComponent.setEnabled(false);
+		this.roomPropertyComponent.setEnabled(false);;
+		this.addExternal.setEnabled(false);
+		this.addButton.setEnabled(false);
+		this.calender.setEnabled(false);
+		this.emailField.setEnabled(false);
+		
+	}
+	
 	
 
 	class dateChooserListener implements PropertyChangeListener  {
@@ -309,5 +329,13 @@ public class AppointmentPanel extends JDialog {
 			
 		}
 	}	
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("Ny avtale");
+		frame.getContentPane().add(new AppointmentPanel(frame,new Appointment(1)));
+		frame.setResizable(false);
+		frame.pack();
+		frame.setVisible(true);
+	}
+	
 
 }
