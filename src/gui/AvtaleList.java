@@ -4,12 +4,14 @@ package gui;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 
 import models.Appointment;
+import models.Person;
 import renderers.AvtaleRenderer;
 import db.DBConnection;
 import db.ObjectFactory;
@@ -21,11 +23,7 @@ public class AvtaleList extends JList{
 		this.setCellRenderer(new AvtaleRenderer());
 		this.setModel(new DefaultListModel<Appointment>());
 	}
-
-	public AvtaleList(String date, String employee){
-		this(date, new String[]{employee});
-	}
-	public AvtaleList(String date, String[] employees){
+	public AvtaleList(String date, ArrayList<Person> employees){
 		this.date = date;
 		this.setCellRenderer(new AvtaleRenderer());
 		this.setModel(new DefaultListModel<Appointment>());
@@ -38,13 +36,13 @@ public class AvtaleList extends JList{
 		this.date = date;
 	}
 
-	public void fetchApps(String[] employees){
+	public void fetchApps(ArrayList<Person> employees){
 		((DefaultListModel<Appointment>) this.getModel()).clear();
 		//Hente avtaler fra databasen
 		String employeesString = "";
-		for (String employee : employees){
+		for (Person employee : employees){
 			employeesString += "EAA.Username = '"+employee+"' ";
-			if(!employee.equals(employees[employees.length-1]))employeesString += " OR ";
+			if(!employee.equals(employees.get(employees.size()-1)))employeesString += " OR ";
 		}
 
 		DBConnection connection = null;
@@ -52,13 +50,14 @@ public class AvtaleList extends JList{
 		try {
 			connection = new DBConnection("src/db/props.properties", true);
 			PreparedStatement pst = connection.prepareStatement(	
-					"SELECT AP.* FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
+					"SELECT AP.*, EAA.Status FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 							"WHERE (DATE(AP.StartTime)  = " + "'" +this.date+"'" +
 									"AND ("+employeesString+"))");
 			rs = pst.executeQuery();
 			while (rs.next()) {
 				Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5));
-				app.setStatus(ObjectFactory.getStatus(employees[0], app));
+				//app.setStatus(ObjectFactory.getStatus(employees[0], app));
+				app.setStatus(rs.getString("Status"));
 				((DefaultListModel<Appointment>) this.getModel()).addElement(app);
 				
 			}
@@ -77,8 +76,10 @@ public class AvtaleList extends JList{
 			}
 		}
 	}
-	public void fetchApps(String employee){
-		fetchApps(new String[]{employee});
+	public void fetchApps(Person employee){
+		ArrayList<Person> empList = new ArrayList<Person>();
+		empList.add(employee);
+		fetchApps(empList);
 	}
 
 

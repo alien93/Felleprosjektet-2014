@@ -20,5 +20,9 @@ public class Person {
 	public boolean equals(Object obj) {
 		return username.equals(((Person) obj).getUsername());
 	}
+	
+	public String toString(){
+		return this.username;
+	}
 
 }

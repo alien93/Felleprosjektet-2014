@@ -93,7 +93,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		}catch (RuntimeException e){
 			status = "gjest";
 		}
-		switch(avtale.getStatus()){
+		switch(status){
 			case Appointment.DECLINED: color = new Color(255, 175, 175); break;
 			case Appointment.CONFIRMED: color = new Color(175, 255, 175); break;
 			case Appointment.HOST: color = new Color(175, 175, 255); break;
