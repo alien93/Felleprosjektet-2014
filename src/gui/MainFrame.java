@@ -16,7 +16,6 @@ import models.Person;
 
 public class MainFrame extends JFrame {
 
-	private JDialog loginDialog;
 	private Person user;
 
 	public MainFrame() {
