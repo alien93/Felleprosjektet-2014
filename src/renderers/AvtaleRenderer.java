@@ -81,7 +81,8 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		tidText.setText(avtale.getStartTime().substring(0, 5) + " - " + avtale.getEndTime().substring(0, 5));
 		romText.setText("Rom: " + String.valueOf(avtale.getMeetingRoomNr()));
 		vertText.setText("Vert: " + "TODO");
-		varselText.setText("*");
+		varselText.setText(avtale.isEdited()? "*" : "");
+		
 		
 	
 		avtaler.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

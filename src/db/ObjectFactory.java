@@ -50,7 +50,7 @@ public class ObjectFactory {
 		ResultSet rs = null;
 		
 		try {
-			pst = con.prepareStatement("SELECT AP.*" +
+			pst = con.prepareStatement("SELECT AP.*, EAA.Status, EAA.Edited" +
 					"FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 					"WHERE EAA.Username = '" + employee.getUsername() + "'");
 			rs = pst.executeQuery();
@@ -60,7 +60,9 @@ public class ObjectFactory {
 												rs.getString("AppointmentName"),
 												rs.getString("StartTime"),
 												rs.getString("EndTime"),
-												rs.getInt("RoomNumber"));
+												rs.getInt("RoomNumber"),
+												rs.getString("Status"),
+												rs.getInt("Edited"));
 				retList.add(ap);
 			}
 		} catch (SQLException e) {
