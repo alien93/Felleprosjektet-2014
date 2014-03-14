@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
@@ -26,7 +29,7 @@ public class AvtaleBok extends JPanel {
 	
 	private JButton prevWeek, nextWeek, newAppointment, addRemove;
 	private AvtaleBokModel model;
-	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
+	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lï¿½rdag", "Sï¿½ndag"};
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
 	private AvtaleList[] appList = new AvtaleList[7];
@@ -130,6 +133,22 @@ public class AvtaleBok extends JPanel {
 		add(addRemove, constraints);
 		
 		updateAvtaleBok();
+		
+		for(final AvtaleList list : appList){
+			list.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					new AppointmentPanel(frame, (Appointment) list.getSelectedValue());	
+				}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseReleased(MouseEvent e) {}
+			
+			});
+		}
+		
 	}
 	
 	public void addEmployees(ArrayList<Person> elist) {

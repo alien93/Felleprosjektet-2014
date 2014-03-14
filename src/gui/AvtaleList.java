@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import models.Appointment;
 import models.Person;
@@ -27,6 +29,7 @@ public class AvtaleList extends JList{
 		this.date = date;
 		this.setCellRenderer(new AvtaleRenderer());
 		this.setModel(new DefaultListModel<Appointment>());
+		
 
 		fetchApps(employees);
 
