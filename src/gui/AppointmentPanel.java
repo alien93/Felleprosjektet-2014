@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
+import models.Appointment;
 import models.Person;
 
 import com.toedter.calendar.JCalendar;
@@ -280,9 +281,23 @@ public class AppointmentPanel extends JPanel {
 		//addExternalConstraint.fill=GridBagConstraints.HORIZONTAL;
 		//addExternalConstraint.anchor=GridBagConstraints.SOUTH;
 		add(addExternal,addExternalConstraint);
+	}
+	
+	public AppointmentPanel(final JFrame jf, Appointment app){
+		this(jf);
 		
-		
-		
+		this.nameField.setEditable(false);
+		this.dateChooser.getDateEditor().setEnabled(false);
+		//this.dateChooser.getDateEditor().se
+		this.starTimeHourPropertyComponent.setEnabled(false);
+		this.starTimeMinutesPropertyComponent.setEnabled(false);
+		this.endTimeHourPropertyComponent.setEnabled(false);
+		this.endTimeMinutePropertyComponent.setEnabled(false);
+		this.roomPropertyComponent.setEnabled(false);;
+		this.addExternal.setEnabled(false);
+		this.addButton.setEnabled(false);
+		this.calender.setEnabled(false);
+		this.emailField.setEnabled(false);
 		
 	}
 	
@@ -306,7 +321,7 @@ public class AppointmentPanel extends JPanel {
 	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Ny avtale");
-		frame.getContentPane().add(new AppointmentPanel(frame));
+		frame.getContentPane().add(new AppointmentPanel(frame,new Appointment(1)));
 		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
