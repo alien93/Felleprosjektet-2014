@@ -51,15 +51,15 @@ public class AvtaleList extends JList{
 			connection = new DBConnection("src/db/props.properties", true);
 			PreparedStatement pst = connection.prepareStatement(	
 					"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime, " +
-							"AP.EndTime, AP.RoomNumber, EAA.Status " +
+							"AP.EndTime, AP.RoomNumber, EAA.Status, EAA.Edited " +
 							"FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 							"WHERE (DATE(AP.StartTime)  = " + "'" +this.date+"'" +
 									"AND ("+employeesString+"))");
 			rs = pst.executeQuery();
 			while (rs.next()) {
-				Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5));
+				Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
+						rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
 				//app.setStatus(ObjectFactory.getStatus(employees[0], app));
-				app.setStatus(rs.getString("Status"));
 				((DefaultListModel<Appointment>) this.getModel()).addElement(app);
 				
 			}

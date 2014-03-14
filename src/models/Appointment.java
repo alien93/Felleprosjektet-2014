@@ -15,6 +15,7 @@ public class Appointment {
 	private String endTime;
 	private int meetingRoomNr;
 	private String currentUserStatus;
+	private boolean edited;
 	private ArrayList<Person>participants;
 
 	public static final String DECLINED = "declined";
@@ -22,12 +23,14 @@ public class Appointment {
 	public static final String NOT_RESPONDED = "not responded";
 	public static final String HOST = "host";
 	
-	public Appointment(int id, String name, String startTime, String endTime, int meetingRoomNr){
+	public Appointment(int id, String name, String startTime, String endTime, int meetingRoomNr, String status, int edited){
 		this(id);
 		this.startTime = startTime;
 		this.name = name;
 		this.endTime = endTime;
 		this.meetingRoomNr = meetingRoomNr;
+		this.currentUserStatus = status;
+		this.edited = (edited == 1);
 	}
 	public Appointment(int id){
 		this.id = id;
@@ -91,6 +94,13 @@ public class Appointment {
 	
 	void setMeetingRoom(){
 		
+	}
+	
+	public boolean isEdited(){
+		return edited;
+	}
+	public void setEdited(boolean edited){
+		this.edited = edited;
 	}
 
 }
