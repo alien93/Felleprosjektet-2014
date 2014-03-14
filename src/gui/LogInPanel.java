@@ -35,7 +35,6 @@ public class LogInPanel extends JDialog{
 	public LogInPanel(Person user, JFrame f) {
 		super(f, "Innlogging", true);
 		
-		System.out.println("2");
 		
 		setSize(300, 150);
 		this.user = user;
