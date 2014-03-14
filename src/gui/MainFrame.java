@@ -3,13 +3,12 @@ package gui;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import models.Person;
 
@@ -66,7 +65,7 @@ public class MainFrame extends JFrame {
 		
 		setVisible(true);
 	}
-
+	
 	public static void main(String[] args){
 		new MainFrame();
 	}

@@ -7,23 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.sql.Date;
-
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-
+import models.Appointment;
 import models.Person;
 
 import com.toedter.calendar.JCalendar;
@@ -57,8 +49,9 @@ public class AppointmentPanel extends JDialog {
 	private final String[] minuteStrings = { "00","15","30","45"};
 	private final String[] alarms = { "På","Av"};
 	protected JDateChooser dateChooser;
+	private Appointment app;
 	
-	public AppointmentPanel(final JFrame jf){
+	public AppointmentPanel(final MainFrame jf, final Person user){
 		super(jf, "Avtale", true);
 		
 		setSize(600, 400);
@@ -78,6 +71,7 @@ public class AppointmentPanel extends JDialog {
 		emailLabel = new JLabel("Epost til ekstern deltager");
 		addExternal= new JButton("Legg til");
 		emailField = new JTextField("");
+		app = new Appointment();
 		
 		
 		dateChooser = new JDateChooser();
@@ -243,6 +237,14 @@ public class AppointmentPanel extends JDialog {
 		//addButtonConstraints.gridwidth=1;
 		add(addButton,addButtonConstraints);
 		
+		addButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Participants(jf, app, user);
+			}
+		});
+		
 		
 		
 		shallButton = new JButton("Skal");
@@ -294,7 +296,7 @@ public class AppointmentPanel extends JDialog {
 
 	class dateChooserListener implements PropertyChangeListener  {
 		public void propertyChangeListener(PropertyChangeEvent ae){
-			  /* if ("date".equals(ae.getPropertyName())) {
+			  /*TODO if ("date".equals(ae.getPropertyName())) {
 	                System.out.print 
 	              ln(ae.getPropertyName()
 	                    + ": " + (Date) ae.getNewValue());
@@ -306,15 +308,6 @@ public class AppointmentPanel extends JDialog {
 			// TODO Auto-generated method stub
 			
 		}
-	}
-	
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("Ny avtale");
-		frame.getContentPane().add(new AppointmentPanel(frame));
-		frame.setResizable(false);
-		frame.pack();
-		frame.setVisible(true);
-	}
-	
+	}	
 
 }
