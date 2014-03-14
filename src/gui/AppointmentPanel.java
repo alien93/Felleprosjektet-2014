@@ -294,8 +294,8 @@ public class AppointmentPanel extends JDialog {
 		setVisible(true);
 	}
 	
-	public AppointmentPanel(final JFrame jf, Appointment app){
-		this(jf);
+	public AppointmentPanel(final MainFrame jf, Appointment app){
+		this(jf, new Person("test"));//TODO: ikke bare new Person
 		
 		this.nameField.setEditable(false);
 		this.dateChooser.getDateEditor().setEnabled(false);
@@ -331,7 +331,7 @@ public class AppointmentPanel extends JDialog {
 	}	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Ny avtale");
-		frame.getContentPane().add(new AppointmentPanel(frame,new Appointment(1)));
+		//frame.getContentPane().add(new AppointmentPanel(frame,new Appointment(1)));
 		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
