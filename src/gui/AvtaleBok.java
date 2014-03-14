@@ -31,10 +31,11 @@ public class AvtaleBok extends JPanel {
 	private JLabel[] dateLabels = new JLabel[7];
 	private AvtaleList[] appList = new AvtaleList[7];
 	private JLabel ukeLabel;
-	private Person user;
+	private ArrayList<Person> employees;
 	
 	public AvtaleBok(Person person, final MainFrame frame) {
-		user = person;
+		employees = new ArrayList<Person>();
+		employees.add(person);
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
 		constraints = new GridBagConstraints();
@@ -99,7 +100,7 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i] = new JLabel(new SimpleDateFormat("dd.MM.yy").format(dates));
-			appList[i] = new AvtaleList(new SimpleDateFormat("yyyy-MM-dd").format(dates), "Anders");//TODO: Generell user
+			appList[i] = new AvtaleList(new SimpleDateFormat("yyyy-MM-dd").format(dates), employees);//TODO: Generell user
 
 			constraints.insets = new Insets(0, 0, 0, 0); // Padding
 			constraints.gridy = 2;
@@ -131,8 +132,12 @@ public class AvtaleBok extends JPanel {
 		updateAvtaleBok();
 	}
 	
-	public void setEmployees(ArrayList<Person> employees) {
-		
+	public void addEmployees(ArrayList<Person> elist) {
+		for (Person p : elist) {
+			if (! employees.contains(p)) {
+				employees.add(p);
+			}
+		}
 	}
 	
 	public void updateAvtaleBok() {
@@ -147,7 +152,7 @@ public class AvtaleBok extends JPanel {
 			}
 			dateLabels[i].setText((new SimpleDateFormat("dd.MM.yy").format(dates)));
 			appList[i].setDate(new SimpleDateFormat("yyyy-MM-dd").format(dates));
-			appList[i].fetchApps("Anders"); //TODO
+			appList[i].fetchApps(employees); //TODO
 		}
 		ukeLabel.setText("Uke " + model.getWeek());
 	}

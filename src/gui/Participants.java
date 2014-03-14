@@ -127,7 +127,7 @@ public class Participants extends JDialog {
 		
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				avtaleBok.setEmployees(attendingEmployees);
+				avtaleBok.addEmployees(attendingEmployees);
 				dispose();
 			}
 		});
