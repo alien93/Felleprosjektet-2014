@@ -74,10 +74,17 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		avtaler.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		Color color = Color.LIGHT_GRAY;
 		//TODO forandre color til riktig farge basert på status
+		String status = "";
+		try{
+			status = avtale.getStatus();
+		}catch (RuntimeException e){
+			status = "gjest";
+		}
 		switch(avtale.getStatus()){
 			case Appointment.DECLINED: color = new Color(255, 175, 175); break;
 			case Appointment.CONFIRMED: color = new Color(175, 255, 175); break;
 			case Appointment.HOST: color = new Color(175, 175, 255); break;
+			case "gjest": color = new Color(255, 100, 255); break;
 		}
 		line = BorderFactory.createRaisedBevelBorder();
 		setBackground(color);
