@@ -26,7 +26,7 @@ public class AvtaleBok extends JPanel {
 	
 	private JButton prevWeek, nextWeek, newAppointment, addRemove;
 	private AvtaleBokModel model;
-	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "LÃ¸rdag", "SÃ¸ndag"};
+	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
 	private AvtaleList[] appList = new AvtaleList[7];
@@ -62,14 +62,14 @@ public class AvtaleBok extends JPanel {
 		newAppointment = new JButton("Ny avtale");
 		newAppointment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new AppointmentPanel(frame, user);
+				new AppointmentPanel(frame, employees.get(0));
 			}
 		});
 		
 		addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Participants(frame, user, AvtaleBok.this);
+				new Participants(frame, employees.get(0), AvtaleBok.this);
 				updateAvtaleBok();
 			}
 		});
