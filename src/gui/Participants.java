@@ -41,6 +41,7 @@ public class Participants extends JDialog {
 	private Person user;
 
 	public Participants(final MainFrame frame, final Appointment ap, final Person person) {
+
 		super(frame, "Avtale", true);
 		user = person;
 
@@ -272,4 +273,5 @@ public class Participants extends JDialog {
 
 		setVisible(true);
 	}
+
 }
