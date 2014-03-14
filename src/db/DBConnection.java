@@ -38,7 +38,7 @@ public class DBConnection {
 	}
 	
 	/*
-	 * Bruk PreparedStatements n���r du skal gj���re st���rre updates/selections
+	 * Bruk PreparedStatements når du skal gjøre større updates/selections
 	 * 
 	 * Bruk:
 	 * 
