@@ -51,8 +51,8 @@ public class AvtaleList extends JList{
 			connection = new DBConnection("src/db/props.properties", true);
 			PreparedStatement pst = connection.prepareStatement(	
 					"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime, " +
-							"AP.EndTime, AP.RoomNumber, EAA.Status FROM (appointment AS AP) " +
-					"NATURAL JOIN (employeeappointmentalarm AS EAA)" +
+							"AP.EndTime, AP.RoomNumber, EAA.Status " +
+							"FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 							"WHERE (DATE(AP.StartTime)  = " + "'" +this.date+"'" +
 									"AND ("+employeesString+"))");
 			rs = pst.executeQuery();
