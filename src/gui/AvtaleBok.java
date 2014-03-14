@@ -9,14 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import models.Appointment;
@@ -70,7 +68,7 @@ public class AvtaleBok extends JPanel {
 		addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Participants(frame, new Appointment(6));
+				new Participants(frame, new Person("Anders"), AvtaleBok.this);
 				updateAvtaleBok();
 			}
 		});
@@ -131,6 +129,10 @@ public class AvtaleBok extends JPanel {
 		add(addRemove, constraints);
 		
 		updateAvtaleBok();
+	}
+	
+	public void setEmployees(ArrayList<Person> employees) {
+		
 	}
 	
 	public void updateAvtaleBok() {

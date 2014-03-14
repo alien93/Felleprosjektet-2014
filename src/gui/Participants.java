@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -28,7 +29,7 @@ import renderers.PersonRenderer;
 import db.DBConnection;
 import db.ObjectFactory;
 
-public class Participants extends JPanel {
+public class Participants extends JDialog {
 
 	private JTextField searchInput;
 	private JLabel searchResultLabel, attendingLabel;
@@ -39,8 +40,8 @@ public class Participants extends JPanel {
 	private JScrollPane searchResultPane, attendingListPane;
 	private Person user;
 
-	public Participants(final JFrame frame, final Appointment ap, final Person person) {
-		//super(frame, "Avtale", true);
+	public Participants(final MainFrame frame, final Appointment ap, final Person person) {
+		super(frame, "Avtale", true);
 		user = person;
 
 		attendingEmployeesAtLoad = new ArrayList<Person>();
@@ -72,7 +73,7 @@ public class Participants extends JPanel {
 				saveParticipantsOnAttending(con);
 				con.commit();
 				con.close();
-				//dispose();
+				dispose();
 			}
 
 			private void deleteParticipantsNotOnAttending(DBConnection con2) {
@@ -119,12 +120,17 @@ public class Participants extends JPanel {
 		addGUI();
 	}
 	
-	public Participants(final JFrame frame, Person person) {
-		//super(frame, "Legg til brukere", true);
+	public Participants(final MainFrame frame, Person person, final AvtaleBok avtaleBok) {
+		super(frame, "Legg til brukere", true);
 		user = person;
 		initGUI(frame);
 		
-		// TODO
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				avtaleBok.setEmployees(attendingEmployees);
+				dispose();
+			}
+		});
 		
 		addGUI();
 	}
@@ -265,14 +271,5 @@ public class Participants extends JPanel {
 		add(saveButton, saveButtonConstraint);
 
 		setVisible(true);
-	}
-
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("Møtedeltagere");
-		frame.setContentPane(new Participants(frame, new Appointment(6), new Person("Kristoffer")));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);	
 	}
 }
