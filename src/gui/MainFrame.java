@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		super("Avtalebok");
 		try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} 
 		catch (Exception e) {}
 		

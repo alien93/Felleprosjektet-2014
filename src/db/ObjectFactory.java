@@ -85,9 +85,10 @@ public class ObjectFactory {
 		String status;
 		try {
 			connection = new DBConnection("src/db/props.properties", true);
-			rs = connection.smallSELECT(
+			PreparedStatement pst = connection.prepareStatement(
 					"SELECT Status FROM employeeappointmentalarm " +
 					"WHERE AppointmentNumber = " + app.getId() + " AND Username = '" + username+"'");
+			rs = pst.executeQuery();
 			if (rs.next()) {
 				status = rs.getString("Status");
 			}
