@@ -17,6 +17,13 @@ public class AvtaleListModel<Appointment> extends DefaultListModel<Appointment>{
 			this.setElementAt((Appointment) contents[i], i);
 		}
 	}
+	
+	public int getIndex(Appointment app){
+		for (int i = 0; i < this.size(); i++){
+			if(app.equals(this.get(i)))return i;
+		}
+		return -1;
+	}
 
 	
 
