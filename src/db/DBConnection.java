@@ -105,28 +105,6 @@ public class DBConnection {
 		}
 	}
 	
-	/*
-	 * bruk insertWithAutoKey når du inserter og vil få tilbake en auto_incrementet key
-	 */
-	
-	public int insertWithAutoKey(String sql) {
-		Statement st;
-		try {
-			st = conn.createStatement();
-			if (st.execute(sql, Statement.RETURN_GENERATED_KEYS)) {
-				ResultSet rs = st.getResultSet();
-				if (rs.next())
-					return rs.getInt(1);
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			close();
-			throw new RuntimeException();
-		}
-		return -1;
-	}
-	
 	public void commit() {
 		try {
 			conn.commit();
