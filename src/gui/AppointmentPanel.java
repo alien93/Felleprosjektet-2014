@@ -65,7 +65,7 @@ public class AppointmentPanel extends JDialog {
 	private GridBagConstraints nameLabelConstraint, nameFieldConstraint, dateLabelConstraint, dateChooserConstraint, startTimeLabelConstraint,
 	endTimeLabelConstraint, roomLabelConstraint, alarmLabelConstraint, starTimePropertyComponentConstraint,
 	starTimeMinutesPropertyComponentConstraint, endTimeHourPropertyComponentConstraint, endTimeMinutePropertyComponentConstraint,
-	roomPropertyComponentConstraint, alarmPropertyComponentConstraint, participantsPaneConstraint, saveButtonConstraints,
+	roomPropertyComponentConstraint, alarmPropertyComponentConstraint, participantsPaneConstraint, saveButtonConstraints, deleteButtonConstraints,
 	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint;
 
 	private JTable table;
@@ -95,7 +95,7 @@ public class AppointmentPanel extends JDialog {
 		if (!currentUser.equals(host)) {
 
 			this.nameField.setEditable(false);
-			this.dateChooser.getDateEditor().setEnabled(false);
+			this.dateChooser.setEnabled(false);
 			//this.dateChooser.getDateEditor().se
 			this.starTimeHourPropertyComponent.setEnabled(false);
 			this.starTimeMinutesPropertyComponent.setEnabled(false);
@@ -107,6 +107,7 @@ public class AppointmentPanel extends JDialog {
 			this.calender.setEnabled(false);
 			this.emailField.setEnabled(false);
 			this.table.setEnabled(false);
+			this.deleteButton.setEnabled(false);
 		}
 		setVisible(true);
 	}
@@ -126,6 +127,12 @@ public class AppointmentPanel extends JDialog {
 			s[i+1][1] = participants.get(e);
 			currentRows.add(e);
 			i++;
+		}
+		
+		if (! currentRows.contains(currentUser.getUsername())) {
+			this.alarmPropertyComponent.setEnabled(false);
+			this.shallButton.setEnabled(false);
+			this.shallNotButton.setEnabled(false);
 		}
 
 		tableModel = new DefaultTableModel(s, tableHeaders) {
@@ -322,8 +329,6 @@ public class AppointmentPanel extends JDialog {
 		 */
 		add(participantsPane,participantsPaneConstraint);
 
-
-
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DBConnection con = new DBConnection("src/db/props.properties", true);
@@ -421,11 +426,25 @@ public class AppointmentPanel extends JDialog {
 			}
 
 		});
+		
+		deleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DBConnection con = new DBConnection("src/db/props.properties", true);
+				con.smallUPDATEorINSERT("DELETE FROM appointment WHERE AppointmentNumber = " + app.getId());
+				con.close();
+				dispose();
+			}
+		});
 
 		saveButtonConstraints = new GridBagConstraints();
-		saveButtonConstraints.gridx=3;
+		saveButtonConstraints.gridx=2;
 		saveButtonConstraints.gridy=9;
 		add(saveButton,saveButtonConstraints);
+		
+		deleteButtonConstraints = new GridBagConstraints();
+		deleteButtonConstraints.gridx = 3;
+		deleteButtonConstraints.gridy = 9;
+		add(deleteButton, deleteButtonConstraints);
 
 		addButton = new JButton("Legg til/fjern");
 		addButtonConstraints = new GridBagConstraints();
