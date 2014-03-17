@@ -116,13 +116,13 @@ public class ObjectFactory {
 		}
 	}
 	
-	public static DefaultListModel<Appointment> getEmpsApps(Person[] emps, String date, DBConnection connection){
+	public static DefaultListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){
 		DefaultListModel<Appointment> model = new DefaultListModel<Appointment>();
 		//Hente avtaler fra databasen
 		String employeesString = "";
 		for (Person employee : emps){
 			employeesString += "EAA.Username = '"+employee+"' ";
-			if(!employee.equals(emps[emps.length-1]))employeesString += " OR ";
+			if(!employee.equals(emps.get(emps.size()-1)))employeesString += " OR ";
 		}
 			ResultSet rs = null;
 			try {

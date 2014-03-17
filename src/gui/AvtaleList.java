@@ -21,8 +21,8 @@ import db.ObjectFactory;
 public class AvtaleList extends JList{
 	private String date;
 
-	public AvtaleList(){
-		this(new DefaultListModel<Appointment>());
+	public AvtaleList(String date){
+		this(date, new DefaultListModel<Appointment>());
 	}
 	public AvtaleList(String date, ArrayList<Person> employees){
 		this.date = date;
@@ -33,7 +33,8 @@ public class AvtaleList extends JList{
 		fetchApps(employees);
 
 	}
-	public AvtaleList(DefaultListModel<Appointment> model){
+	public AvtaleList(String date, DefaultListModel<Appointment> model){
+		this.date = date;
 		this.setCellRenderer(new AvtaleRenderer());
 		this.setModel(model);
 	}

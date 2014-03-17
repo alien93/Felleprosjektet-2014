@@ -32,6 +32,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 	public AvtaleRenderer(){
 		setLayout(new GridBagLayout());
 		setPreferredSize(new Dimension(175, 60));
+		setMinimumSize(new Dimension(125, 55));
 		
 		GridBagConstraints gc = new GridBagConstraints();
 		gc.insets = new Insets(1, 5, 1, 5); // Padding
@@ -89,16 +90,11 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		Color color = Color.LIGHT_GRAY;
 		//TODO forandre color til riktig farge basert på status
 		String status = avtale.getStatus();
-		/*try{
-			status = avtale.getStatus();
-		}catch (RuntimeException e){
-			status = "gjest";
-		}*/
 		switch(status){
 			case Appointment.DECLINED: color = new Color(255, 175, 175); break;
 			case Appointment.CONFIRMED: color = new Color(175, 255, 175); break;
 			case Appointment.HOST: color = new Color(175, 175, 255); break;
-			default: color = new Color(255, 100, 255); break;
+			default: color = new Color(255, 150, 255); break;
 		}
 		line = BorderFactory.createRaisedBevelBorder();
 		setBackground(color);
