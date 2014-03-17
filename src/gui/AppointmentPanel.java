@@ -22,6 +22,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -77,8 +78,9 @@ public class AppointmentPanel extends JDialog {
 		currentUser = user;
 		host = user;
 		oldRows = new HashMap<String, String>();
-
+		
 		makeGui(jf);
+		this.deleteButton.setEnabled(false);
 		setVisible(true);
 	}
 
@@ -129,7 +131,7 @@ public class AppointmentPanel extends JDialog {
 			i++;
 		}
 		
-		if (! currentRows.contains(currentUser.getUsername())) {
+		if (! currentRows.contains(currentUser.getUsername()) && app != null) {
 			this.alarmPropertyComponent.setEnabled(false);
 			this.shallButton.setEnabled(false);
 			this.shallNotButton.setEnabled(false);
@@ -429,10 +431,15 @@ public class AppointmentPanel extends JDialog {
 		
 		deleteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DBConnection con = new DBConnection("src/db/props.properties", true);
-				con.smallUPDATEorINSERT("DELETE FROM appointment WHERE AppointmentNumber = " + app.getId());
-				con.close();
-				dispose();
+				if (app != null) {
+					int confirm = JOptionPane.showOptionDialog(null, "Er du sikker?", "Bekreftelse", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					if (confirm == 0) { // If user is sure
+						DBConnection con = new DBConnection("src/db/props.properties", true);
+						con.smallUPDATEorINSERT("DELETE FROM appointment WHERE AppointmentNumber = " + app.getId());
+						con.close();
+						dispose();
+					}
+				}
 			}
 		});
 
