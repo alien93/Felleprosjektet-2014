@@ -20,8 +20,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import db.DBConnection;
+import db.ObjectFactory;
+
 import models.Appointment;
 import models.AvtaleBokModel;
+import models.AvtaleListModel;
 import models.Person;
 
 
@@ -96,6 +100,7 @@ public class AvtaleBok extends JPanel {
 		
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
+		DBConnection connection = new DBConnection("src/db/props.properties", true);
 		for (int i = 0; i < days.length; i++) {
 			constraints.gridx = i;
 			try {
@@ -104,7 +109,12 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i] = new JLabel(new SimpleDateFormat("dd.MM.yy").format(dates));
-			appList[i] = new AvtaleList(new SimpleDateFormat("yyyy-MM-dd").format(dates), employees);//TODO: Generell user
+			String appDate = new SimpleDateFormat("yyyy-MM-dd").format(dates);
+			appList[i] = new AvtaleList(appDate);
+			AvtaleListModel model = ObjectFactory.getEmpsApps(employees, appDate, connection);
+			model.sort();
+			appList[i].setModel(model);
+			//((AvtaleListModel<Appointment>) appList[i].getModel()).sort();
 
 			constraints.insets = new Insets(0, 0, 0, 0); // Padding
 			constraints.gridy = 2;
@@ -123,6 +133,7 @@ public class AvtaleBok extends JPanel {
 			add(panel, constraints);
 			panel.add(appList[i], constraints);
 		}
+		connection.close();
 		
 		constraints.gridx = 5;
 		constraints.gridy = 5;
@@ -133,7 +144,7 @@ public class AvtaleBok extends JPanel {
 		
 		add(addRemove, constraints);
 		
-		updateAvtaleBok();
+		//updateAvtaleBok();
 		
 		for(final AvtaleList list : appList){
 			list.addMouseListener(new MouseListener(){
@@ -163,6 +174,7 @@ public class AvtaleBok extends JPanel {
 	public void updateAvtaleBok() {
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
+		DBConnection connection = new DBConnection("src/db/props.properties", true);
 		for (int i = 0; i < days.length; i++) {
 			constraints.gridx = i;
 			try {
@@ -171,9 +183,14 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i].setText((new SimpleDateFormat("dd.MM.yy").format(dates)));
-			appList[i].setDate(new SimpleDateFormat("yyyy-MM-dd").format(dates));
-			appList[i].fetchApps(employees); //TODO
+			String appDate = new SimpleDateFormat("yyyy-MM-dd").format(dates);
+			appList[i].setDate(appDate);
+			AvtaleListModel model = ObjectFactory.getEmpsApps(employees, appDate, connection);
+			model.sort();
+			appList[i].setModel(model);
+			//((AvtaleListModel<Appointment>) appList[i].getModel()).sort();
 		}
+		connection.close();
 		ukeLabel.setText("Uke " + model.getWeek());
 	}
 }
