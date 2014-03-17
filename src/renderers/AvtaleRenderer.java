@@ -44,6 +44,8 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(nameText, gc);
 		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 14));
+		nameText.setMinimumSize(new Dimension(100, 22));
+		nameText.setPreferredSize(new Dimension(100, 22));
 		
 		gc.gridx = 1;
 		gc.anchor = GridBagConstraints.EAST;
@@ -66,6 +68,8 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		gc.fill = GridBagConstraints.REMAINDER;
 		add(romText, gc);
 		romText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
+		romText.setMinimumSize(new Dimension(50, 15));
+		romText.setPreferredSize(new Dimension(65, 15));
 		
 		gc.gridx = 0; // Column
 		gc.gridy = 2; // Row
@@ -82,7 +86,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		nameText.setText(avtale.getName());
 		tidText.setText(avtale.getStartTime().substring(0, 5) + " - " + avtale.getEndTime().substring(0, 5));
 		romText.setText("Rom: " + String.valueOf(avtale.getMeetingRoomNr()));
-		vertText.setText("Vert: " + "TODO");//TODO
+		vertText.setText("Vert: " + avtale.getHost().getUsername());//TODO
 		varselText.setText(avtale.isEdited()? "*" : "");
 		
 		
@@ -98,9 +102,9 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 			case Appointment.GJEST: 	color = new Color(255, 175, 255); break;
 		}
 		//line = BorderFactory.createRaisedBevelBorder();
-		line = BorderFactory.createLineBorder(Color.WHITE, 2);
+		line = BorderFactory.createLineBorder(Color.WHITE, 1);
 		setBackground(color);
-		//setBorder(line);
+		setBorder(line);
         return this;
 	}
 
