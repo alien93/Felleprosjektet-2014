@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import models.Appointment;
+import models.AvtaleListModel;
 import models.Person;
 import renderers.AvtaleRenderer;
 import db.DBConnection;
@@ -22,20 +24,20 @@ public class AvtaleList extends JList{
 	private String date;
 
 	public AvtaleList(String date){
-		this(date, new DefaultListModel<Appointment>());
+		this(date, new AvtaleListModel<Appointment>());
 	}
 	public AvtaleList(String date, ArrayList<Person> employees){
 		this.date = date;
-		this.setCellRenderer(new AvtaleRenderer());
-		this.setModel(new DefaultListModel<Appointment>());
+		this.setCellRenderer((ListCellRenderer<? super Appointment>) new AvtaleRenderer());
+		this.setModel(new AvtaleListModel<Appointment>());
 		
 
 		fetchApps(employees);
 
 	}
-	public AvtaleList(String date, DefaultListModel<Appointment> model){
+	public AvtaleList(String date, AvtaleListModel<Appointment> model){
 		this.date = date;
-		this.setCellRenderer(new AvtaleRenderer());
+		this.setCellRenderer((ListCellRenderer<? super Appointment>) new AvtaleRenderer());
 		this.setModel(model);
 	}
 
@@ -67,7 +69,7 @@ public class AvtaleList extends JList{
 				Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
 						rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
 				//app.setStatus(ObjectFactory.getStatus(employees[0], app));
-				((DefaultListModel<Appointment>) this.getModel()).addElement(app);
+				((AvtaleListModel<Appointment>) this.getModel()).addElement(app);
 				
 			}
 			

@@ -16,7 +16,6 @@ import models.Person;
 
 public class MainFrame extends JFrame {
 
-	private JDialog loginDialog;
 	private Person user;
 
 	public MainFrame() {
@@ -26,7 +25,6 @@ public class MainFrame extends JFrame {
 		} 
 		catch (Exception e) {}
 		
-		setSize(1024, 768);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // We use a custom close action
 		
 		UIManager.put("OptionPane.yesButtonText", "Ja"); // Translate "yes" and "no" options

@@ -1,8 +1,10 @@
 package gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,10 +13,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -36,95 +40,60 @@ public class Participants extends JDialog {
 	private JList<Person> searchResult, attendingList;
 	private JButton attendButton, undoAttendButton, saveButton;
 	private DefaultListModel<Person> unattendingEmployeesModel, attendingEmployeesModel;
-	private ArrayList<Person> unattendingEmployees, attendingEmployees, attendingEmployeesAtLoad, potentialEmployeesToAdd;
+	private ArrayList<Person> unattendingEmployees, attendingEmployees;
 	private JScrollPane searchResultPane, attendingListPane;
+	private HashMap<String, String> attendingMap;
 	private Person user;
 
-	public Participants(final MainFrame frame, final Appointment ap, final Person person) {
+	public Participants(final AppointmentPanel appointmentPanel, final Person person, HashMap<String, String> attendingEmpAtLoad) {
 
-		super(frame, "Avtale", true);
+		super(appointmentPanel, "Avtale", true);
 		user = person;
 
-		attendingEmployeesAtLoad = new ArrayList<Person>();
-		potentialEmployeesToAdd = new ArrayList<Person>();
-
-		// Push employees who's allready attending into attendingEmployeesAtLoad
-		DBConnection con = new DBConnection("src/db/props.properties", true);
-		PreparedStatement prs;
-		try {
-			prs = con.prepareStatement("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + ap.getId());
-			ResultSet rsAtLoad = prs.executeQuery();
-			while (rsAtLoad.next()) {
-				attendingEmployeesAtLoad.add(new Person(rsAtLoad.getString(1)));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		attendingMap = new HashMap<String, String>(attendingEmpAtLoad);
+		attendingEmployees = new ArrayList<Person>();
+		
+		for (String user : attendingEmpAtLoad.keySet()) {
+			attendingEmployees.add(new Person(user));
 		}
-		con.close();
+		
+		initGUI();
 
-		initGUI(frame);
 
 		// Actionlisteners //
 		saveButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				DBConnection con = new DBConnection("src/db/props.properties", false);
-				deleteParticipantsNotOnAttending(con);
-				saveParticipantsOnAttending(con);
-				con.commit();
-				con.close();
+				
+				for (Person pers : unattendingEmployees) {
+					if (attendingMap.containsKey(pers))
+						attendingMap.remove(pers.getUsername());
+				}
+				
+				attendingEmployees.removeAll(attendingMap.keySet());
+				for (Person pers : attendingEmployees) {
+					attendingMap.put(pers.getUsername(), "not_responded");
+				}
+				
+				appointmentPanel.updateParticipantRows(attendingMap);
 				dispose();
 			}
-
-			private void deleteParticipantsNotOnAttending(DBConnection con2) {
-				PreparedStatement prs;
-				try {
-					prs = con2.prepareStatement("DELETE FROM employeeappointmentalarm WHERE Username = ? AND AppointmentNumber = ?");
-					for (Person p : attendingEmployeesAtLoad) {
-						if (!attendingEmployees.contains(p)) { 	// If a person in attendingEmployeesAtLoad isn't in attendingEmployees
-							prs.setString(1, p.getUsername());	// it has been unattended
-							prs.setInt(2, ap.getId());
-							prs.executeUpdate();
-						}
-					}
-				} catch (SQLException e) {
-					con2.close();
-					e.printStackTrace();
-					throw new RuntimeException();
-				} 
-
-			}
-
-			private void saveParticipantsOnAttending(DBConnection con2) {
-				potentialEmployeesToAdd.removeAll(unattendingEmployees);		// Do not insert the ones who was unattended again
-				potentialEmployeesToAdd.removeAll(attendingEmployeesAtLoad);	// Do not insert the ones already in the database
-				PreparedStatement prs;
-				try {
-					prs = con2.prepareStatement("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status)" +
-							"VALUES (?,?,?)");
-					for (Person p : potentialEmployeesToAdd) {
-						prs.setString(1, p.getUsername());
-						prs.setInt(2, ap.getId());
-						prs.setString(3, "not_responded");
-						prs.executeUpdate();
-					}
-				} catch (SQLException e) {
-					con2.close();
-					e.printStackTrace();
-					throw new RuntimeException();
-				}
-
-			}
+			
 		});
 
-		addGUI();
+		addGUI(appointmentPanel);
+		updateAttendingEmployeesModel();
+		updateUnattendingEmployeesModel();
 	}
 	
-	public Participants(final MainFrame frame, Person person, final AvtaleBok avtaleBok) {
-		super(frame, "Legg til brukere", true);
-		user = person;
-		initGUI(frame);
+	public Participants(final MainFrame frame, final AvtaleBok avtaleBok, ArrayList<Person> employees) {
+		super(frame, "Legg til andres avtaler", true);
+		user = employees.get(0);
+		attendingEmployees = new ArrayList<Person>(employees);
+		
+		initGUI();
+		unattendingEmployees.remove(employees.get(0));
 		
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -133,7 +102,7 @@ public class Participants extends JDialog {
 			}
 		});
 		
-		addGUI();
+		addGUI(frame);
 	}
 
 	public void updateUnattendingEmployeesModel() {
@@ -152,10 +121,9 @@ public class Participants extends JDialog {
 		}
 	}
 
-	private void initGUI(JFrame frame) {
+	private void initGUI() {
 		setLayout(new GridBagLayout());
-		setSize(600, 400);
-		frame.setLocationRelativeTo(null);
+		setSize(500, 300);
 
 		searchInput = new JTextField(25);
 		searchResultLabel = new JLabel("Employees");
@@ -182,10 +150,10 @@ public class Participants extends JDialog {
 		attendingList.setModel(attendingEmployeesModel);
 
 		unattendingEmployees = ObjectFactory.getAllEmployees();
-		attendingEmployees = new ArrayList<Person>(attendingEmployeesAtLoad);
 
 		unattendingEmployees.removeAll(attendingEmployees); // Remove all attending employees from not attending list
 		
+		unattendingEmployees.remove(user);
 		attendingEmployees.remove(user); // Remove logged in user from appointment
 
 		updateAttendingEmployeesModel(); // Update attending employees model
@@ -206,8 +174,6 @@ public class Participants extends JDialog {
 				for (Person p : selectedEmployees) {
 					attendingEmployees.add(p); // Add employee to attending list
 					unattendingEmployees.remove(p); // Remove employee from unattending list
-					if (!potentialEmployeesToAdd.contains(p))
-						potentialEmployeesToAdd.add(p);
 				}
 				updateUnattendingEmployeesModel(); // Update models
 				updateAttendingEmployeesModel();
@@ -226,10 +192,11 @@ public class Participants extends JDialog {
 		});
 	}
 
-	private void addGUI() {
+	private void addGUI(Component frame) {
 		// Add elements to grid //
 		GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.gridwidth = 3;
+		inputConstraint.insets = new Insets(0, 0, 10, 0);
 		add(searchInput, inputConstraint);
 
 		GridBagConstraints resultLabelConstraint = new GridBagConstraints();
@@ -258,19 +225,25 @@ public class Participants extends JDialog {
 		GridBagConstraints attendButtonConstraint = new GridBagConstraints();
 		attendButtonConstraint.gridx = 1;
 		attendButtonConstraint.gridy = 2;
+		attendButtonConstraint.insets = new Insets(25, 5, 0, 5);
 		add(attendButton, attendButtonConstraint);
 
 		GridBagConstraints undoAttendConstraint = new GridBagConstraints();
 		undoAttendConstraint.anchor = GridBagConstraints.SOUTH;
 		undoAttendConstraint.gridx = 1;
 		undoAttendConstraint.gridy = 3;
+		undoAttendConstraint.insets = new Insets(0, 5, 25, 5);
 		add(undoAttendButton, undoAttendConstraint);
 
 		GridBagConstraints saveButtonConstraint = new GridBagConstraints();
-		saveButtonConstraint.gridx = 1;
+		saveButtonConstraint.gridwidth = 3;
+		saveButtonConstraint.gridx = 0;
 		saveButtonConstraint.gridy = 4;
+		saveButtonConstraint.insets = new Insets(10, 0, 0, 0);
+		saveButtonConstraint.ipadx = 30;
 		add(saveButton, saveButtonConstraint);
 
+		setLocationRelativeTo(frame);
 		setVisible(true);
 	}
 

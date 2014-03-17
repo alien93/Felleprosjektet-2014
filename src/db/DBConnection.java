@@ -100,6 +100,8 @@ public class DBConnection {
 			st.executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
+			close();
+			throw new RuntimeException();
 		}
 	}
 	
