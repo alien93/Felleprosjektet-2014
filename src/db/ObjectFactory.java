@@ -137,7 +137,7 @@ public class ObjectFactory {
 				while (rs.next()) {
 					Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
 							rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
-					if(!rs.getString(8).equals(emps.get(0)))app.setStatus(Appointment.GJEST);
+					if(!rs.getString(8).equals(emps.get(0).getUsername()))app.setStatus(Appointment.GJEST);
 					model.addElement(app);
 						
 				}
