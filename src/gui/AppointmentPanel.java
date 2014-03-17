@@ -134,6 +134,7 @@ public class AppointmentPanel extends JDialog {
 			this.alarmPropertyComponent.setEnabled(false);
 			this.shallButton.setEnabled(false);
 			this.shallNotButton.setEnabled(false);
+			this.saveButton.setEnabled(false);
 		}
 
 		tableModel = new DefaultTableModel(s, tableHeaders) {
