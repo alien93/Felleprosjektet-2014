@@ -49,7 +49,7 @@ public class AppointmentPanel extends JDialog {
 	private JLabel nameLabel, dateLabel, emailLabel;
 	private JCalendar calender;
 	private JLabel startTimeLabel, endTimeLabel, roomLabel, alarmLabel;
-	private JButton saveButton, addButton, shallButton, shallNotButton, addExternal;
+	private JButton saveButton, deleteButton, addButton, shallButton, shallNotButton, addExternal;
 	private JComboBox starTimeHourPropertyComponent, starTimeMinutesPropertyComponent, endTimeHourPropertyComponent,endTimeMinutePropertyComponent,roomPropertyComponent, alarmPropertyComponent;
 	private JScrollPane participantsPane;
 	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
@@ -166,6 +166,7 @@ public class AppointmentPanel extends JDialog {
 		roomLabel= new JLabel("Møterom");
 		alarmLabel = new JLabel("Alarm");
 		saveButton = new JButton("Lagre");
+		deleteButton = new JButton("Slett");
 		addButton= new JButton("Legg til/fjern");
 		shallButton= new JButton("Skal");
 		shallNotButton = new JButton("Skal ikke");
@@ -323,7 +324,6 @@ public class AppointmentPanel extends JDialog {
 
 
 
-		saveButton = new JButton("Lagre");
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DBConnection con = new DBConnection("src/db/props.properties", true);
@@ -493,7 +493,7 @@ public class AppointmentPanel extends JDialog {
 				}
 				else {
 					for (int i = 1; i < tableModel.getRowCount(); i++) {
-						if (tableModel.getValueAt(i, 0).equals(currentUser)) {
+						if (tableModel.getValueAt(i, 0).equals(currentUser.getUsername())) {
 							tableModel.setValueAt("Confirmed", i, 1);
 						}
 					}
@@ -523,7 +523,7 @@ public class AppointmentPanel extends JDialog {
 				}
 				else {
 					for (int i = 1; i < tableModel.getRowCount(); i++) {
-						if (tableModel.getValueAt(i, 0).equals(currentUser)) {
+						if (tableModel.getValueAt(i, 0).equals(currentUser.getUsername())) {
 							tableModel.setValueAt("Declined", i, 1);
 						}
 					}
