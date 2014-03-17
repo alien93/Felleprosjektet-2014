@@ -121,9 +121,11 @@ public class Participants extends JDialog {
 		addGUI();
 	}
 	
-	public Participants(final MainFrame frame, Person person, final AvtaleBok avtaleBok) {
-		super(frame, "Legg til brukere", true);
-		user = person;
+	public Participants(final MainFrame frame, final AvtaleBok avtaleBok, ArrayList<Person> employees) {
+		super(frame, "Legg til andres avtaler", true);
+		user = employees.get(0);
+		attendingEmployeesAtLoad = new ArrayList<Person>(employees);
+		
 		initGUI(frame);
 		
 		saveButton.addActionListener(new ActionListener() {

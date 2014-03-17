@@ -69,13 +69,14 @@ public class AvtaleBok extends JPanel {
 		newAppointment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new AppointmentPanel(frame, employees.get(0));
+				updateAvtaleBok();
 			}
 		});
 		
 		addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Participants(frame, employees.get(0), AvtaleBok.this);
+				new Participants(frame, AvtaleBok.this, employees);
 				updateAvtaleBok();
 			}
 		});
