@@ -35,10 +35,6 @@ public class Appointment implements Comparable<Appointment>{
 	public Appointment(int id){
 		this.id = id;
 	}
-	public Appointment() {
-		// Used when making new appointment;
-		currentUserStatus = HOST;
-	}
 	
 	public String getName(){
 		return name;
