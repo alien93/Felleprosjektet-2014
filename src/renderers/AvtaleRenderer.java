@@ -94,7 +94,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 			case Appointment.DECLINED: color = new Color(255, 175, 175); break;
 			case Appointment.CONFIRMED: color = new Color(175, 255, 175); break;
 			case Appointment.HOST: color = new Color(175, 175, 255); break;
-			default: color = new Color(255, 150, 255); break;
+			case Appointment.GJEST: color = new Color(255, 175, 255); break;
 		}
 		line = BorderFactory.createRaisedBevelBorder();
 		setBackground(color);

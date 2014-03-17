@@ -22,6 +22,7 @@ public class Appointment {
 	public static final String CONFIRMED = "confirmed";
 	public static final String NOT_RESPONDED = "not responded";
 	public static final String HOST = "host";
+	public static final String GJEST = "gjest";
 	
 	public Appointment(int id, String name, String startTime, String endTime, int meetingRoomNr, String status, int edited){
 		this(id);
