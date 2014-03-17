@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -16,6 +17,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 
 import models.Appointment;
 import models.Person;
@@ -58,7 +64,7 @@ public class AppointmentPanel extends JDialog {
 		
 		setSize(600, 400);
 		setLayout(new GridBagLayout());
-		nameField= new JTextField("                            ");
+		nameField= new JTextField();
 		nameLabel= new JLabel("Name");
 		dateLabel= new JLabel("Date");
 		calender = new JCalendar();
@@ -247,7 +253,27 @@ public class AppointmentPanel extends JDialog {
 			}
 		});
 		
-		
+		addExternal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Email email = new SimpleEmail();
+					email.setHostName("smtp.googlemail.com");
+					email.setSmtpPort(465);
+					email.setAuthenticator(new DefaultAuthenticator("ikkesvar.fellesprosjektet", "Fellesprosjekt26"));
+					email.setSSLOnConnect(true);
+					email.setFrom("ikkesvar.fellesprosjektet@gmail.com");
+					email.setSubject("Du har blitt lagt til i en avtale");
+					email.setMsg("Heisann!\n\n"
+							+ "Du har blitt lagt til som deltager i en avtale "
+							+ "opprettet av bruker " + user.getUsername());
+					email.addTo(emailField.getText());
+					email.send();
+				}
+				catch (EmailException ee) {
+					ee.printStackTrace();
+				}
+			}
+		});
 		
 		shallButton = new JButton("Skal");
 		GridBagConstraints shallButtonConstraints = new GridBagConstraints();
@@ -329,13 +355,4 @@ public class AppointmentPanel extends JDialog {
 			
 		}
 	}	
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("Ny avtale");
-		//frame.getContentPane().add(new AppointmentPanel(frame,new Appointment(1)));
-		frame.setResizable(false);
-		frame.pack();
-		frame.setVisible(true);
-	}
-	
-
 }
