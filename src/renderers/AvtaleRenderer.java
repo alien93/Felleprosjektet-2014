@@ -15,6 +15,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import models.Appointment;
@@ -32,6 +33,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 	public AvtaleRenderer(){
 		setLayout(new GridBagLayout());
 		setPreferredSize(new Dimension(175, 60));
+		setMinimumSize(new Dimension(125, 55));
 		
 		GridBagConstraints gc = new GridBagConstraints();
 		gc.insets = new Insets(1, 5, 1, 5); // Padding
@@ -80,29 +82,25 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		nameText.setText(avtale.getName());
 		tidText.setText(avtale.getStartTime().substring(0, 5) + " - " + avtale.getEndTime().substring(0, 5));
 		romText.setText("Rom: " + String.valueOf(avtale.getMeetingRoomNr()));
-		vertText.setText("Vert: " + "TODO");
+		vertText.setText("Vert: " + "TODO");//TODO
 		varselText.setText(avtale.isEdited()? "*" : "");
 		
 		
 	
 		avtaler.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		Color color = Color.LIGHT_GRAY;
+		Color color = new Color(220, 220, 220);
 		//TODO forandre color til riktig farge basert på status
 		String status = avtale.getStatus();
-		/*try{
-			status = avtale.getStatus();
-		}catch (RuntimeException e){
-			status = "gjest";
-		}*/
 		switch(status){
-			case Appointment.DECLINED: color = new Color(255, 175, 175); break;
-			case Appointment.CONFIRMED: color = new Color(175, 255, 175); break;
-			case Appointment.HOST: color = new Color(175, 175, 255); break;
-			default: color = new Color(255, 100, 255); break;
+			case Appointment.DECLINED: 	color = new Color(255, 100, 100); break;
+			case Appointment.CONFIRMED: color = new Color(100, 255, 100); break;
+			case Appointment.HOST: 		color = new Color(000, 200, 255); break;
+			case Appointment.GJEST: 	color = new Color(255, 175, 255); break;
 		}
-		line = BorderFactory.createRaisedBevelBorder();
+		//line = BorderFactory.createRaisedBevelBorder();
+		line = BorderFactory.createLineBorder(Color.WHITE, 2);
 		setBackground(color);
-		setBorder(line);
+		//setBorder(line);
         return this;
 	}
 
