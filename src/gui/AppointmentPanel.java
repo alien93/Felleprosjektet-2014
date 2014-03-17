@@ -130,8 +130,7 @@ public class AppointmentPanel extends JDialog {
 			currentRows.add(e);
 			i++;
 		}
-		
-		if (! currentRows.contains(currentUser.getUsername()) && app != null) {
+		if (app != null && !(currentRows.contains(currentUser.getUsername()) || host.equals(currentUser))) {
 			this.alarmPropertyComponent.setEnabled(false);
 			this.shallButton.setEnabled(false);
 			this.shallNotButton.setEnabled(false);
