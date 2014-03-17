@@ -22,8 +22,7 @@ public class AvtaleList extends JList{
 	private String date;
 
 	public AvtaleList(){
-		this.setCellRenderer(new AvtaleRenderer());
-		this.setModel(new DefaultListModel<Appointment>());
+		this(new DefaultListModel<Appointment>());
 	}
 	public AvtaleList(String date, ArrayList<Person> employees){
 		this.date = date;
@@ -33,6 +32,10 @@ public class AvtaleList extends JList{
 
 		fetchApps(employees);
 
+	}
+	public AvtaleList(DefaultListModel<Appointment> model){
+		this.setCellRenderer(new AvtaleRenderer());
+		this.setModel(model);
 	}
 
 	public void setDate(String date){

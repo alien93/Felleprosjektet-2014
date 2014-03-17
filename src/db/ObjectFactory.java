@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.swing.DefaultListModel;
+
 import models.Appointment;
 
 import models.Person;
@@ -114,6 +116,43 @@ public class ObjectFactory {
 		}
 	}
 	
-	
+	public static DefaultListModel<Appointment> getEmpsApps(Person[] emps, String date, DBConnection connection){
+		DefaultListModel<Appointment> model = new DefaultListModel<Appointment>();
+		//Hente avtaler fra databasen
+		String employeesString = "";
+		for (Person employee : emps){
+			employeesString += "EAA.Username = '"+employee+"' ";
+			if(!employee.equals(emps[emps.length-1]))employeesString += " OR ";
+		}
+			ResultSet rs = null;
+			try {
+				PreparedStatement pst = connection.prepareStatement(	
+						"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime, " +
+								"AP.EndTime, AP.RoomNumber, EAA.Status, EAA.Edited " +
+								"FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
+								"WHERE (DATE(AP.StartTime)  = " + "'" +date+"'" +
+										"AND ("+employeesString+"))");
+				rs = pst.executeQuery();
+				while (rs.next()) {
+					Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
+							rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
+					model.addElement(app);
+						
+				}
+					
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (rs != null)
+						rs.close();
+
+				} catch (SQLException e) {
+						e.printStackTrace();
+						throw new RuntimeException();
+				}
+			}
+			return model;
+		}
 
 }
