@@ -111,5 +111,10 @@ public class Appointment implements Comparable<Appointment>{
 	public String toString(){
 		return this.name;
 	}
+	@Override
+	public boolean equals(Object app){
+		if(app instanceof Appointment)return false;
+		return this.id == ((Appointment) app).getId();
+	}
 
 }
