@@ -3,12 +3,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.swing.DefaultListModel;
 
 import db.DBConnection;
 
 
-public class Appointment {
+public class Appointment implements Comparable<Appointment>{
 	private int id;
 	private String name;
 	private String startTime;
@@ -106,6 +105,15 @@ public class Appointment {
 	}
 	public void setEdited(boolean edited){
 		this.edited = edited;
+	}
+	@Override
+	public int compareTo(Appointment app) {
+		int diff = this.getStartTime().compareTo(app.getStartTime());
+		if(diff == 0)diff = this.getEndTime().compareTo(app.getEndTime());
+		return diff;
+	}
+	public String toString(){
+		return this.name;
 	}
 
 }

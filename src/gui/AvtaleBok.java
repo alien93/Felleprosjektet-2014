@@ -25,6 +25,7 @@ import db.ObjectFactory;
 
 import models.Appointment;
 import models.AvtaleBokModel;
+import models.AvtaleListModel;
 import models.Person;
 
 
@@ -110,7 +111,10 @@ public class AvtaleBok extends JPanel {
 			dateLabels[i] = new JLabel(new SimpleDateFormat("dd.MM.yy").format(dates));
 			String appDate = new SimpleDateFormat("yyyy-MM-dd").format(dates);
 			appList[i] = new AvtaleList(appDate);
-			appList[i].setModel(ObjectFactory.getEmpsApps(employees, appDate, connection));
+			AvtaleListModel model = ObjectFactory.getEmpsApps(employees, appDate, connection);
+			model.sort();
+			appList[i].setModel(model);
+			//((AvtaleListModel<Appointment>) appList[i].getModel()).sort();
 
 			constraints.insets = new Insets(0, 0, 0, 0); // Padding
 			constraints.gridy = 2;
@@ -181,7 +185,10 @@ public class AvtaleBok extends JPanel {
 			dateLabels[i].setText((new SimpleDateFormat("dd.MM.yy").format(dates)));
 			String appDate = new SimpleDateFormat("yyyy-MM-dd").format(dates);
 			appList[i].setDate(appDate);
-			appList[i].setModel(ObjectFactory.getEmpsApps(employees, appDate, connection));
+			AvtaleListModel model = ObjectFactory.getEmpsApps(employees, appDate, connection);
+			model.sort();
+			appList[i].setModel(model);
+			//((AvtaleListModel<Appointment>) appList[i].getModel()).sort();
 		}
 		connection.close();
 		ukeLabel.setText("Uke " + model.getWeek());

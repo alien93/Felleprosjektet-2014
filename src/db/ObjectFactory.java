@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 
 import models.Appointment;
+import models.AvtaleListModel;
 
 import models.Person;
 
@@ -116,8 +117,8 @@ public class ObjectFactory {
 		}
 	}
 	
-	public static DefaultListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){
-		DefaultListModel<Appointment> model = new DefaultListModel<Appointment>();
+	public static AvtaleListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){
+		AvtaleListModel<Appointment> model = new AvtaleListModel<Appointment>();
 		//Hente avtaler fra databasen
 		String employeesString = "";
 		for (Person employee : emps){
