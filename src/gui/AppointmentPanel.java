@@ -588,8 +588,11 @@ public class AppointmentPanel extends JDialog {
 
 			ResultSet rsAtLoad = con.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + app.getId());
 			while (rsAtLoad.next()) {
-				if (rsAtLoad.getString("Status").equals("host"))
-					this.host = new Person(rsAtLoad.getString("Username"));
+				if (rsAtLoad.getString("Status").equals("host")) {
+					Person thisHost = new Person(rsAtLoad.getString("Username"));
+					this.host = thisHost;
+					app.setHost(thisHost);
+				}
 				else
 					oldRows.put(rsAtLoad.getString("Username"), rsAtLoad.getString("Status"));
 			}

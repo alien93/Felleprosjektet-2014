@@ -15,7 +15,7 @@ public class Appointment implements Comparable<Appointment>{
 	private int meetingRoomNr;
 	private String currentUserStatus;
 	private boolean edited;
-	private ArrayList<Person>participants;
+	private Person host;
 
 	public static final String DECLINED = "declined";
 	public static final String CONFIRMED = "confirmed";
@@ -69,30 +69,24 @@ public class Appointment implements Comparable<Appointment>{
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public ArrayList<Person> getParticipants(){
-		return participants;
-	}
-	
 	public void setStatus(String status){
 		this.currentUserStatus = status;
 	}
-	
 	public String getStatus(){
 		return this.currentUserStatus;
 	}
-	void addEmployee(Person employee){
-		this.participants.add(employee);
+	public Person getHost() {
+		return this.host;
 	}
-	void removeEmployee(Person employee){
-		this.participants.remove(employee);
+	public void setHost(Person employee){
+		this.host = employee;
 	}
 	
-	void saveAppointment(){
+	public void saveAppointment(){
 		
 	}
 	
-	void setMeetingRoom(){
+	public void setMeetingRoom(){
 		
 	}
 	
