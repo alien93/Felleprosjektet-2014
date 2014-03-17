@@ -1,13 +1,15 @@
 package gui;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import models.Person;
@@ -19,6 +21,11 @@ public class MainFrame extends JFrame {
 
 	public MainFrame() {
 		super("Avtalebok");
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} 
+		catch (Exception e) {}
+		
 		setSize(1024, 768);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // We use a custom close action
 		
@@ -29,6 +36,7 @@ public class MainFrame extends JFrame {
 				int confirm = JOptionPane.showOptionDialog(null, "Er du sikker på at du vil logge ut?", "Bekreftelse", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 				if (confirm == 0) { // If user is sure,
 					setVisible(false);
+					
 					loginGUI();
 				}
 			}
@@ -41,15 +49,10 @@ public class MainFrame extends JFrame {
 
 	private void loginGUI() {
 		user = null;
-		LogInPanel loginPanel = new LogInPanel(user);
-		loginDialog = new JDialog(this, "Innlogging", true);
-		loginDialog.setSize(300, 150);
-		loginDialog.setLocationRelativeTo(null); // Place in center of screen
-		loginDialog.add(loginPanel);
-		loginDialog.setVisible(true);
+		LogInPanel loginDialog = new LogInPanel(user, this);
 		
-		if(loginPanel.getUser() != null) { // After dialog is dismissed we can set the user
-			user = loginPanel.getUser(); // Set user
+		if(loginDialog.getUser() != null) { // After dialog is dismissed we can set the user
+			user = loginDialog.getUser(); // Set user
 			mainGUI(); // Open main window
 		}
 		else {
@@ -59,14 +62,16 @@ public class MainFrame extends JFrame {
 	
 	private void mainGUI() {
 		setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
-		AvtaleBok calendar = new AvtaleBok(user);
+		AvtaleBok calendar = new AvtaleBok(user, this);
 		add(calendar);
+		
 		
 		setVisible(true);
 	}
-
+	
 	public static void main(String[] args){
 		new MainFrame();
 	}
+	
 
 }

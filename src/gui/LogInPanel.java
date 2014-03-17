@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,17 +25,20 @@ import org.apache.commons.codec.digest.DigestUtils;
 import db.DBConnection;
 import models.Person;
 
-public class LogInPanel extends JPanel{
+public class LogInPanel extends JDialog{
 	
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JButton logInButton;
 	private Person user;
 	
-	public LogInPanel(Person user) {
+	public LogInPanel(Person user, JFrame f) {
+		super(f, "Innlogging", true);
+		
+		
+		setSize(300, 150);
 		this.user = user;
 		setLayout(new GridBagLayout()); // Set layout
-		setVisible(true);
 		
 		usernameField = new JTextField(15);
 		usernameField.setName("UsernameField");
@@ -88,6 +93,8 @@ public class LogInPanel extends JPanel{
 				}
 			}
 		});
+		setLocationRelativeTo(null);
+		setVisible(true);
 	}
 	
 	public void loginAttempt() {

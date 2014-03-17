@@ -7,17 +7,23 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
+import db.DBConnection;
+import db.ObjectFactory;
+
+import models.Appointment;
 import models.AvtaleBokModel;
 import models.Person;
 
@@ -26,15 +32,16 @@ public class AvtaleBok extends JPanel {
 	
 	private JButton prevWeek, nextWeek, newAppointment, addRemove;
 	private AvtaleBokModel model;
-	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
+	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "L�rdag", "S�ndag"};
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
 	private AvtaleList[] appList = new AvtaleList[7];
 	private JLabel ukeLabel;
-	private Person user;
+	private ArrayList<Person> employees;
 	
-	public AvtaleBok(Person person) {
-		user = person;
+	public AvtaleBok(Person person, final MainFrame frame) {
+		employees = new ArrayList<Person>();
+		employees.add(person);
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
 		constraints = new GridBagConstraints();
@@ -61,16 +68,15 @@ public class AvtaleBok extends JPanel {
 		newAppointment = new JButton("Ny avtale");
 		newAppointment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Du trykka paa knappen ;)");
+				new AppointmentPanel(frame, employees.get(0));
 			}
 		});
 		
 		addRemove = new JButton("Legg til/ fjern ansatt");
 		addRemove.addActionListener(new ActionListener() {
-			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Du trykka paa den andre knappen :D");
+				new Participants(frame, employees.get(0), AvtaleBok.this);
+				updateAvtaleBok();
 			}
 		});
 		
@@ -92,6 +98,7 @@ public class AvtaleBok extends JPanel {
 		
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
+		DBConnection connection = new DBConnection("src/db/props.properties", true);
 		for (int i = 0; i < days.length; i++) {
 			constraints.gridx = i;
 			try {
@@ -100,7 +107,9 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i] = new JLabel(new SimpleDateFormat("dd.MM.yy").format(dates));
-			appList[i] = new AvtaleList(new SimpleDateFormat("yyyy-MM-dd").format(dates), "Anders");//TODO: Generell user
+			String appDate = new SimpleDateFormat("yyyy-MM-dd").format(dates);
+			appList[i] = new AvtaleList(appDate);
+			appList[i].setModel(ObjectFactory.getEmpsApps(employees, appDate, connection));
 
 			constraints.insets = new Insets(0, 0, 0, 0); // Padding
 			constraints.gridy = 2;
@@ -119,6 +128,7 @@ public class AvtaleBok extends JPanel {
 			add(panel, constraints);
 			panel.add(appList[i], constraints);
 		}
+		connection.close();
 		
 		constraints.gridx = 5;
 		constraints.gridy = 5;
@@ -129,12 +139,37 @@ public class AvtaleBok extends JPanel {
 		
 		add(addRemove, constraints);
 		
-		updateAvtaleBok();
+		//updateAvtaleBok();
+		
+		for(final AvtaleList list : appList){
+			list.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					new AppointmentPanel(frame, (Appointment) list.getSelectedValue());	
+				}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseReleased(MouseEvent e) {}
+			
+			});
+		}
+		
+	}
+	
+	public void addEmployees(ArrayList<Person> elist) {
+		for (Person p : elist) {
+			if (! employees.contains(p)) {
+				employees.add(p);
+			}
+		}
 	}
 	
 	public void updateAvtaleBok() {
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
+		DBConnection connection = new DBConnection("src/db/props.properties", true);
 		for (int i = 0; i < days.length; i++) {
 			constraints.gridx = i;
 			try {
@@ -143,9 +178,11 @@ public class AvtaleBok extends JPanel {
 				e.printStackTrace();
 			}
 			dateLabels[i].setText((new SimpleDateFormat("dd.MM.yy").format(dates)));
-			appList[i].setDate(new SimpleDateFormat("yyyy-MM-dd").format(dates));
-			appList[i].fetchApps("Anders"); //TODO
+			String appDate = new SimpleDateFormat("yyyy-MM-dd").format(dates);
+			appList[i].setDate(appDate);
+			appList[i].setModel(ObjectFactory.getEmpsApps(employees, appDate, connection));
 		}
+		connection.close();
 		ukeLabel.setText("Uke " + model.getWeek());
 	}
 }
