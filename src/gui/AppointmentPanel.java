@@ -714,8 +714,8 @@ public class AppointmentPanel extends JDialog {
 			if (rsAtLoad.next()) {
 				nameField.setText(rsAtLoad.getString("AppointmentName"));
 				locationField.setText(rsAtLoad.getString("Location"));
-				int year = Integer.parseInt(rsAtLoad.getString("StartTime").substring(0, 4))-1900;
-				int month = Integer.parseInt(rsAtLoad.getString("StartTime").substring(5, 7))-1;
+				int year = Integer.parseInt(rsAtLoad.getString("StartTime").substring(0, 4));
+				int month = Integer.parseInt(rsAtLoad.getString("StartTime").substring(5, 7));
 				int day = Integer.parseInt(rsAtLoad.getString("StartTime").substring(8, 10));
 				dateChooser.setDate(new Date(year, month, day));
 				starTimeHourPropertyComponent.setSelectedItem(rsAtLoad.getString("StartTime").substring(11, 13));
