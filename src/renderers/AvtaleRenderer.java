@@ -104,7 +104,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 			try {
 
 				ResultSet rsAtLoad = con.smallSELECT("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId() + "AND Status = 'host'");
-				while (rsAtLoad.next()) {
+				if (rsAtLoad.next()) {
 						Person thisHost = new Person(rsAtLoad.getString("Username"));
 						avtale.setHost(thisHost);
 					
