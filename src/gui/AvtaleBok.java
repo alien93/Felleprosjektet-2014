@@ -172,6 +172,10 @@ public class AvtaleBok extends JPanel {
 		}
 	}
 	
+	public void removeEmployees(ArrayList<Person> elist) {
+		employees.removeAll(elist);
+	}
+	
 	public void updateAvtaleBok() {
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");

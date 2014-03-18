@@ -19,7 +19,7 @@ public class Appointment implements Comparable<Appointment>{
 
 	public static final String DECLINED = "declined";
 	public static final String CONFIRMED = "confirmed";
-	public static final String NOT_RESPONDED = "not responded";
+	public static final String NOT_RESPONDED = "not_responded";
 	public static final String HOST = "host";
 	public static final String GJEST = "gjest";
 	

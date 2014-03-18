@@ -42,15 +42,13 @@ public class Participants extends JDialog {
 	private DefaultListModel<Person> unattendingEmployeesModel, attendingEmployeesModel;
 	private ArrayList<Person> unattendingEmployees, attendingEmployees;
 	private JScrollPane searchResultPane, attendingListPane;
-	private HashMap<String, String> attendingMap;
 	private Person user;
 
-	public Participants(final AppointmentPanel appointmentPanel, final Person person, HashMap<String, String> attendingEmpAtLoad) {
+	public Participants(final AppointmentPanel appointmentPanel, final Person person, final HashMap<String, String> attendingEmpAtLoad) {
 
 		super(appointmentPanel, "Avtale", true);
 		user = person;
 
-		attendingMap = new HashMap<String, String>(attendingEmpAtLoad);
 		attendingEmployees = new ArrayList<Person>();
 		
 		for (String user : attendingEmpAtLoad.keySet()) {
@@ -66,14 +64,17 @@ public class Participants extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
+				HashMap<String, String> attendingMap = new HashMap<String, String>(attendingEmpAtLoad);
+				
 				for (Person pers : unattendingEmployees) {
-					if (attendingMap.containsKey(pers))
+					if (attendingMap.containsKey(pers.getUsername())) {
 						attendingMap.remove(pers.getUsername());
+					}
 				}
 				
-				attendingEmployees.removeAll(attendingMap.keySet());
 				for (Person pers : attendingEmployees) {
-					attendingMap.put(pers.getUsername(), "not_responded");
+					if (!attendingMap.containsKey(pers.getUsername()))
+						attendingMap.put(pers.getUsername(), "Avventer svar");
 				}
 				
 				appointmentPanel.updateParticipantRows(attendingMap);
@@ -93,11 +94,12 @@ public class Participants extends JDialog {
 		attendingEmployees = new ArrayList<Person>(employees);
 		
 		initGUI();
-		unattendingEmployees.remove(employees.get(0));
+		unattendingEmployees.remove(user);
 		
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				avtaleBok.addEmployees(attendingEmployees);
+				avtaleBok.removeEmployees(unattendingEmployees);
 				dispose();
 			}
 		});
