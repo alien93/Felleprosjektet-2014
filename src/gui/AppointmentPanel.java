@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -673,9 +675,23 @@ public class AppointmentPanel extends JDialog {
 			if (rsAtLoad.next()) {
 				nameField.setText(rsAtLoad.getString("AppointmentName"));
 				locationField.setText(rsAtLoad.getString("Location"));
-				// TODO Kristoffer
+				int year = Integer.parseInt(rsAtLoad.getString("StartTime").substring(0, 4))-1900;
+				int month = Integer.parseInt(rsAtLoad.getString("StartTime").substring(5, 7))-1;
+				int day = Integer.parseInt(rsAtLoad.getString("StartTime").substring(8, 10));
+				dateChooser.setDate(new Date(year, month, day));
 				starTimeHourPropertyComponent.setSelectedItem(rsAtLoad.getString("StartTime").substring(11, 13));
+				starTimeMinutesPropertyComponent.setSelectedItem(rsAtLoad.getString("StartTime").substring(14, 16));
 				endTimeHourPropertyComponent.setSelectedItem(rsAtLoad.getString("EndTime").substring(11, 13));
+				endTimeMinutePropertyComponent.setSelectedItem(rsAtLoad.getString("EndTime").substring(14, 16));
+				String room = rsAtLoad.getString("RoomNumber");
+				for (int i = 0; i < roomPropertyComponent.getItemCount(); i++) {
+					String roomTemp = (String) roomPropertyComponent.getItemAt(i);
+					String[] splitted = roomTemp.split("\\s+");
+					if (splitted[0].equals(room)) {
+						roomPropertyComponent.setSelectedIndex(i);;
+					}
+				}
+//				alarmPropertyComponent.setSelectedItem(rsAtLoad.getString("")); TODO
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
