@@ -103,12 +103,11 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 			DBConnection con = new DBConnection("src/db/props.properties", true);
 			try {
 
-				ResultSet rsAtLoad = con.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId());
+				ResultSet rsAtLoad = con.smallSELECT("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId() + "AND Status = 'host'");
 				while (rsAtLoad.next()) {
-					if (rsAtLoad.getString("Status").equals("host")) {
 						Person thisHost = new Person(rsAtLoad.getString("Username"));
 						avtale.setHost(thisHost);
-					}
+					
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
