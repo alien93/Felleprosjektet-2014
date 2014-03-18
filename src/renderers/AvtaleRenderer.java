@@ -45,7 +45,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		gc.gridy = 0; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(nameText, gc);
-		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 14));
+		nameText.setFont(new Font("Constantia"/*nameText.getFont().getName()*/, Font.BOLD, 14));
 		nameText.setMinimumSize(new Dimension(100, 22));
 		nameText.setPreferredSize(new Dimension(100, 22));
 		nameText.setForeground(TEXT_COLOR);
