@@ -378,11 +378,13 @@ public class AppointmentPanel extends JDialog {
 			}
 
 			private void createAppointment(DBConnection con2) {
+				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
+				String[] roomStripped = roomTemp.split("\\s+");
 				con2.smallUPDATEorINSERT("INSERT INTO appointment(AppointmentName, StartTime, EndTime, RoomNumber, Location) VALUES('" + 
 						nameField.getText() + "', '" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', '" +
 						new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " + (String) endTimeHourPropertyComponent.getSelectedItem() + ":" +
-						(String) endTimeMinutePropertyComponent.getSelectedItem() + ":00', " + (String) roomPropertyComponent.getSelectedItem() +
+						(String) endTimeMinutePropertyComponent.getSelectedItem() + ":00', " + roomStripped[0] +
 						", '"+ locationField.getText() +"')");
 				ResultSet rs = con2.smallSELECT("SELECT LAST_INSERT_ID() FROM appointment");
 				try {
