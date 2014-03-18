@@ -279,7 +279,22 @@ public class AppointmentPanel extends JDialog {
 		endTimeMinutePropertyComponentConstraint.weightx=1;
 		add(endTimeMinutePropertyComponent,endTimeMinutePropertyComponentConstraint);
 
-		String[] rooms = { "101","102"};
+		String[] rooms = null;
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		try {
+			ResultSet rs = con.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
+			rs.next();
+			rooms = new String[rs.getInt(1) + 1];
+			rooms[0] = "";
+			rs = con.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
+			int i = 1;
+			while (rs.next()) {
+				rooms[i] = rs.getString("RoomNumber") + " (Plass til " + rs.getString("Size") + " personer)";
+				i++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		roomPropertyComponent = new JComboBox(rooms);
 		roomPropertyComponentConstraint = new GridBagConstraints();
 		roomPropertyComponentConstraint.gridx=1;
@@ -356,12 +371,7 @@ public class AppointmentPanel extends JDialog {
 					rs.next();
 					makeAppointment(rs.getString(1));
 				} catch (SQLException e) {
-					try {
-						rs.close();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					try { rs.close(); } catch (SQLException e1) { e1.printStackTrace(); }
 					throw new RuntimeException("LOL");
 				}
 				con2.smallUPDATEorINSERT("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status)" +
@@ -399,7 +409,17 @@ public class AppointmentPanel extends JDialog {
 							if (saveList.contains(tableModel.getValueAt(i, 0))) {
 								prs.setString(1, (String) tableModel.getValueAt(i, 0));
 								prs.setInt(2, app.getId());
-								prs.setString(3, (String) tableModel.getValueAt(i, 1));
+								switch ((String) tableModel.getValueAt(i, 1)) {
+									case "Deltar":
+										prs.setString(3, Appointment.CONFIRMED);
+										break;
+									case "Deltar ikke":
+										prs.setString(3, Appointment.DECLINED);
+										break;
+									case "Avventer svar":
+										prs.setString(3, Appointment.NOT_RESPONDED);
+										break;
+								}
 								prs.executeUpdate();
 							}
 						}
@@ -420,15 +440,26 @@ public class AppointmentPanel extends JDialog {
 				updateList.retainAll(oldRows.keySet());
 				for (int i = 1; i < tableModel.getRowCount(); i++) {
 					String username = (String) tableModel.getValueAt(i, 0);
-					if (updateList.contains(username) && !tableModel.getValueAt(i, 1).equals(oldRows.get(username))) {
-						con2.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Status = '" + tableModel.getValueAt(i, 1) +
+					String status = null;
+					switch ((String) tableModel.getValueAt(i, 1)) {
+						case "Deltar":
+							status = Appointment.CONFIRMED;
+							break;
+						case "Deltar ikke":
+							status = Appointment.DECLINED;
+							break;
+						case "Avventer svar":
+							status = Appointment.NOT_RESPONDED;
+							break;
+					}
+					if (updateList.contains(username) && !oldRows.get(username).equals(status) && !tableModel.getValueAt(i, 1).equals(oldRows.get(username))) {
+						con2.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Status = '" + status +
 								"' WHERE (Username = '" + username + "' AND AppointmentNumber = " + app.getId() + ")");
 					}
 				}
-			}
 
-		});
-		
+			}});
+
 		deleteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (app != null) {
@@ -513,14 +544,14 @@ public class AppointmentPanel extends JDialog {
 					ListSelectionModel sel = table.getSelectionModel();
 					for (int i = 1; i < tableModel.getRowCount(); i++) {
 						if (sel.isSelectedIndex(i)) {
-							tableModel.setValueAt("Confirmed", i, 1);
+							tableModel.setValueAt("Deltar", i, 1);
 						}
 					}
 				}
 				else {
 					for (int i = 1; i < tableModel.getRowCount(); i++) {
 						if (tableModel.getValueAt(i, 0).equals(currentUser.getUsername())) {
-							tableModel.setValueAt("Confirmed", i, 1);
+							tableModel.setValueAt("Deltar", i, 1);
 						}
 					}
 				}
@@ -543,14 +574,14 @@ public class AppointmentPanel extends JDialog {
 					ListSelectionModel sel = table.getSelectionModel();
 					for (int i = 1; i < tableModel.getRowCount(); i++) {
 						if (sel.isSelectedIndex(i)) {
-							tableModel.setValueAt("Declined", i, 1);
+							tableModel.setValueAt("Deltar ikke", i, 1);
 						}
 					}
 				}
 				else {
 					for (int i = 1; i < tableModel.getRowCount(); i++) {
 						if (tableModel.getValueAt(i, 0).equals(currentUser.getUsername())) {
-							tableModel.setValueAt("Declined", i, 1);
+							tableModel.setValueAt("Deltar ikke", i, 1);
 						}
 					}
 				}
@@ -600,8 +631,19 @@ public class AppointmentPanel extends JDialog {
 					this.host = thisHost;
 					app.setHost(thisHost);
 				}
-				else
-					oldRows.put(rsAtLoad.getString("Username"), rsAtLoad.getString("Status"));
+				else {
+					switch (rsAtLoad.getString("Status")) {
+						case Appointment.CONFIRMED:
+							oldRows.put(rsAtLoad.getString("Username"), "Deltar");
+							break;
+						case Appointment.DECLINED:
+							oldRows.put(rsAtLoad.getString("Username"), "Deltar ikke");
+							break;
+						case Appointment.NOT_RESPONDED:
+							oldRows.put(rsAtLoad.getString("Username"), "Avventer svar");
+							break;
+					}
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
