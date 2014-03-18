@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
 import res.IconURL;
@@ -40,6 +41,7 @@ public class AvtaleBok extends JPanel {
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
 	private AvtaleList[] appList = new AvtaleList[7];
+	private JScrollPane[] scrollere = new JScrollPane[7];
 	private JLabel ukeLabel;
 	private JLabel[] fargeLabels = new JLabel[5];
 	private ArrayList<Person> employees;
@@ -129,13 +131,11 @@ public class AvtaleBok extends JPanel {
 			constraints.insets = new Insets(0, 0, 10, 0); // Padding
 			add(dateLabels[i], constraints);
 			constraints.gridy = 4;
-			JPanel panel = new JPanel();
-			panel.setBackground(Color.WHITE);
-			panel.setBorder(new LineBorder(Color.BLACK));
-			panel.setPreferredSize(new Dimension(180, 600));
-			panel.setMinimumSize(new Dimension(150, 300));
-			add(panel, constraints);
-			panel.add(appList[i], constraints);
+			scrollere[i] = new JScrollPane(appList[i]);
+			scrollere[i].setPreferredSize(new Dimension(200, 600));
+			scrollere[i].setMinimumSize(new Dimension(150, 300));
+			
+			add(scrollere[i], constraints);
 		}
 		connection.close();
 
