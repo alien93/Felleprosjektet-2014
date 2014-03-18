@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -18,7 +20,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
+import db.DBConnection;
+
 import models.Appointment;
+import models.Person;
 
 
 
@@ -45,7 +50,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		gc.gridy = 0; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(nameText, gc);
-		nameText.setFont(new Font("Constantia"/*nameText.getFont().getName()*/, Font.BOLD, 14));
+		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 14));
 		nameText.setMinimumSize(new Dimension(100, 22));
 		nameText.setPreferredSize(new Dimension(100, 22));
 		nameText.setForeground(TEXT_COLOR);
@@ -92,13 +97,30 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		nameText.setText(avtale.getName());
 		tidText.setText(avtale.getStartTime().substring(0, 5) + " - " + avtale.getEndTime().substring(0, 5));
 		romText.setText("Rom: " + String.valueOf(avtale.getMeetingRoomNr()));
-		vertText.setText("Vert: TODO");//TODO
+		try{
+			vertText.setText("Vert: " + avtale.getHost().getUsername());//TODO
+		}catch (NullPointerException npe){
+			DBConnection con = new DBConnection("src/db/props.properties", true);
+			try {
+
+				ResultSet rsAtLoad = con.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId());
+				while (rsAtLoad.next()) {
+					if (rsAtLoad.getString("Status").equals("host")) {
+						Person thisHost = new Person(rsAtLoad.getString("Username"));
+						avtale.setHost(thisHost);
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			con.close();
+		}
 		varselText.setText(avtale.isEdited()? "*" : "");
 		
 		
 	
 		avtaler.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		Color color = new Color(220, 220, 220);
+		Color color = new Color(118, 118, 118);
 		//TODO forandre color til riktig farge basert p� status
 		String status = avtale.getStatus();
 		switch(status){
