@@ -23,6 +23,8 @@ import models.Appointment;
 
 
 public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointment>{
+	public static final Color TEXT_COLOR = Color.WHITE;
+	
 	JLabel nameText = new JLabel("");
 	JLabel tidText = new JLabel("");
 	JLabel romText = new JLabel("");
@@ -46,6 +48,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 14));
 		nameText.setMinimumSize(new Dimension(100, 22));
 		nameText.setPreferredSize(new Dimension(100, 22));
+		nameText.setForeground(TEXT_COLOR);
 		
 		gc.gridx = 1;
 		gc.anchor = GridBagConstraints.EAST;
@@ -53,7 +56,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		add(varselText, gc);
 		varselText.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		//varselText.setForeground(new Color(255, 230, 130));
-		varselText.setForeground(Color.BLACK);
+		varselText.setForeground(TEXT_COLOR);
 		gc.anchor = GridBagConstraints.WEST;
 		
 		gc.gridx = 0; // Column
@@ -61,6 +64,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(tidText, gc);
 		tidText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
+		tidText.setForeground(TEXT_COLOR);
 		
 		gc.gridx = 1; // Column
 		gc.gridy = 2; // Row
@@ -70,12 +74,14 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		romText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
 		romText.setMinimumSize(new Dimension(50, 15));
 		romText.setPreferredSize(new Dimension(65, 15));
+		romText.setForeground(TEXT_COLOR);
 		
 		gc.gridx = 0; // Column
 		gc.gridy = 2; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(vertText, gc);
 		vertText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
+		vertText.setForeground(TEXT_COLOR);
 		
 	}
 	
