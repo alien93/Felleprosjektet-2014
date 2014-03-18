@@ -94,6 +94,7 @@ public class AppointmentPanel extends JDialog {
 
 		getInitialParticipants();
 		makeGui(jf);
+		getAppointmentInfo();
 
 		if (!currentUser.equals(host)) {
 
@@ -630,7 +631,6 @@ public class AppointmentPanel extends JDialog {
 		add(addExternal,addExternalConstraint);
 
 		updateParticipantRows(oldRows);
-		getAppointmentInfo();
 		setLocationRelativeTo(jf);
 	}
 
