@@ -672,8 +672,9 @@ public class AppointmentPanel extends JDialog {
 	
 	public void getAppointmentInfo() {
 		DBConnection con = new DBConnection("src/db/props.properties", true);
+		ResultSet rsAtLoad = null;
 		try {
-			ResultSet rsAtLoad = con.smallSELECT("SELECT AppointmentName, StartTime, EndTime, RoomNumber, Location FROM appointment WHERE AppointmentNumber = " + app.getId());
+			rsAtLoad = con.smallSELECT("SELECT AppointmentName, StartTime, EndTime, RoomNumber, Location FROM appointment WHERE AppointmentNumber = " + app.getId());
 			if (rsAtLoad.next()) {
 				nameField.setText(rsAtLoad.getString("AppointmentName"));
 				locationField.setText(rsAtLoad.getString("Location"));
@@ -697,9 +698,13 @@ public class AppointmentPanel extends JDialog {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		finally {
-			con.close();
+		} finally {
+			try {
+				rsAtLoad.close();				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			con.close();			
 		}
 	}
 	
