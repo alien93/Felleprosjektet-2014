@@ -49,13 +49,12 @@ public class AppointmentPanel extends JDialog {
 	private JTextField nameField, emailField;
 	private JLabel nameLabel, dateLabel, emailLabel;
 	private JCalendar calender;
-	private JLabel startTimeLabel, endTimeLabel, roomLabel, alarmLabel;
+	private JLabel startTimeLabel, endTimeLabel, roomLabel, alarmLabel, alarmHourBeforeLabel;
 	private JButton saveButton, deleteButton, addButton, shallButton, shallNotButton, addExternal;
 	private JComboBox starTimeHourPropertyComponent, starTimeMinutesPropertyComponent, endTimeHourPropertyComponent,endTimeMinutePropertyComponent,roomPropertyComponent, alarmPropertyComponent;
 	private JScrollPane participantsPane;
 	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
 	private final String[] minuteStrings = { "00","15","30","45"};
-	private final String[] alarms = { "På","Av"};
 	private JDateChooser dateChooser;
 	private Appointment app;
 	private HashMap<String, String> oldRows;
@@ -67,7 +66,7 @@ public class AppointmentPanel extends JDialog {
 	endTimeLabelConstraint, roomLabelConstraint, alarmLabelConstraint, starTimePropertyComponentConstraint,
 	starTimeMinutesPropertyComponentConstraint, endTimeHourPropertyComponentConstraint, endTimeMinutePropertyComponentConstraint,
 	roomPropertyComponentConstraint, alarmPropertyComponentConstraint, participantsPaneConstraint, saveButtonConstraints, deleteButtonConstraints,
-	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint;
+	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint, alarmHourBeforeLabelConstraint;
 
 	private JTable table;
 
@@ -174,6 +173,7 @@ public class AppointmentPanel extends JDialog {
 		endTimeLabel= new JLabel("Sluttid");
 		roomLabel= new JLabel("Møterom");
 		alarmLabel = new JLabel("Alarm");
+		alarmHourBeforeLabel = new JLabel(" timer f�r.");
 		saveButton = new JButton("Lagre");
 		deleteButton = new JButton("Slett");
 		addButton= new JButton("Legg til/fjern");
@@ -242,6 +242,13 @@ public class AppointmentPanel extends JDialog {
 		alarmLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		alarmLabelConstraint.anchor = GridBagConstraints.NORTH;
 		add(alarmLabel,alarmLabelConstraint);
+		
+		alarmHourBeforeLabelConstraint = new GridBagConstraints();
+		alarmHourBeforeLabelConstraint.gridx=2;
+		alarmHourBeforeLabelConstraint.gridy=5;
+		alarmHourBeforeLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		alarmHourBeforeLabelConstraint.anchor = GridBagConstraints.NORTH;
+		add(alarmHourBeforeLabel,alarmHourBeforeLabelConstraint);
 
 
 		starTimeHourPropertyComponent= new JComboBox(hourStrings);
@@ -304,12 +311,12 @@ public class AppointmentPanel extends JDialog {
 		add(roomPropertyComponent, roomPropertyComponentConstraint);
 
 
-		alarmPropertyComponent = new JComboBox(alarms);
+		alarmPropertyComponent = new JComboBox(hourStrings);
 		alarmPropertyComponentConstraint = new GridBagConstraints();
 		alarmPropertyComponentConstraint.gridx=1;
 		alarmPropertyComponentConstraint.gridy=5;
 		alarmPropertyComponentConstraint.fill= GridBagConstraints.HORIZONTAL;
-		alarmPropertyComponentConstraint.gridwidth=2;
+		alarmPropertyComponentConstraint.gridwidth=1;
 		alarmPropertyComponentConstraint.anchor = GridBagConstraints.NORTH;
 		add(alarmPropertyComponent,alarmPropertyComponentConstraint);
 
