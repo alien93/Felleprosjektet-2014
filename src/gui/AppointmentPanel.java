@@ -429,6 +429,7 @@ public class AppointmentPanel extends JDialog {
 			private void updateAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+
 				ResultSet rs1 = con2.smallSELECT(	"SELECT AlarmID FROM employeeappointmentalarm " +
 													"WHERE AppointmentNumber = " + app.getId() +
 														" AND Username = '" + currentUser.getUsername() + "'");
@@ -476,6 +477,7 @@ public class AppointmentPanel extends JDialog {
 			private void createAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+
 				if((int)alarmPropertyComponent.getValue() != 0){
 					con2.smallUPDATEorINSERT("INSERT INTO alarm(AlarmTime) VALUES(" +alarmPropertyComponent.getValue()+")");
 				
