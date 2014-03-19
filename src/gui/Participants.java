@@ -182,19 +182,6 @@ public class Participants extends JDialog {
 		searchResult.setModel(unattendingEmployeesModel); // Set JList models
 		attendingList.setModel(attendingEmployeesModel);
 		
-//		final ListCellRenderer<Person> oldRenderer = (ListCellRenderer<Person>) searchResult.getCellRenderer();
-//		searchResult.setCellRenderer(new ListCellRenderer<Person>() {
-//
-//			@Override
-//			public Component getListCellRendererComponent(JList<? extends Person> list, Person value, int index, boolean isSelected, boolean cellHasFocus) {
-//				JLabel ret = new JLabel(value.getUsername());
-//				ret.setBackground(oldRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus).getBackground());
-//				if (value.getGroupMembers() != null)
-//					ret.setToolTipText(value.getGMembersString());
-//				return ret;
-//			}
-//		});
-
 		unattendingEmployees = ObjectFactory.getAllEmployees();
 
 		unattendingEmployees.removeAll(attendingEmployees); // Remove all attending employees from not attending list
