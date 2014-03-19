@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -30,6 +33,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
@@ -72,6 +77,7 @@ public class AppointmentPanel extends JDialog {
 	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint;
 
 	private JTable table;
+	private String roomAvail;
 
 
 	public AppointmentPanel(final MainFrame jf, final Person user){
@@ -83,6 +89,7 @@ public class AppointmentPanel extends JDialog {
 		
 		makeGui(jf);
 		this.deleteButton.setEnabled(false);
+		dateChooser.setDate(new Date());
 		setVisible(true);
 	}
 
@@ -117,9 +124,6 @@ public class AppointmentPanel extends JDialog {
 		setVisible(true);
 	}
 
-
-
-
 	public void updateParticipantRows(HashMap<String, String> participants) {
 		String[][] s = new String[participants.size() + 1][2];
 		String[] initialTable = { host.getUsername(), "Host" };
@@ -150,23 +154,6 @@ public class AppointmentPanel extends JDialog {
 	}
 
 	public void makeGui(MainFrame jf) {
-
-		class dateChooserListener implements PropertyChangeListener  {
-			public void propertyChangeListener(PropertyChangeEvent ae){
-				/*TODO if ("date".equals(ae.getPropertyName())) {
-	                System.out.print 
-	              ln(ae.getPropertyName()
-	                    + ": " + (Date) ae.getNewValue());
-	            }
-				 */
-			}
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				// TODO Auto-generated method stub
-
-			}
-		}
-
 		setSize(600, 400);
 		setLayout(new GridBagLayout());
 		nameField= new JTextField();
@@ -190,8 +177,6 @@ public class AppointmentPanel extends JDialog {
 		table = new JTable();
 
 		dateChooser = new JDateChooser();
-		dateChooser.getDateEditor().addPropertyChangeListener(new dateChooserListener());
-		//nameField.setSize(100,10);
 		calender.add(dateChooser);
 
 		nameLabelConstraint = new GridBagConstraints();
@@ -297,30 +282,48 @@ public class AppointmentPanel extends JDialog {
 		endTimeMinutePropertyComponentConstraint.weightx=1;
 		add(endTimeMinutePropertyComponent,endTimeMinutePropertyComponentConstraint);
 
-		String[] rooms = null;
-		DBConnection con = new DBConnection("src/db/props.properties", true);
-		try {
-			ResultSet rs = con.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
-			rs.next();
-			rooms = new String[rs.getInt(1) + 1];
-			rooms[0] = "";
-			rs = con.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
-			int i = 1;
-			while (rs.next()) {
-				rooms[i] = rs.getString("RoomNumber") + " (Plass til " + rs.getString("Size") + " personer)";
-				i++;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		roomPropertyComponent = new JComboBox(rooms);
+		roomPropertyComponent = new JComboBox(getInitialRooms());
 		roomPropertyComponentConstraint = new GridBagConstraints();
 		roomPropertyComponentConstraint.gridx=1;
 		roomPropertyComponentConstraint.gridy=5;
 		roomPropertyComponentConstraint.fill=GridBagConstraints.HORIZONTAL;
 		roomPropertyComponentConstraint.gridwidth=2;
+		roomPropertyComponent.setFocusable(false);
 		add(roomPropertyComponent, roomPropertyComponentConstraint);
-
+		
+		roomPropertyComponent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
+				String[] roomSplitted = roomTemp.split("\\s+");
+				
+				String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
+				String startMin = starTimeMinutesPropertyComponent.getSelectedItem().toString();
+				String endHour = endTimeHourPropertyComponent.getSelectedItem().toString();
+				String endMin = endTimeMinutePropertyComponent.getSelectedItem().toString();
+				
+				String date = new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate());
+				Date startTime = null;
+				Date endTime = null;
+				try {
+					startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + startHour + ":" + startMin);
+					endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + endHour + ":" + endMin);
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+				
+				String roomAvailTemp = isRoomAvailable(Integer.parseInt(roomSplitted[0]), startTime, endTime);
+				if (roomAvailTemp != null) {
+//					roomLabel.setForeground(Color.RED);
+					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+					roomAvail = roomAvailTemp;
+				}
+				else {
+//					roomLabel.setForeground(Color.BLACK);
+					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
+					roomAvail = null;
+				}
+			}
+		});
 
 		alarmPropertyComponent = new JComboBox(alarms);
 		alarmPropertyComponentConstraint = new GridBagConstraints();
@@ -366,15 +369,20 @@ public class AppointmentPanel extends JDialog {
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DBConnection con = new DBConnection("src/db/props.properties", true);
-				if (app != null)
-					deleteParticipantsNotOnAttending(con);
-				else
-					createAppointment(con);
-				saveParticipantsOnAttending(con);
-				updateParticipantStatus(con);
-				con.close();
-				dispose();
+				if (roomAvail != null) {
+					JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 2);
+				}
+				else {
+					DBConnection con = new DBConnection("src/db/props.properties", true);
+					if (app != null)
+						deleteParticipantsNotOnAttending(con);
+					else
+						createAppointment(con);
+					saveParticipantsOnAttending(con);
+					updateParticipantStatus(con);
+					con.close();
+					dispose();
+				}
 			}
 
 			private void createAppointment(DBConnection con2) {
@@ -706,6 +714,69 @@ public class AppointmentPanel extends JDialog {
 			}
 			con.close();			
 		}
+	}
+	
+	public String[] getInitialRooms() {
+		String[] rooms = null;
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		try {
+			ResultSet rs = con.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
+			rs.next();
+			rooms = new String[rs.getInt(1) + 1];
+			rooms[0] = "";
+			rs = con.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
+			int i = 1;
+			while (rs.next()) {
+				rooms[i] = rs.getString("RoomNumber") + " (Plass til " + rs.getString("Size") + " personer)";
+				i++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rooms;
+	}
+	
+	public String isRoomAvailable(int appRoomNr, Date appStartTime, Date appEndTime) {
+		if (appRoomNr == -1) {
+			return null;
+		}
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		ResultSet rs = null;
+		try {
+			if (app != null) {				
+				rs = con.smallSELECT("SELECT AppointmentNumber, AppointmentName, StartTime, EndTime, RoomNumber FROM appointment WHERE RoomNumber = " + appRoomNr + " AND AppointmentNumber <> " + app.getId());
+			} else {
+				rs = con.smallSELECT("SELECT AppointmentNumber, AppointmentName, StartTime, EndTime, RoomNumber FROM appointment WHERE RoomNumber = " + appRoomNr);
+			}
+			
+			if (! rs.next()) { // If no appointments were found
+				return null;
+			} else {
+				rs.beforeFirst();
+				while (rs.next()) {
+					if ((appEndTime.after(rs.getTimestamp("StartTime")) && appEndTime.before(rs.getTimestamp("EndTime"))) ||
+							(appStartTime.after(rs.getTimestamp("StartTime")) && appStartTime.before(rs.getTimestamp("EndTime"))) ||
+							((appStartTime.before(rs.getTimestamp("StartTime")) || appStartTime.equals(rs.getTimestamp("StartTime"))) &&
+									(appEndTime.after(rs.getTimestamp("EndTime")) || appEndTime.equals(rs.getTimestamp("EndTime"))))) {
+						return "Dette rommet er ikke ledig på valgt tidspunkt.\n\r"
+								+ "Det er opptatt av " + rs.getString("AppointmentName")
+								+ " som varer fra " + rs.getTime("StartTime")
+								+ " til " + rs.getTime("EndTime");
+					}
+				}
+				return null;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();				
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+			con.close();
+		}
+		return null;
 	}
 	
 	public void makeAppointment(String id) {
