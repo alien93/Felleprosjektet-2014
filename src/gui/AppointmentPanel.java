@@ -145,7 +145,7 @@ public class AppointmentPanel extends JDialog {
 	}
 
 	public void makeGui(MainFrame jf) {
-		setSize(600, 400);
+		setSize(610, 400);
 		setResizable(true);
 		setLayout(new GridBagLayout());
 		nameField= new JTextField();
@@ -384,7 +384,7 @@ public class AppointmentPanel extends JDialog {
 		participantsPaneConstraint.fill=GridBagConstraints.HORIZONTAL;
 		participantsPaneConstraint.anchor=GridBagConstraints.NORTHWEST;
 		 */
-		participantsPaneConstraint.insets = new Insets(5, 0, 5, 0);
+		participantsPaneConstraint.insets = new Insets(5, 0, 5, 5);
 		add(participantsPane,participantsPaneConstraint);
 
 		saveButton.addActionListener(new ActionListener() {
