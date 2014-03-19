@@ -133,6 +133,7 @@ public class AvtaleBok extends JPanel {
 			
 			add(scrollere[i], constraints);
 		}
+		updateAlarm(connection);
 		connection.close();
 
 		constraints.gridy = 5;
@@ -205,18 +206,15 @@ public class AvtaleBok extends JPanel {
 		employees.removeAll(elist);
 	}
 	
-	public void updateAlarm() {
-		AvtaleListModel<Appointment> alarmAppointments = ObjectFactory.getAlarmAppointments(employees.get(0).getUsername());
-		System.out.println(alarmAppointments.getSize());
-		for (int i = 0; i < alarmAppointments.size(); i++){
-			JOptionPane.showMessageDialog(null, "Dette er en test"+alarmAppointments.get(i).getName(), "test", JOptionPane.PLAIN_MESSAGE);
+	public void updateAlarm(DBConnection con) {
+		ArrayList<String[]> alarmAppointments = ObjectFactory.getAlarmAppointments(employees.get(0).getUsername(), con);
+		for (String[] alarmInfo : alarmAppointments){
+			JOptionPane.showMessageDialog(null, alarmInfo[1] + " starter " + alarmInfo[0].substring(0, 5), "Alarm for " + alarmInfo[1], JOptionPane.INFORMATION_MESSAGE);
 		}
 
 	}
 	
 	public void updateAvtaleBok() {
-		updateAlarm();
-		JOptionPane.showMessageDialog(null, "Dette er en test", "test", JOptionPane.PLAIN_MESSAGE);
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
 		DBConnection connection = new DBConnection("src/db/props.properties", true);
@@ -235,7 +233,8 @@ public class AvtaleBok extends JPanel {
 			appList[i].setModel(model);
 			//((AvtaleListModel<Appointment>) appList[i].getModel()).sort();
 		}
-		connection.close();
 		ukeLabel.setText("Uke " + model.getWeek());
+		updateAlarm(connection);
+		connection.close();
 	}
 }

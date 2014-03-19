@@ -118,42 +118,24 @@ public class ObjectFactory {
 		}
 	}
 	
-	public static AvtaleListModel<Appointment> getAlarmAppointments(String username){
-		AvtaleListModel<Appointment> model = new AvtaleListModel<Appointment>();
-		
-		DBConnection connection = null;
+	public static ArrayList<String[]> getAlarmAppointments(String username, DBConnection connection){
+		ArrayList<String[]> alarmer= new ArrayList<String[]>();
 		ResultSet rs = null;
-//		String status;
-//		String text = "2011-12-30 17:10:00";
-//		Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(text);
-//		Date now = new Date();
-//
-//		if (date.after(now))
-//		{
-//		    // do stuff
-//		}
 		try {
-			connection = new DBConnection("src/db/props.properties", true);
 			PreparedStatement pst = connection.prepareStatement(
-					"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime,"
-					+ "AP.EndTime, AP.RoomNumber, EAA.Status "
-					+ "FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA) NATURAL JOIN (alarm AS A)");
-//				"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime, " +
-//					"AP.EndTime, AP.RoomNumber" +//, EAA.Status, EAA.Edited, EAA.Username" + //, A.AlarmTime " +
-//					"FROM (appointment AS AP)");//NATURAL JOIN (employeeappointmentalarm AS EAA)" + // NATURAL JOIN (alarm AS A)"); //+
-				//	"WHERE (EAA.Username = " + "'" +username+"'" +")" + "");
-				//		"AND (A.Seen = 0)" );
-				//		"AND A.");
+					"SELECT TIME(AP.StartTime), AP.AppointmentName, A.AlarmID " +
+					"FROM ((alarm as A) NATURAL JOIN (employeeappointmentalarm AS EAA)) NATURAL JOIN (appointment as AP) " +
+					"WHERE EAA.Username = '"+username+"' " +
+							"AND SUBTIME(TIMESTAMP(AP.StartTime), MAKETIME(A.AlarmTime, 0, 0) < NOW())" +
+							"AND TIMESTAMP(AP.StartTime) > NOW()" +
+							"AND A.Seen = 0"
+			);
+
 				rs = pst.executeQuery();
 				while (rs.next()) {
-					System.out.println(rs.getString(2));
-//					if (java.util.Calendar.getInstance().getTime().getTime() > rs.getDate(9).getTime()){ 
-//						Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
-//							rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
-//						if (!model.contains(app)){
-//							model.addElement(app);
-//						}
-//					}	
+					alarmer.add(new String[]{rs.getString(1), rs.getString(2)});
+					connection.smallUPDATEorINSERT("UPDATE alarm SET Seen = 1 WHERE AlarmID = " + rs.getString(3));
+	
 				}
 					
 			} catch (SQLException e) {
@@ -168,7 +150,7 @@ public class ObjectFactory {
 						throw new RuntimeException();
 				}
 			}
-			return model;
+			return alarmer;
 		}
 	
 	public static AvtaleListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){

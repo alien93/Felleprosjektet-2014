@@ -448,7 +448,7 @@ public class AppointmentPanel extends JDialog {
 						
 					}
 					else {
-						con2.smallUPDATEorINSERT("UPDATE alarm SET AlarmTime = " + alarmPropertyComponent.getValue() + " WHERE AlarmID = " + oldAlarmID);
+						con2.smallUPDATEorINSERT("UPDATE alarm SET AlarmTime = " + alarmPropertyComponent.getValue() + ", Seen = 0 WHERE AlarmID = " + oldAlarmID);
 					}
 					
 				}
