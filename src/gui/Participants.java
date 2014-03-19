@@ -46,7 +46,7 @@ public class Participants extends JDialog {
 
 	public Participants(final AppointmentPanel appointmentPanel, final Person person, final HashMap<String, String> attendingEmpAtLoad) {
 
-		super(appointmentPanel, "Avtale", true);
+		super(appointmentPanel, "Deltagere", true);
 		user = person;
 
 		attendingEmployees = new ArrayList<Person>();
@@ -89,7 +89,7 @@ public class Participants extends JDialog {
 	}
 	
 	public Participants(final MainFrame frame, final AvtaleBok avtaleBok, ArrayList<Person> employees) {
-		super(frame, "Legg til andres avtaler", true);
+		super(frame, "Multivisning", true);
 		user = employees.get(0);
 		attendingEmployees = new ArrayList<Person>(employees);
 		
@@ -128,8 +128,8 @@ public class Participants extends JDialog {
 		setSize(500, 300);
 
 		searchInput = new JTextField(25);
-		searchResultLabel = new JLabel("Employees");
-		attendingLabel = new JLabel("Added");
+		searchResultLabel = new JLabel("Ansatte");
+		attendingLabel = new JLabel("Lagt til");
 		searchResult = new JList<Person>();
 		attendingList = new JList<Person>();
 		attendButton = new JButton(">");
