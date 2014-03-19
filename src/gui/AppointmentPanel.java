@@ -68,7 +68,6 @@ public class AppointmentPanel extends JDialog {
 	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint;
 	private boolean isEdited = false;
 	private JTable table;
-	private String roomAvail;
 
 
 	public AppointmentPanel(final MainFrame jf, final Person user){
@@ -300,43 +299,12 @@ public class AppointmentPanel extends JDialog {
 		
 		roomPropertyComponent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
-				Person hostTemp = null;
-				try {
-					hostTemp = app.getHost();
-				} catch (NullPointerException npe) {
-					hostTemp = null;
-				}
-				if (! roomTemp.equals("") && (hostTemp != null || (hostTemp == null && hostTemp == currentUser))) {
-					String[] roomSplitted = roomTemp.split("\\s+");
-					
-					String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
-					String startMin = starTimeMinutesPropertyComponent.getSelectedItem().toString();
-					String endHour = endTimeHourPropertyComponent.getSelectedItem().toString();
-					String endMin = endTimeMinutePropertyComponent.getSelectedItem().toString();
-					
-					String date = new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate());
-					Date startTime = null;
-					Date endTime = null;
-					try {
-						startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + startHour + ":" + startMin);
-						endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + endHour + ":" + endMin);
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-					
-					String roomAvailTemp = isRoomAvailable(Integer.parseInt(roomSplitted[0]), startTime, endTime);
-					if (roomAvailTemp != null) {
-						roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
-						roomAvail = roomAvailTemp;
-					}
-					else {
-						roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
-						roomAvail = null;
-					}
+				String roomAvailTemp = checkRoom();
+				if (roomAvailTemp != null) {
+					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 				}
 				else {
-					roomAvail = null;
+					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
 				}
 			}
 		});
@@ -393,17 +361,22 @@ public class AppointmentPanel extends JDialog {
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String roomAvail = checkRoom();
 				if (roomAvail != null) {
 					JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 2);
 				}
 				else {
 					DBConnection con = new DBConnection("src/db/props.properties", true);
-					if (app != null)
+					if (app != null) {
 						deleteParticipantsNotOnAttending(con);
+						updateAppointment(con);
+					}
 					else
 						createAppointment(con);
 					saveParticipantsOnAttending(con);
 					updateParticipantStatus(con);
+					if (isEdited)
+						setEdited(con);
 					con.close();
 					dispose();
 				}
@@ -843,6 +816,45 @@ public class AppointmentPanel extends JDialog {
 			con.close();
 		}
 		return null;
+	}
+	
+	public String checkRoom() {
+		String roomTemp = (String) roomPropertyComponent.getSelectedItem();
+		Person hostTemp = null;
+		try {
+			hostTemp = app.getHost();
+		} catch (NullPointerException npe) {
+			hostTemp = null;
+		}
+		if (! roomTemp.equals("") && (hostTemp != null || (hostTemp == null && hostTemp == currentUser))) {
+			String[] roomSplitted = roomTemp.split("\\s+");
+			
+			String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
+			String startMin = starTimeMinutesPropertyComponent.getSelectedItem().toString();
+			String endHour = endTimeHourPropertyComponent.getSelectedItem().toString();
+			String endMin = endTimeMinutePropertyComponent.getSelectedItem().toString();
+			
+			String date = new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate());
+			Date startTime = null;
+			Date endTime = null;
+			try {
+				startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + startHour + ":" + startMin);
+				endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + endHour + ":" + endMin);
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+			
+			String roomAvailTemp = isRoomAvailable(Integer.parseInt(roomSplitted[0]), startTime, endTime);
+			if (roomAvailTemp != null) {
+				return roomAvailTemp;
+			}
+			else {
+				return null;
+			}
+		}
+		else {
+			return null;
+		}
 	}
 	
 	public void makeAppointment(String id) {
