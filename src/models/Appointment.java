@@ -107,7 +107,7 @@ public class Appointment implements Comparable<Appointment>{
 	}
 	@Override
 	public boolean equals(Object app){
-		if(app instanceof Appointment)return false;
+		if(!(app instanceof Appointment))return false;
 		return this.id == ((Appointment) app).getId();
 	}
 

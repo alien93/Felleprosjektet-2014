@@ -98,7 +98,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		tidText.setText(avtale.getStartTime().substring(0, 5) + " - " + avtale.getEndTime().substring(0, 5));
 		romText.setText("Rom: " + String.valueOf(avtale.getMeetingRoomNr()));
 		try{
-			vertText.setText("Vert: " + avtale.getHost().getUsername());//TODO
+			vertText.setText("Vert: " + avtale.getHost().getUsername());
 		}catch (NullPointerException npe){
 			DBConnection con = new DBConnection("src/db/props.properties", true);
 			try {
@@ -120,15 +120,13 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 	
 		avtaler.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		Color color = new Color(118, 118, 118);
-		//TODO forandre color til riktig farge basert p� status
 		String status = avtale.getStatus();
 		switch(status){
-			case Appointment.DECLINED: 	color = new Color(255, 100, 100); break;
-			case Appointment.CONFIRMED: color = new Color(100, 255, 100); break;
-			case Appointment.HOST: 		color = new Color(000, 200, 255); break;
-			case Appointment.GJEST: 	color = new Color(255, 175, 255); break;
+			case Appointment.DECLINED: 	color = new Color(255, 075, 075); break;
+			case Appointment.CONFIRMED: color = new Color(075, 200, 075); break;
+			case Appointment.HOST: 		color = new Color(000, 150, 255); break;
+			case Appointment.GJEST: 	color = new Color(200, 055, 200); break;
 		}
-		//line = BorderFactory.createRaisedBevelBorder();
 		line = BorderFactory.createLineBorder(Color.WHITE, 1);
 		setBackground(color);
 		setBorder(line);
