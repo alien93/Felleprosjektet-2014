@@ -890,7 +890,7 @@ public class AppointmentPanel extends JDialog {
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
-		return(startTime.before(endTime));
+		return(startTime.before(endTime) || startTime.equals(endTime));
 	}
 	
 	public void makeAppointment(String id) {
