@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -154,7 +155,8 @@ public class AppointmentPanel extends JDialog {
 	}
 
 	public void makeGui(MainFrame jf) {
-		setSize(600, 400);
+		setSize(580, 350);
+		setResizable(false);
 		setLayout(new GridBagLayout());
 		nameField= new JTextField();
 		locationField= new JTextField();
@@ -183,6 +185,7 @@ public class AppointmentPanel extends JDialog {
 		nameLabelConstraint.gridx = 0;
 		nameLabelConstraint.gridy = 0;
 		nameLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		nameLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(nameLabel, nameLabelConstraint);
 
 		nameFieldConstraint = new GridBagConstraints();
@@ -190,12 +193,14 @@ public class AppointmentPanel extends JDialog {
 		nameFieldConstraint.gridy = 0;
 		nameFieldConstraint.fill = GridBagConstraints.HORIZONTAL;
 		nameFieldConstraint.gridwidth=2;
+		nameFieldConstraint.insets = new Insets(5, 5, 5, 5);
 		add(nameField, nameFieldConstraint);
 		
 		locationLabelConstraint = new GridBagConstraints();
 		locationLabelConstraint.gridx = 0;
 		locationLabelConstraint.gridy = 1;
 		locationLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		locationLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(locationLabel, locationLabelConstraint);
 		
 		locationFieldConstraint = new GridBagConstraints();
@@ -203,12 +208,14 @@ public class AppointmentPanel extends JDialog {
 		locationFieldConstraint.gridy = 1;
 		locationFieldConstraint.fill = GridBagConstraints.HORIZONTAL;
 		locationFieldConstraint.gridwidth=2;
+		locationFieldConstraint.insets = new Insets(5, 5, 5, 5);
 		add(locationField, locationFieldConstraint);
 
 		dateLabelConstraint = new GridBagConstraints();
 		dateLabelConstraint.gridx = 0;
 		dateLabelConstraint.gridy = 2;
 		dateLabelConstraint.fill= GridBagConstraints.HORIZONTAL;
+		dateLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(dateLabel, dateLabelConstraint);
 
 
@@ -217,6 +224,7 @@ public class AppointmentPanel extends JDialog {
 		dateChooserConstraint.gridy=2;
 		dateChooserConstraint.fill =GridBagConstraints.HORIZONTAL;
 		dateChooserConstraint.gridwidth=2;
+		dateChooserConstraint.insets = new Insets(5, 5, 5, 5);
 		add(dateChooser,dateChooserConstraint);
 
 
@@ -224,12 +232,14 @@ public class AppointmentPanel extends JDialog {
 		startTimeLabelConstraint.gridx=0;
 		startTimeLabelConstraint.gridy=3;
 		startTimeLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		startTimeLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(startTimeLabel, startTimeLabelConstraint);
 
 		endTimeLabelConstraint = new GridBagConstraints();
 		endTimeLabelConstraint.gridx=0;
 		endTimeLabelConstraint.gridy=4;
 		endTimeLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		endTimeLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(endTimeLabel,endTimeLabelConstraint);
 
 		roomLabelConstraint= new GridBagConstraints();
@@ -237,6 +247,7 @@ public class AppointmentPanel extends JDialog {
 		roomLabelConstraint.gridy=5;
 		roomLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		roomLabelConstraint.anchor=GridBagConstraints.NORTH;
+		roomLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(roomLabel,roomLabelConstraint);
 
 		alarmLabelConstraint = new GridBagConstraints();
@@ -244,6 +255,7 @@ public class AppointmentPanel extends JDialog {
 		alarmLabelConstraint.gridy=6;
 		alarmLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		alarmLabelConstraint.anchor = GridBagConstraints.NORTH;
+		alarmLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(alarmLabel,alarmLabelConstraint);
 
 
@@ -253,6 +265,7 @@ public class AppointmentPanel extends JDialog {
 		starTimePropertyComponentConstraint.weightx=0.5;
 		starTimePropertyComponentConstraint.fill=GridBagConstraints.HORIZONTAL;
 		starTimePropertyComponentConstraint.gridy=3;
+		starTimePropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(starTimeHourPropertyComponent,starTimePropertyComponentConstraint);
 
 
@@ -262,7 +275,8 @@ public class AppointmentPanel extends JDialog {
 		starTimeMinutesPropertyComponentConstraint.gridwidth=1;
 		starTimeMinutesPropertyComponentConstraint.weightx=0.5;
 		starTimeMinutesPropertyComponentConstraint.gridx=2;
-		starTimeMinutesPropertyComponentConstraint.gridy=3;;
+		starTimeMinutesPropertyComponentConstraint.gridy=3;
+		starTimeMinutesPropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(starTimeMinutesPropertyComponent,starTimeMinutesPropertyComponentConstraint);
 
 		endTimeHourPropertyComponent= new JComboBox(hourStrings);
@@ -272,6 +286,7 @@ public class AppointmentPanel extends JDialog {
 		endTimeHourPropertyComponentConstraint.weightx=1;
 		endTimeHourPropertyComponentConstraint.gridy=4;
 		endTimeHourPropertyComponentConstraint.gridwidth=1;
+		endTimeHourPropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(endTimeHourPropertyComponent,endTimeHourPropertyComponentConstraint);
 
 		endTimeMinutePropertyComponent = new JComboBox(minuteStrings);
@@ -280,6 +295,7 @@ public class AppointmentPanel extends JDialog {
 		endTimeMinutePropertyComponentConstraint.fill=GridBagConstraints.HORIZONTAL;
 		endTimeMinutePropertyComponentConstraint.gridy=4;
 		endTimeMinutePropertyComponentConstraint.weightx=1;
+		endTimeMinutePropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(endTimeMinutePropertyComponent,endTimeMinutePropertyComponentConstraint);
 
 		roomPropertyComponent = new JComboBox(getInitialRooms());
@@ -289,6 +305,7 @@ public class AppointmentPanel extends JDialog {
 		roomPropertyComponentConstraint.fill=GridBagConstraints.HORIZONTAL;
 		roomPropertyComponentConstraint.gridwidth=2;
 		roomPropertyComponent.setFocusable(false);
+		roomPropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(roomPropertyComponent, roomPropertyComponentConstraint);
 		
 		roomPropertyComponent.addActionListener(new ActionListener() {
@@ -337,6 +354,7 @@ public class AppointmentPanel extends JDialog {
 		alarmPropertyComponentConstraint.fill= GridBagConstraints.HORIZONTAL;
 		alarmPropertyComponentConstraint.gridwidth=2;
 		alarmPropertyComponentConstraint.anchor = GridBagConstraints.NORTH;
+		alarmPropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(alarmPropertyComponent,alarmPropertyComponentConstraint);
 
 
@@ -355,7 +373,7 @@ public class AppointmentPanel extends JDialog {
 			}
 		});
 		participantsPane = new JScrollPane(table);
-		participantsPane.setPreferredSize(new Dimension(250, 0));
+		participantsPane.setPreferredSize(new Dimension(300, 0));
 		participantsPaneConstraint = new GridBagConstraints();
 		participantsPaneConstraint.gridx=3;
 		participantsPaneConstraint.gridy=0;
@@ -370,6 +388,7 @@ public class AppointmentPanel extends JDialog {
 		participantsPaneConstraint.fill=GridBagConstraints.HORIZONTAL;
 		participantsPaneConstraint.anchor=GridBagConstraints.NORTHWEST;
 		 */
+		participantsPaneConstraint.insets = new Insets(5, 0, 5, 0);
 		add(participantsPane,participantsPaneConstraint);
 
 		saveButton.addActionListener(new ActionListener() {
@@ -510,11 +529,13 @@ public class AppointmentPanel extends JDialog {
 		saveButtonConstraints = new GridBagConstraints();
 		saveButtonConstraints.gridx=2;
 		saveButtonConstraints.gridy=9;
+		saveButtonConstraints.insets = new Insets(5, 5, 5, 5);
 		add(saveButton,saveButtonConstraints);
 		
 		deleteButtonConstraints = new GridBagConstraints();
 		deleteButtonConstraints.gridx = 3;
 		deleteButtonConstraints.gridy = 9;
+		deleteButtonConstraints.insets = new Insets(5, 5, 5, 5);
 		add(deleteButton, deleteButtonConstraints);
 
 		addButton = new JButton("Legg til/fjern");
@@ -522,6 +543,7 @@ public class AppointmentPanel extends JDialog {
 		addButtonConstraints.gridx=3;
 		addButtonConstraints.gridy=5;
 		addButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
+		addButtonConstraints.insets = new Insets(5, 5, 5, 5);
 		addButtonConstraints.gridwidth=3;
 		//addButtonConstraints.anchor=GridBagConstraints.WEST;
 		//addButtonConstraints.fill= GridBagConstraints.VERTICAL;
@@ -568,6 +590,7 @@ public class AppointmentPanel extends JDialog {
 		shallButtonConstraints.gridy=6;
 		shallButtonConstraints.weightx=0.5;
 		shallButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
+		shallButtonConstraints.insets = new Insets(5, 5, 5, 5);
 
 		shallButton.addActionListener(new ActionListener() {
 
@@ -599,6 +622,7 @@ public class AppointmentPanel extends JDialog {
 		shallNotButtonConstraints.gridy=6;
 		shallNotButtonConstraints.weightx=0.5;
 		shallNotButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
+		shallNotButtonConstraints.insets = new Insets(5, 5, 5, 5);
 		shallNotButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -627,6 +651,7 @@ public class AppointmentPanel extends JDialog {
 		emailLabelConstraint.gridy=8;
 		emailLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		emailLabelConstraint.gridwidth=2;
+		emailLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(emailLabel,emailLabelConstraint);
 
 		emailFieldConstraint = new GridBagConstraints();
@@ -634,6 +659,7 @@ public class AppointmentPanel extends JDialog {
 		emailFieldConstraint.gridy=8;
 		emailFieldConstraint.fill=GridBagConstraints.HORIZONTAL;
 		emailFieldConstraint.gridwidth=2;
+		emailFieldConstraint.insets = new Insets(5, 5, 5, 5);
 		add(emailField,emailFieldConstraint);
 
 		addExternalConstraint = new GridBagConstraints();
@@ -643,6 +669,7 @@ public class AppointmentPanel extends JDialog {
 		addExternalConstraint.gridwidth=3;
 		//addExternalConstraint.fill=GridBagConstraints.HORIZONTAL;
 		//addExternalConstraint.anchor=GridBagConstraints.SOUTH;
+		addExternalConstraint.insets = new Insets(5, 5, 5, 5);
 		add(addExternal,addExternalConstraint);
 
 		updateParticipantRows(oldRows);
