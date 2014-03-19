@@ -301,7 +301,13 @@ public class AppointmentPanel extends JDialog {
 		roomPropertyComponent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
-				if (! roomTemp.equals("") && app.getHost() == currentUser) {
+				Person hostTemp = null;
+				try {
+					hostTemp = app.getHost();
+				} catch (NullPointerException npe) {
+					hostTemp = null;
+				}
+				if (! roomTemp.equals("") && (hostTemp != null || (hostTemp == null && hostTemp == currentUser))) {
 					String[] roomSplitted = roomTemp.split("\\s+");
 					
 					String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
@@ -321,12 +327,10 @@ public class AppointmentPanel extends JDialog {
 					
 					String roomAvailTemp = isRoomAvailable(Integer.parseInt(roomSplitted[0]), startTime, endTime);
 					if (roomAvailTemp != null) {
-//					roomLabel.setForeground(Color.RED);
 						roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 						roomAvail = roomAvailTemp;
 					}
 					else {
-//					roomLabel.setForeground(Color.BLACK);
 						roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
 						roomAvail = null;
 					}
@@ -412,6 +416,10 @@ public class AppointmentPanel extends JDialog {
 			private void updateAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+				if (roomStripped[0].equals("")) {
+					roomStripped[0] = "NULL";
+				}
+				System.out.println("Test");
 				con2.smallUPDATEorINSERT("UPDATE appointment SET AppointmentName = '" + nameField.getText() + "', " +
 						"StartTime='" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', " +
@@ -423,6 +431,9 @@ public class AppointmentPanel extends JDialog {
 			private void createAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+				if (roomStripped[0].equals("")) {
+					roomStripped[0] = "NULL";
+				}
 				con2.smallUPDATEorINSERT("INSERT INTO appointment(AppointmentName, StartTime, EndTime, RoomNumber, Location) VALUES('" + 
 						nameField.getText() + "', '" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', '" +
@@ -722,7 +733,9 @@ public class AppointmentPanel extends JDialog {
 			e.printStackTrace();
 		} finally {
 			try {
-				rsAtLoad.close();
+				if (rsAtLoad != null) {
+					rsAtLoad.close();
+				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
