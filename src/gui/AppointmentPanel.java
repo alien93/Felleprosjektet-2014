@@ -796,9 +796,6 @@ public class AppointmentPanel extends JDialog {
 	}
 	
 	public String isRoomAvailable(int appRoomNr, Date appStartTime, Date appEndTime) {
-		if (appRoomNr == -1) {
-			return null;
-		}
 		DBConnection con = new DBConnection("src/db/props.properties", true);
 		ResultSet rs = null;
 		try {
