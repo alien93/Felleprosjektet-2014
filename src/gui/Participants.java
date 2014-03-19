@@ -225,7 +225,7 @@ public class Participants extends JDialog {
 								unattendingEmployees.remove(per);
 							}
 						}
-					} else {
+					} else if (!attendingEmployees.contains(p)) {
 						attendingEmployees.add(p); // Add employee to attending list
 						unattendingEmployees.remove(p); // Remove employee from unattending list
 					}
