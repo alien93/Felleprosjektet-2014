@@ -263,7 +263,7 @@ public class AppointmentPanel extends JDialog {
 		
 		alarmHourBeforeLabelConstraint = new GridBagConstraints();
 		alarmHourBeforeLabelConstraint.gridx=2;
-		alarmHourBeforeLabelConstraint.gridy=5;
+		alarmHourBeforeLabelConstraint.gridy=6;
 		alarmHourBeforeLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		alarmHourBeforeLabelConstraint.anchor = GridBagConstraints.NORTH;
 		add(alarmHourBeforeLabel,alarmHourBeforeLabelConstraint);

@@ -3,13 +3,14 @@ package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.DefaultListModel;
 
 import models.Appointment;
 import models.AvtaleListModel;
-
 import models.Person;
 
 public class ObjectFactory {
@@ -116,6 +117,59 @@ public class ObjectFactory {
 			connection.close();
 		}
 	}
+	
+	public static AvtaleListModel<Appointment> getAlarmAppointments(String username){
+		AvtaleListModel<Appointment> model = new AvtaleListModel<Appointment>();
+		
+		DBConnection connection = null;
+		ResultSet rs = null;
+//		String status;
+//		String text = "2011-12-30 17:10:00";
+//		Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(text);
+//		Date now = new Date();
+//
+//		if (date.after(now))
+//		{
+//		    // do stuff
+//		}
+		try {
+			connection = new DBConnection("src/db/props.properties", true);
+			PreparedStatement pst = connection.prepareStatement(
+					"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime,"
+					+ "AP.EndTime, AP.RoomNumber, EAA.Status "
+					+ "FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA) NATURAL JOIN (alarm AS A)");
+//				"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime, " +
+//					"AP.EndTime, AP.RoomNumber" +//, EAA.Status, EAA.Edited, EAA.Username" + //, A.AlarmTime " +
+//					"FROM (appointment AS AP)");//NATURAL JOIN (employeeappointmentalarm AS EAA)" + // NATURAL JOIN (alarm AS A)"); //+
+				//	"WHERE (EAA.Username = " + "'" +username+"'" +")" + "");
+				//		"AND (A.Seen = 0)" );
+				//		"AND A.");
+				rs = pst.executeQuery();
+				while (rs.next()) {
+					System.out.println(rs.getString(2));
+//					if (java.util.Calendar.getInstance().getTime().getTime() > rs.getDate(9).getTime()){ 
+//						Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
+//							rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
+//						if (!model.contains(app)){
+//							model.addElement(app);
+//						}
+//					}	
+				}
+					
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (rs != null)
+						rs.close();
+
+				} catch (SQLException e) {
+						e.printStackTrace();
+						throw new RuntimeException();
+				}
+			}
+			return model;
+		}
 	
 	public static AvtaleListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){
 		AvtaleListModel<Appointment> model = new AvtaleListModel<Appointment>();

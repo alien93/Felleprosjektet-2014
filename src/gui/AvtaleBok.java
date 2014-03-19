@@ -17,12 +17,12 @@ import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import db.DBConnection;
 import db.ObjectFactory;
-
 import models.Appointment;
 import models.AvtaleBokModel;
 import models.AvtaleListModel;
@@ -176,7 +176,18 @@ public class AvtaleBok extends JPanel {
 		employees.removeAll(elist);
 	}
 	
+	public void updateAlarm() {
+		AvtaleListModel<Appointment> alarmAppointments = ObjectFactory.getAlarmAppointments(employees.get(0).getUsername());
+		System.out.println(alarmAppointments.getSize());
+		for (int i = 0; i < alarmAppointments.size(); i++){
+			JOptionPane.showMessageDialog(null, "Dette er en test"+alarmAppointments.get(i).getName(), "test", JOptionPane.PLAIN_MESSAGE);
+		}
+
+	}
+	
 	public void updateAvtaleBok() {
+		updateAlarm();
+		JOptionPane.showMessageDialog(null, "Dette er en test", "test", JOptionPane.PLAIN_MESSAGE);
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
 		DBConnection connection = new DBConnection("src/db/props.properties", true);
