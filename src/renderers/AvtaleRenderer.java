@@ -96,7 +96,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 
 		nameText.setText(avtale.getName());
 		tidText.setText(avtale.getStartTime().substring(0, 5) + " - " + avtale.getEndTime().substring(0, 5));
-		romText.setText("Rom: " + String.valueOf(avtale.getMeetingRoomNr()));
+		romText.setText(avtale.getMeetingRoomNr() != 0 ? "Rom: " + String.valueOf(avtale.getMeetingRoomNr()): avtale.getLocation());
 		try{
 			vertText.setText("Vert: " + avtale.getHost().getUsername());
 		}catch (NullPointerException npe){

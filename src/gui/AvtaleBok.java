@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,16 +16,13 @@ import java.util.Date;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.LineBorder;
-
 import res.IconURL;
 
 import db.DBConnection;
 import db.ObjectFactory;
-
 import models.Appointment;
 import models.AvtaleBokModel;
 import models.AvtaleListModel;
@@ -80,7 +76,7 @@ public class AvtaleBok extends JPanel {
 			}
 		});
 		
-		addRemove = new JButton("Legg til/ fjern ansatt");
+		addRemove = new JButton("Multivisning");
 		addRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Participants(frame, AvtaleBok.this, employees);
@@ -137,6 +133,7 @@ public class AvtaleBok extends JPanel {
 			
 			add(scrollere[i], constraints);
 		}
+		updateAlarm(connection);
 		connection.close();
 
 		constraints.gridy = 5;
@@ -182,8 +179,10 @@ public class AvtaleBok extends JPanel {
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					new AppointmentPanel(frame, (Appointment) list.getSelectedValue(), employees.get(0));
-					updateAvtaleBok();
+					if (!list.getSelectionModel().isSelectionEmpty()) {
+						new AppointmentPanel(frame, (Appointment) list.getSelectedValue(), employees.get(0));
+						updateAvtaleBok();
+					}
 				}
 				public void mouseEntered(MouseEvent e) {}
 				public void mouseExited(MouseEvent e) {}
@@ -207,6 +206,14 @@ public class AvtaleBok extends JPanel {
 		employees.removeAll(elist);
 	}
 	
+	public void updateAlarm(DBConnection con) {
+		ArrayList<String[]> alarmAppointments = ObjectFactory.getAlarmAppointments(employees.get(0).getUsername(), con);
+		for (String[] alarmInfo : alarmAppointments){
+			JOptionPane.showMessageDialog(null, alarmInfo[1] + " starter " + alarmInfo[0].substring(0, 5), "Alarm for " + alarmInfo[1], JOptionPane.INFORMATION_MESSAGE);
+		}
+
+	}
+	
 	public void updateAvtaleBok() {
 		Date dates = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy w u");
@@ -226,7 +233,8 @@ public class AvtaleBok extends JPanel {
 			appList[i].setModel(model);
 			//((AvtaleListModel<Appointment>) appList[i].getModel()).sort();
 		}
-		connection.close();
 		ukeLabel.setText("Uke " + model.getWeek());
+		updateAlarm(connection);
+		connection.close();
 	}
 }

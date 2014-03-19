@@ -16,6 +16,7 @@ public class Appointment implements Comparable<Appointment>{
 	private String currentUserStatus;
 	private boolean edited;
 	private Person host;
+	private String location;
 
 	public static final String DECLINED = "declined";
 	public static final String CONFIRMED = "confirmed";
@@ -80,6 +81,12 @@ public class Appointment implements Comparable<Appointment>{
 	}
 	public void setHost(Person employee){
 		this.host = employee;
+	}
+	public void setLocation(String location){
+		this.location = location;
+	}
+	public String getLocation(){
+		return this.location;
 	}
 	
 	public void saveAppointment(){

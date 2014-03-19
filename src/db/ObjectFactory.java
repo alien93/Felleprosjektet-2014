@@ -5,12 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.swing.DefaultListModel;
-
 import models.Appointment;
 import models.AvtaleListModel;
-
 import models.Person;
 
 public class ObjectFactory {
@@ -145,6 +141,41 @@ public class ObjectFactory {
 		}
 	}
 	
+	public static ArrayList<String[]> getAlarmAppointments(String username, DBConnection connection){
+		ArrayList<String[]> alarmer= new ArrayList<String[]>();
+		ResultSet rs = null;
+		try {
+			PreparedStatement pst = connection.prepareStatement(
+					"SELECT TIME(AP.StartTime), AP.AppointmentName, A.AlarmID " +
+					"FROM ((alarm as A) NATURAL JOIN (employeeappointmentalarm AS EAA)) NATURAL JOIN (appointment as AP) " +
+					"WHERE EAA.Username = '"+username+"' " +
+							"AND SUBTIME(TIMESTAMP(AP.StartTime), MAKETIME(A.AlarmTime, 0, 0)) < NOW()" +
+							"AND TIMESTAMP(AP.StartTime) > NOW()" +
+							"AND A.Seen = 0"
+			);
+
+				rs = pst.executeQuery();
+				while (rs.next()) {
+					alarmer.add(new String[]{rs.getString(1), rs.getString(2)});
+					connection.smallUPDATEorINSERT("UPDATE alarm SET Seen = 1 WHERE AlarmID = " + rs.getString(3));
+	
+				}
+					
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (rs != null)
+						rs.close();
+
+				} catch (SQLException e) {
+						e.printStackTrace();
+						throw new RuntimeException();
+				}
+			}
+			return alarmer;
+		}
+	
 	public static AvtaleListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){
 		AvtaleListModel<Appointment> model = new AvtaleListModel<Appointment>();
 		//Hente avtaler fra databasen
@@ -157,7 +188,7 @@ public class ObjectFactory {
 			try {
 				PreparedStatement pst = connection.prepareStatement(	
 						"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime, " +
-								"AP.EndTime, AP.RoomNumber, EAA.Status, EAA.Edited, EAA.Username " +
+								"AP.EndTime, AP.RoomNumber, EAA.Status, EAA.Edited, EAA.Username, AP.Location, EAA.Hide " +
 								"FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 								"WHERE (DATE(AP.StartTime)  = " + "'" +date+"'" +
 										"AND ("+employeesString+"))");
@@ -165,8 +196,10 @@ public class ObjectFactory {
 				while (rs.next()) {
 					Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
 							rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
+					app.setLocation(rs.getString(9));
 					if(rs.getString(6).equals(Appointment.HOST))app.setHost(new Person(rs.getString(8)));
 					if(!rs.getString(8).equals(emps.get(0).getUsername()))app.setStatus(Appointment.GJEST);
+					if (rs.getInt("Eaa.Hide") == 1) continue;
 					if (!model.contains(app)){
 						model.addElement(app);
 					}else if(rs.getString(8).equals(emps.get(0).getUsername())){
