@@ -76,7 +76,7 @@ public class AvtaleBok extends JPanel {
 			}
 		});
 		
-		addRemove = new JButton("Legg til/ fjern ansatt");
+		addRemove = new JButton("Multivisning");
 		addRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Participants(frame, AvtaleBok.this, employees);
