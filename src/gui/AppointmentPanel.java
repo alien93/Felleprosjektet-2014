@@ -383,7 +383,7 @@ public class AppointmentPanel extends JDialog {
 				if (roomAvail != null) {
 					JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 0);
 				}
-				else if (isEndTimeBeforeStartTime()) {
+				else if (isEndTimeAfterStartTime()) {
 					DBConnection con = new DBConnection("src/db/props.properties", true);
 					if (app != null) {
 						deleteParticipantsNotOnAttending(con);
@@ -879,7 +879,7 @@ public class AppointmentPanel extends JDialog {
 		}
 	}
 	
-	public boolean isEndTimeBeforeStartTime() {
+	public boolean isEndTimeAfterStartTime() {
 		String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
 		String startMin = starTimeMinutesPropertyComponent.getSelectedItem().toString();
 		String endHour = endTimeHourPropertyComponent.getSelectedItem().toString();
