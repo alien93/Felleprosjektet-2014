@@ -109,7 +109,7 @@ public class AppointmentPanel extends JDialog {
 			this.calender.setEnabled(false);
 			this.emailField.setEnabled(false);
 			this.table.setEnabled(false);
-			this.deleteButton.setEnabled(false);
+			this.deleteButton.setText("Skjul avtalen");
 		}
 		setVisible(true);
 	}
@@ -629,6 +629,7 @@ public class AppointmentPanel extends JDialog {
 							tableModel.setValueAt("Deltar", i, 1);
 						}
 					}
+					deleteButton.setEnabled(false);		
 				}
 				isEdited = true;
 			}
@@ -661,6 +662,9 @@ public class AppointmentPanel extends JDialog {
 							tableModel.setValueAt("Deltar ikke", i, 1);
 						}
 					}
+					deleteButton.setEnabled(true);
+					
+					
 				}
 				isEdited = true;
 			}

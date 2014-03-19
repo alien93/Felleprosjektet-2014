@@ -129,7 +129,7 @@ public class ObjectFactory {
 			try {
 				PreparedStatement pst = connection.prepareStatement(	
 						"SELECT AP.AppointmentNumber, AP.AppointmentName, AP.StartTime, " +
-								"AP.EndTime, AP.RoomNumber, EAA.Status, EAA.Edited, EAA.Username, AP.Location " +
+								"AP.EndTime, AP.RoomNumber, EAA.Status, EAA.Edited, EAA.Username, AP.Location, EAA.Hide " +
 								"FROM (appointment AS AP) NATURAL JOIN (employeeappointmentalarm AS EAA)" +
 								"WHERE (DATE(AP.StartTime)  = " + "'" +date+"'" +
 										"AND ("+employeesString+"))");
@@ -140,6 +140,7 @@ public class ObjectFactory {
 					app.setLocation(rs.getString(9));
 					if(rs.getString(6).equals(Appointment.HOST))app.setHost(new Person(rs.getString(8)));
 					if(!rs.getString(8).equals(emps.get(0).getUsername()))app.setStatus(Appointment.GJEST);
+					if (rs.getInt("Eaa.Hide") == 1) continue;
 					if (!model.contains(app)){
 						model.addElement(app);
 					}else if(rs.getString(8).equals(emps.get(0).getUsername())){
