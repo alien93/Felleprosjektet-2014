@@ -14,12 +14,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
+
+import res.IconURL;
 
 import db.DBConnection;
 import db.ObjectFactory;
@@ -33,11 +37,13 @@ public class AvtaleBok extends JPanel {
 	
 	private JButton prevWeek, nextWeek, newAppointment, addRemove;
 	private AvtaleBokModel model;
-	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "L�rdag", "S�ndag"};
+	private final String[] days = {"Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"};
 	private GridBagConstraints constraints;
 	private JLabel[] dateLabels = new JLabel[7];
 	private AvtaleList[] appList = new AvtaleList[7];
+	private JScrollPane[] scrollere = new JScrollPane[7];
 	private JLabel ukeLabel;
+	private JLabel[] fargeLabels = new JLabel[5];
 	private ArrayList<Person> employees;
 	
 	public AvtaleBok(Person person, final MainFrame frame) {
@@ -125,23 +131,48 @@ public class AvtaleBok extends JPanel {
 			constraints.insets = new Insets(0, 0, 10, 0); // Padding
 			add(dateLabels[i], constraints);
 			constraints.gridy = 4;
-			JPanel panel = new JPanel();
-			panel.setBackground(Color.WHITE);
-			panel.setBorder(new LineBorder(Color.BLACK));
-			panel.setPreferredSize(new Dimension(180, 600));
-			panel.setMinimumSize(new Dimension(150, 300));
-			add(panel, constraints);
-			panel.add(appList[i], constraints);
+			scrollere[i] = new JScrollPane(appList[i]);
+			scrollere[i].setPreferredSize(new Dimension(200, 600));
+			scrollere[i].setMinimumSize(new Dimension(150, 300));
+			
+			add(scrollere[i], constraints);
 		}
 		connection.close();
+
+		constraints.gridy = 5;
+		
+		constraints.gridx = 0;
+		fargeLabels[0] = new JLabel(" - Deltar");
+		fargeLabels[0].setIcon(new ImageIcon(IconURL.CONF_URL));
+		fargeLabels[0].setSize(new Dimension(180, 25));
+		add(fargeLabels[0], constraints);
+		
+		constraints.gridx = 1;
+		fargeLabels[1] = new JLabel(" - Deltar ikke");
+		fargeLabels[1].setIcon(new ImageIcon(IconURL.DECL_URL));
+		add(fargeLabels[1], constraints);
+		
+		constraints.gridx = 2;
+		fargeLabels[2] = new JLabel(" - Vert");
+		fargeLabels[2].setIcon(new ImageIcon(IconURL.HOST_URL));
+		add(fargeLabels[2], constraints);
+		
+		constraints.gridx = 3;
+		fargeLabels[3] = new JLabel(" - Avventer svar");
+		fargeLabels[3].setIcon(new ImageIcon(IconURL.NO_RE_URL));
+		add(fargeLabels[3], constraints);
+		
+		constraints.gridx = 4;
+		fargeLabels[4] = new JLabel(" - Gjest");
+		fargeLabels[4].setIcon(new ImageIcon(IconURL.GJEST_URL));
+		add(fargeLabels[4], constraints);
+		
+		
 		
 		constraints.gridx = 5;
-		constraints.gridy = 5;
 		add(newAppointment, constraints);
 		
 		constraints.gridx = 6;
-		constraints.gridy = 5;
-		
 		add(addRemove, constraints);
 		
 		//updateAvtaleBok();
