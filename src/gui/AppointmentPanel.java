@@ -256,6 +256,12 @@ public class AppointmentPanel extends JDialog {
 		starTimePropertyComponentConstraint.gridy=3;
 		starTimePropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(starTimeHourPropertyComponent,starTimePropertyComponentConstraint);
+		
+		starTimeHourPropertyComponent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parseDateAndCheckRoom();
+			}
+		});
 
 
 		starTimeMinutesPropertyComponent = new JComboBox(minuteStrings);
@@ -268,6 +274,12 @@ public class AppointmentPanel extends JDialog {
 		starTimeMinutesPropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(starTimeMinutesPropertyComponent,starTimeMinutesPropertyComponentConstraint);
 
+		starTimeMinutesPropertyComponent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parseDateAndCheckRoom();
+			}
+		});
+		
 		endTimeHourPropertyComponent= new JComboBox(hourStrings);
 		endTimeHourPropertyComponentConstraint = new GridBagConstraints();
 		endTimeHourPropertyComponentConstraint.gridx=1;
@@ -278,6 +290,12 @@ public class AppointmentPanel extends JDialog {
 		endTimeHourPropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(endTimeHourPropertyComponent,endTimeHourPropertyComponentConstraint);
 
+		endTimeHourPropertyComponent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parseDateAndCheckRoom();
+			}
+		});
+		
 		endTimeMinutePropertyComponent = new JComboBox(minuteStrings);
 		endTimeMinutePropertyComponentConstraint = new GridBagConstraints();
 		endTimeMinutePropertyComponentConstraint.gridx=2;
@@ -287,6 +305,12 @@ public class AppointmentPanel extends JDialog {
 		endTimeMinutePropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(endTimeMinutePropertyComponent,endTimeMinutePropertyComponentConstraint);
 
+		endTimeMinutePropertyComponent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parseDateAndCheckRoom();
+			}
+		});
+		
 		roomPropertyComponent = new JComboBox(getInitialRooms());
 		roomPropertyComponentConstraint = new GridBagConstraints();
 		roomPropertyComponentConstraint.gridx=1;
@@ -299,13 +323,7 @@ public class AppointmentPanel extends JDialog {
 		
 		roomPropertyComponent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String roomAvailTemp = checkRoom();
-				if (roomAvailTemp != null) {
-					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
-				}
-				else {
-					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
-				}
+				parseDateAndCheckRoom();
 			}
 		});
 
@@ -361,11 +379,11 @@ public class AppointmentPanel extends JDialog {
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String roomAvail = checkRoom();
+				String roomAvail = parseDateAndCheckRoom();
 				if (roomAvail != null) {
-					JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 2);
+					JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 0);
 				}
-				else {
+				else if (isEndTimeBeforeStartTime()) {
 					DBConnection con = new DBConnection("src/db/props.properties", true);
 					if (app != null) {
 						deleteParticipantsNotOnAttending(con);
@@ -380,6 +398,9 @@ public class AppointmentPanel extends JDialog {
 					con.close();
 					dispose();
 				}
+				else {
+					JOptionPane.showMessageDialog(null, "Sluttid kan ikke være før starttid!", "Feil", 2);
+				}
 			}
 
 			private void setEdited(DBConnection con2) {
@@ -392,7 +413,6 @@ public class AppointmentPanel extends JDialog {
 				if (roomStripped[0].equals("")) {
 					roomStripped[0] = "NULL";
 				}
-				System.out.println("Test");
 				con2.smallUPDATEorINSERT("UPDATE appointment SET AppointmentName = '" + nameField.getText() + "', " +
 						"StartTime='" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', " +
@@ -818,7 +838,7 @@ public class AppointmentPanel extends JDialog {
 		return null;
 	}
 	
-	public String checkRoom() {
+	public String parseDateAndCheckRoom() {
 		String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 		Person hostTemp = null;
 		try {
@@ -826,7 +846,7 @@ public class AppointmentPanel extends JDialog {
 		} catch (NullPointerException npe) {
 			hostTemp = null;
 		}
-		if (! roomTemp.equals("") && (hostTemp != null || (hostTemp == null && hostTemp == currentUser))) {
+		if (! roomTemp.equals("") && (hostTemp == null || (hostTemp != null && hostTemp.getUsername().equals(currentUser.getUsername())))) {
 			String[] roomSplitted = roomTemp.split("\\s+");
 			
 			String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
@@ -846,15 +866,34 @@ public class AppointmentPanel extends JDialog {
 			
 			String roomAvailTemp = isRoomAvailable(Integer.parseInt(roomSplitted[0]), startTime, endTime);
 			if (roomAvailTemp != null) {
+				roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 				return roomAvailTemp;
 			}
 			else {
+				roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
 				return null;
 			}
 		}
 		else {
 			return null;
 		}
+	}
+	
+	public boolean isEndTimeBeforeStartTime() {
+		String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
+		String startMin = starTimeMinutesPropertyComponent.getSelectedItem().toString();
+		String endHour = endTimeHourPropertyComponent.getSelectedItem().toString();
+		String endMin = endTimeMinutePropertyComponent.getSelectedItem().toString();
+		
+		Date startTime = null;
+		Date endTime = null;
+		try {
+			startTime = new SimpleDateFormat("HH:mm").parse(startHour + ":" + startMin);
+			endTime = new SimpleDateFormat("HH:mm").parse(endHour + ":" + endMin);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		return(startTime.before(endTime));
 	}
 	
 	public void makeAppointment(String id) {
