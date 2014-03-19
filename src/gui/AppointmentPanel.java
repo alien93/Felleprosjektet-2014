@@ -311,32 +311,37 @@ public class AppointmentPanel extends JDialog {
 		roomPropertyComponent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
-				String[] roomSplitted = roomTemp.split("\\s+");
-				
-				String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
-				String startMin = starTimeMinutesPropertyComponent.getSelectedItem().toString();
-				String endHour = endTimeHourPropertyComponent.getSelectedItem().toString();
-				String endMin = endTimeMinutePropertyComponent.getSelectedItem().toString();
-				
-				String date = new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate());
-				Date startTime = null;
-				Date endTime = null;
-				try {
-					startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + startHour + ":" + startMin);
-					endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + endHour + ":" + endMin);
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-				}
-				
-				String roomAvailTemp = isRoomAvailable(Integer.parseInt(roomSplitted[0]), startTime, endTime);
-				if (roomAvailTemp != null) {
+				if (! roomTemp.equals("")) {
+					String[] roomSplitted = roomTemp.split("\\s+");
+					
+					String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
+					String startMin = starTimeMinutesPropertyComponent.getSelectedItem().toString();
+					String endHour = endTimeHourPropertyComponent.getSelectedItem().toString();
+					String endMin = endTimeMinutePropertyComponent.getSelectedItem().toString();
+					
+					String date = new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate());
+					Date startTime = null;
+					Date endTime = null;
+					try {
+						startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + startHour + ":" + startMin);
+						endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date + " " + endHour + ":" + endMin);
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					
+					String roomAvailTemp = isRoomAvailable(Integer.parseInt(roomSplitted[0]), startTime, endTime);
+					if (roomAvailTemp != null) {
 //					roomLabel.setForeground(Color.RED);
-					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
-					roomAvail = roomAvailTemp;
+						roomPropertyComponent.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+						roomAvail = roomAvailTemp;
+					}
+					else {
+//					roomLabel.setForeground(Color.BLACK);
+						roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
+						roomAvail = null;
+					}
 				}
 				else {
-//					roomLabel.setForeground(Color.BLACK);
-					roomPropertyComponent.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
 					roomAvail = null;
 				}
 			}
