@@ -294,7 +294,7 @@ public class AppointmentPanel extends JDialog {
 		roomPropertyComponent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
-				if (! roomTemp.equals("")) {
+				if (! roomTemp.equals("") && app.getHost() == currentUser) {
 					String[] roomSplitted = roomTemp.split("\\s+");
 					
 					String startHour = starTimeHourPropertyComponent.getSelectedItem().toString();
