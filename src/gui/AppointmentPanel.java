@@ -110,6 +110,10 @@ public class AppointmentPanel extends JDialog {
 			this.emailField.setEnabled(false);
 			this.table.setEnabled(false);
 			this.deleteButton.setText("Skjul avtalen");
+			if (tableModel.getValueAt(currentRows.indexOf(currentUser.getUsername()) + 1, 1).equals("Deltar ikke"))
+				this.deleteButton.setEnabled(true);
+			else
+				this.deleteButton.setEnabled(false);
 		}
 		setVisible(true);
 	}
@@ -530,6 +534,14 @@ public class AppointmentPanel extends JDialog {
 
 		deleteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(!currentUser.equals(host)){
+					DBConnection con = new DBConnection("src/db/props.properties", true);
+					con.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Hide=1 WHERE Username='" + currentUser.getUsername() + "' AND AppointmentNumber=" + app.getId());
+					con.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Status = 'declined' WHERE (Username = '" + currentUser.getUsername() + "' AND AppointmentNumber = " + app.getId() + ")");
+					con.close();
+					dispose();
+					return;
+				}
 				if (app != null) {
 					int confirm = JOptionPane.showOptionDialog(null, "Er du sikker?", "Bekreftelse", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 					if (confirm == 0) { // If user is sure
@@ -539,6 +551,7 @@ public class AppointmentPanel extends JDialog {
 						dispose();
 					}
 				}
+				
 			}
 		});
 
@@ -663,8 +676,7 @@ public class AppointmentPanel extends JDialog {
 						}
 					}
 					deleteButton.setEnabled(true);
-					
-					
+
 				}
 				isEdited = true;
 			}
