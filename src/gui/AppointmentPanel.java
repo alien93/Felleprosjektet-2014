@@ -84,6 +84,7 @@ public class AppointmentPanel extends JDialog {
 		
 		makeGui(jf);
 		this.deleteButton.setEnabled(false);
+		dateChooser.setDate(new Date());
 		setVisible(true);
 	}
 
@@ -395,6 +396,8 @@ public class AppointmentPanel extends JDialog {
 			private void updateAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+				if (roomStripped[0].equals(""))
+					roomStripped[0] = "NULL";
 				con2.smallUPDATEorINSERT("UPDATE appointment SET AppointmentName = '" + nameField.getText() + "', " +
 						"StartTime='" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', " +
@@ -406,6 +409,8 @@ public class AppointmentPanel extends JDialog {
 			private void createAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+				if (roomStripped[0].equals(""))
+					roomStripped[0] = "NULL";
 				con2.smallUPDATEorINSERT("INSERT INTO appointment(AppointmentName, StartTime, EndTime, RoomNumber, Location) VALUES('" + 
 						nameField.getText() + "', '" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', '" +

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 
@@ -44,6 +45,33 @@ public class ObjectFactory {
 				System.err.println("Kunne ikke lukke alle ressurser!");
 			}
 		}
+	}
+	
+	public static HashMap<Integer, ArrayList<Person>> getAllGroups() {
+		HashMap<Integer, ArrayList<Person>> retMap = new HashMap<Integer, ArrayList<Person>>();
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		ResultSet rs = con.smallSELECT("SELECT Username, GruppeNumber FROM employeegruppe");
+		
+		try {
+			while (rs.next()) {
+				if (!retMap.containsKey(rs.getInt("GruppeNumber")))
+					retMap.put(rs.getInt("GruppeNumber"), new ArrayList<Person>());
+				retMap.get(rs.getInt("GruppeNumber")).add(new Person(rs.getString("Username")));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Feil ved uthenting av grupper!");
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+
+			} catch (SQLException e) {
+				System.err.println("Kunne ikke lukke alle ressurser!");
+			}
+			con.close();
+		}
+		return retMap;
 	}
 	
 	public static void getEmployeeAppointments(Person employee) {
