@@ -50,6 +50,7 @@ public class AppointmentPanel extends JDialog {
 	private JButton saveButton, deleteButton, addButton, shallButton, shallNotButton, addExternal;
 	private JComboBox starTimeHourPropertyComponent, starTimeMinutesPropertyComponent, endTimeHourPropertyComponent,endTimeMinutePropertyComponent,roomPropertyComponent;
 	private JSpinner alarmPropertyComponent;
+	private int oldAlarmID =-1;
 	private JScrollPane participantsPane;
 	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
 	private final String[] minuteStrings = { "00","15","30","45"};
@@ -399,17 +400,44 @@ public class AppointmentPanel extends JDialog {
 			private void updateAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+				if((int)alarmPropertyComponent.getValue() != 0){
+					if(oldAlarmID == 0) {
+						con2.smallUPDATEorINSERT("INSERT INTO alarm(AlarmTime) VALUES(" +alarmPropertyComponent.getValue()+")");
+						
+						ResultSet rs1 = con2.smallSELECT("SELECT LAST_INSERT_ID() FROM alarm");
+						try {
+							rs1.next();
+							oldAlarmID = rs1.getInt("AlarmID");
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+					else con2.smallUPDATEorINSERT("UPDATE alarm SET AlarmTime = " + alarmPropertyComponent.getValue() + " WHERE employeeappointmentalarm.AlarmID = " + oldAlarmID);
+				}
+				
+				
 				con2.smallUPDATEorINSERT("UPDATE appointment SET AppointmentName = '" + nameField.getText() + "', " +
 						"StartTime='" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', " +
 						"EndTime='"+ new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) endTimeHourPropertyComponent.getSelectedItem() + ":" + (String) endTimeMinutePropertyComponent.getSelectedItem() + ":00', " +
-						"RoomNumber=" + roomStripped[0] + ", Location='" + locationField.getText() + "' WHERE AppointmentNumber = " + app.getId());
+						"RoomNumber=" + roomStripped[0] + ", Location='" + locationField.getText() + ", AlarmID= " + oldAlarmID + "' WHERE AppointmentNumber = " + app.getId());
 			}
 
 			private void createAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+				if((int)alarmPropertyComponent.getValue() != 0){
+					con2.smallUPDATEorINSERT("INSERT INTO alarm(AlarmTime) VALUES(" +alarmPropertyComponent.getValue()+")");
+				
+					ResultSet rs1 = con2.smallSELECT("SELECT LAST_INSERT_ID() FROM alarm");
+					try {
+						rs1.next();
+						oldAlarmID = rs1.getInt(1);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
 				con2.smallUPDATEorINSERT("INSERT INTO appointment(AppointmentName, StartTime, EndTime, RoomNumber, Location) VALUES('" + 
 						nameField.getText() + "', '" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', '" +
@@ -423,8 +451,14 @@ public class AppointmentPanel extends JDialog {
 					try { rs.close(); } catch (SQLException e1) { e1.printStackTrace(); }
 					throw new RuntimeException("LOL");
 				}
-				con2.smallUPDATEorINSERT("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status)" +
-						"VALUES ('"+ currentUser.getUsername() +"', " + app.getId() + ", 'host')");
+				if(oldAlarmID == -1){
+					con2.smallUPDATEorINSERT("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status)" +
+							"VALUES ('"+ currentUser.getUsername() +"', " + app.getId() + ", 'host')");
+				}
+				else{
+					con2.smallUPDATEorINSERT("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status, AlarmID)" +
+							"VALUES ('"+ currentUser.getUsername() +"', " + app.getId() + ", 'host', )" + oldAlarmID);//TODO
+				}
 			}
 
 			private void deleteParticipantsNotOnAttending(DBConnection con2) {
