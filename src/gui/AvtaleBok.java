@@ -178,8 +178,10 @@ public class AvtaleBok extends JPanel {
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					new AppointmentPanel(frame, (Appointment) list.getSelectedValue(), employees.get(0));
-					updateAvtaleBok();
+					if (!list.getSelectionModel().isSelectionEmpty()) {
+						new AppointmentPanel(frame, (Appointment) list.getSelectedValue(), employees.get(0));
+						updateAvtaleBok();
+					}
 				}
 				public void mouseEntered(MouseEvent e) {}
 				public void mouseExited(MouseEvent e) {}
