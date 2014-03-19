@@ -9,28 +9,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-
-import models.Appointment;
 import models.Person;
 import renderers.PersonRenderer;
-import db.DBConnection;
 import db.ObjectFactory;
 
 public class Participants extends JDialog {
@@ -42,6 +34,7 @@ public class Participants extends JDialog {
 	private DefaultListModel<Person> unattendingEmployeesModel, attendingEmployeesModel;
 	private ArrayList<Person> unattendingEmployees, attendingEmployees;
 	private JScrollPane searchResultPane, attendingListPane;
+	private HashMap<Integer, ArrayList<Person>> groups = null;
 	private Person user;
 
 	public Participants(final AppointmentPanel appointmentPanel, final Person person, final HashMap<String, String> attendingEmpAtLoad) {
@@ -56,7 +49,12 @@ public class Participants extends JDialog {
 		}
 		
 		initGUI();
-
+		
+		groups = ObjectFactory.getAllGroups();
+		updateGroups();
+		
+		updateAttendingEmployeesModel();
+		updateUnattendingEmployeesModel();
 
 		// Actionlisteners //
 		saveButton.addActionListener(new ActionListener() {
@@ -84,8 +82,6 @@ public class Participants extends JDialog {
 		});
 
 		addGUI(appointmentPanel);
-		updateAttendingEmployeesModel();
-		updateUnattendingEmployeesModel();
 	}
 	
 	public Participants(final MainFrame frame, final AvtaleBok avtaleBok, ArrayList<Person> employees) {
@@ -122,6 +118,33 @@ public class Participants extends JDialog {
 			attendingEmployeesModel.addElement(p);
 		}
 	}
+	
+	public void updateGroups() {
+		if (groups != null) {
+			for (int groupNumber : groups.keySet()) {
+				Person potential = new Person("Gruppe " + groupNumber, groups.get(groupNumber));
+				if (!unattendingEmployees.contains(potential)) {
+					for (Person per : groups.get(groupNumber)) {
+						if (unattendingEmployees.contains(per)) {
+							unattendingEmployees.add(0, potential);
+							break;
+						}
+					}
+				}
+				else {
+					boolean existsInUnattending = false;
+					for (Person per : groups.get(groupNumber)) {
+						if (unattendingEmployees.contains(per)) {
+							existsInUnattending = true;
+							break;
+						}
+					}
+					if (!existsInUnattending)
+						unattendingEmployees.remove(potential);
+				}
+			}
+		}
+	}
 
 	private void initGUI() {
 		setLayout(new GridBagLayout());
@@ -130,7 +153,15 @@ public class Participants extends JDialog {
 		searchInput = new JTextField(25);
 		searchResultLabel = new JLabel("Employees");
 		attendingLabel = new JLabel("Added");
-		searchResult = new JList<Person>();
+		searchResult = new JList<Person>() {
+			@Override
+			public String getToolTipText(MouseEvent event) {
+				int index = locationToIndex(event.getPoint());
+				if (index > -1 && unattendingEmployeesModel.get(index).getGroupMembers() != null)
+					return unattendingEmployeesModel.get(index).getGMembersString();
+				return null;
+			}
+		};
 		attendingList = new JList<Person>();
 		attendButton = new JButton(">");
 		undoAttendButton = new JButton("<");
@@ -150,6 +181,19 @@ public class Participants extends JDialog {
 
 		searchResult.setModel(unattendingEmployeesModel); // Set JList models
 		attendingList.setModel(attendingEmployeesModel);
+		
+//		final ListCellRenderer<Person> oldRenderer = (ListCellRenderer<Person>) searchResult.getCellRenderer();
+//		searchResult.setCellRenderer(new ListCellRenderer<Person>() {
+//
+//			@Override
+//			public Component getListCellRendererComponent(JList<? extends Person> list, Person value, int index, boolean isSelected, boolean cellHasFocus) {
+//				JLabel ret = new JLabel(value.getUsername());
+//				ret.setBackground(oldRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus).getBackground());
+//				if (value.getGroupMembers() != null)
+//					ret.setToolTipText(value.getGMembersString());
+//				return ret;
+//			}
+//		});
 
 		unattendingEmployees = ObjectFactory.getAllEmployees();
 
@@ -174,9 +218,19 @@ public class Participants extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				List<Person> selectedEmployees = searchResult.getSelectedValuesList();
 				for (Person p : selectedEmployees) {
-					attendingEmployees.add(p); // Add employee to attending list
-					unattendingEmployees.remove(p); // Remove employee from unattending list
+					if (p.getGroupMembers() != null) {
+						for (Person per : p.getGroupMembers()) {
+							if (!attendingEmployees.contains(per) && !per.equals(user)) {
+								attendingEmployees.add(per);
+								unattendingEmployees.remove(per);
+							}
+						}
+					} else {
+						attendingEmployees.add(p); // Add employee to attending list
+						unattendingEmployees.remove(p); // Remove employee from unattending list
+					}
 				}
+				updateGroups();
 				updateUnattendingEmployeesModel(); // Update models
 				updateAttendingEmployeesModel();
 			}
@@ -188,6 +242,7 @@ public class Participants extends JDialog {
 					unattendingEmployees.add(p);
 					attendingEmployees.remove(p);
 				}
+				updateGroups();
 				updateUnattendingEmployeesModel();
 				updateAttendingEmployeesModel();
 			}
@@ -244,9 +299,10 @@ public class Participants extends JDialog {
 		saveButtonConstraint.insets = new Insets(10, 0, 0, 0);
 		saveButtonConstraint.ipadx = 30;
 		add(saveButton, saveButtonConstraint);
+		
 
 		setLocationRelativeTo(frame);
-		setVisible(true);
+		this.setVisible(true);
 	}
 
 }
