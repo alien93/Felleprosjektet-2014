@@ -126,7 +126,7 @@ public class ObjectFactory {
 					"SELECT TIME(AP.StartTime), AP.AppointmentName, A.AlarmID " +
 					"FROM ((alarm as A) NATURAL JOIN (employeeappointmentalarm AS EAA)) NATURAL JOIN (appointment as AP) " +
 					"WHERE EAA.Username = '"+username+"' " +
-							"AND SUBTIME(TIMESTAMP(AP.StartTime), MAKETIME(A.AlarmTime, 0, 0) < NOW())" +
+							"AND SUBTIME(TIMESTAMP(AP.StartTime), MAKETIME(A.AlarmTime, 0, 0)) < NOW()" +
 							"AND TIMESTAMP(AP.StartTime) > NOW()" +
 							"AND A.Seen = 0"
 			);
