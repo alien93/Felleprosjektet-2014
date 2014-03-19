@@ -141,6 +141,8 @@ public class AppointmentPanel extends JDialog {
 			}
 		};
 		table.setModel(tableModel);
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setResizingAllowed(false);
 	}
 
 	public void makeGui(MainFrame jf) {
@@ -592,6 +594,8 @@ public class AppointmentPanel extends JDialog {
 					email.addTo(emailField.getText());
 					email.send();
 					isEdited = true;
+					emailField.setText("");
+					JOptionPane.showMessageDialog(null, "Ekstern deltager lagt til!", "Opptatt", 1);
 				}
 				catch (EmailException ee) {
 					ee.printStackTrace();
