@@ -145,7 +145,7 @@ public class AppointmentPanel extends JDialog {
 
 	public void makeGui(MainFrame jf) {
 		setSize(610, 400);
-		setResizable(true);
+		setResizable(false);
 		setLayout(new GridBagLayout());
 		nameField= new JTextField();
 		locationField= new JTextField();
