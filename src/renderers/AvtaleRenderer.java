@@ -102,7 +102,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		}catch (NullPointerException npe){
 			DBConnection con = new DBConnection("src/db/props.properties", true);
 			try {
-				ResultSet rsAtLoad = con.smallSELECT("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId() + "AND Status = 'host'");
+				ResultSet rsAtLoad = con.smallSELECT("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId() + " AND Status = 'host'");
 				if (rsAtLoad.next()) {
 					Person thisHost = new Person(rsAtLoad.getString("Username"));
 					avtale.setHost(thisHost);
