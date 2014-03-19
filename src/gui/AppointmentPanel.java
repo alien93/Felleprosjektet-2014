@@ -23,9 +23,11 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
@@ -47,13 +49,14 @@ public class AppointmentPanel extends JDialog {
 	private JTextField nameField, locationField, emailField;
 	private JLabel nameLabel, locationLabel, dateLabel, emailLabel;
 	private JCalendar calender;
-	private JLabel startTimeLabel, endTimeLabel, roomLabel, alarmLabel;
+	private JLabel startTimeLabel, endTimeLabel, roomLabel, alarmLabel, alarmHourBeforeLabel;
 	private JButton saveButton, deleteButton, addButton, shallButton, shallNotButton, addExternal;
-	private JComboBox starTimeHourPropertyComponent, starTimeMinutesPropertyComponent, endTimeHourPropertyComponent,endTimeMinutePropertyComponent,roomPropertyComponent, alarmPropertyComponent;
+	private JComboBox starTimeHourPropertyComponent, starTimeMinutesPropertyComponent, endTimeHourPropertyComponent,endTimeMinutePropertyComponent,roomPropertyComponent;
+	private JSpinner alarmPropertyComponent;
+	private int oldAlarmID =-1;
 	private JScrollPane participantsPane;
 	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
 	private final String[] minuteStrings = { "00","15","30","45"};
-	private final String[] alarms = { "På","Av"};
 	private JDateChooser dateChooser;
 	private Appointment app;
 	private HashMap<String, String> oldRows;
@@ -65,7 +68,8 @@ public class AppointmentPanel extends JDialog {
 	endTimeLabelConstraint, roomLabelConstraint, alarmLabelConstraint, starTimePropertyComponentConstraint,
 	starTimeMinutesPropertyComponentConstraint, endTimeHourPropertyComponentConstraint, endTimeMinutePropertyComponentConstraint,
 	roomPropertyComponentConstraint, alarmPropertyComponentConstraint, participantsPaneConstraint, saveButtonConstraints, deleteButtonConstraints,
-	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint;
+	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint, alarmHourBeforeLabelConstraint;
+
 	private boolean isEdited = false;
 	private JTable table;
 
@@ -155,10 +159,11 @@ public class AppointmentPanel extends JDialog {
 		locationLabel= new JLabel("Sted:");
 		dateLabel= new JLabel("Dato:");
 		calender = new JCalendar();
-		startTimeLabel= new JLabel("Starttid:");
-		endTimeLabel= new JLabel("Sluttid:");
-		roomLabel= new JLabel("Møterom:");
-		alarmLabel = new JLabel("Alarm:");
+		startTimeLabel= new JLabel("Starttid");
+		endTimeLabel= new JLabel("Sluttid");
+		roomLabel= new JLabel("Møterom");
+		alarmLabel = new JLabel("Alarm");
+		alarmHourBeforeLabel = new JLabel(" timer før start.");
 		saveButton = new JButton("Lagre");
 		deleteButton = new JButton("Slett");
 		addButton = new JButton("Legg til/fjern deltagere");
@@ -248,6 +253,13 @@ public class AppointmentPanel extends JDialog {
 		alarmLabelConstraint.anchor = GridBagConstraints.NORTH;
 		alarmLabelConstraint.insets = new Insets(5, 5, 5, 5);
 		add(alarmLabel,alarmLabelConstraint);
+		
+		alarmHourBeforeLabelConstraint = new GridBagConstraints();
+		alarmHourBeforeLabelConstraint.gridx=2;
+		alarmHourBeforeLabelConstraint.gridy=6;
+		alarmHourBeforeLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
+		alarmHourBeforeLabelConstraint.anchor = GridBagConstraints.NORTH;
+		add(alarmHourBeforeLabel,alarmHourBeforeLabelConstraint);
 
 
 		starTimeHourPropertyComponent= new JComboBox(hourStrings);
@@ -329,12 +341,13 @@ public class AppointmentPanel extends JDialog {
 			}
 		});
 
-		alarmPropertyComponent = new JComboBox(alarms);
+		alarmPropertyComponent = new JSpinner();
+		alarmPropertyComponent.setModel(new SpinnerNumberModel(0, 0, 23, 1));
 		alarmPropertyComponentConstraint = new GridBagConstraints();
 		alarmPropertyComponentConstraint.gridx=1;
 		alarmPropertyComponentConstraint.gridy=6;
 		alarmPropertyComponentConstraint.fill= GridBagConstraints.HORIZONTAL;
-		alarmPropertyComponentConstraint.gridwidth=2;
+		alarmPropertyComponentConstraint.gridwidth=1;
 		alarmPropertyComponentConstraint.anchor = GridBagConstraints.NORTH;
 		alarmPropertyComponentConstraint.insets = new Insets(5, 5, 5, 5);
 		add(alarmPropertyComponent,alarmPropertyComponentConstraint);
@@ -412,6 +425,37 @@ public class AppointmentPanel extends JDialog {
 			private void updateAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
+				ResultSet rs1 = con2.smallSELECT(	"SELECT AlarmID FROM employeeappointmentalarm " +
+													"WHERE AppointmentNumber = " + app.getId() +
+														" AND Username = '" + currentUser.getUsername() + "'");
+				try {
+					if(rs1.next())oldAlarmID = rs1.getInt(1);
+					else oldAlarmID = -1;
+					rs1.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				if((int)alarmPropertyComponent.getValue() != 0){
+					if(oldAlarmID == -1) {
+						con2.smallUPDATEorINSERT("INSERT INTO alarm(AlarmTime) VALUES(" +alarmPropertyComponent.getValue()+")");
+						con2.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET AlarmID = " + oldAlarmID);
+						ResultSet rs2 = con2.smallSELECT("SELECT LAST_INSERT_ID() FROM alarm");
+						try {
+							rs2.next();
+							oldAlarmID = rs2.getInt(1);
+							rs2.close();
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+						
+					}
+					else {
+						con2.smallUPDATEorINSERT("UPDATE alarm SET AlarmTime = " + alarmPropertyComponent.getValue() + ", Seen = 0 WHERE AlarmID = " + oldAlarmID);
+					}
+					
+				}
+				
+				
 				if (roomStripped[0].equals("")) {
 					roomStripped[0] = "NULL";
 				}
@@ -421,14 +465,27 @@ public class AppointmentPanel extends JDialog {
 						"EndTime='"+ new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) endTimeHourPropertyComponent.getSelectedItem() + ":" + (String) endTimeMinutePropertyComponent.getSelectedItem() + ":00', " +
 						"RoomNumber=" + roomStripped[0] + ", Location='" + locationField.getText() + "' WHERE AppointmentNumber = " + app.getId());
+				
+
 			}
 
 			private void createAppointment(DBConnection con2) {
 				String roomTemp = (String) roomPropertyComponent.getSelectedItem();
 				String[] roomStripped = roomTemp.split("\\s+");
-				if (roomStripped[0].equals("")) {
-					roomStripped[0] = "NULL";
+				if((int)alarmPropertyComponent.getValue() != 0){
+					con2.smallUPDATEorINSERT("INSERT INTO alarm(AlarmTime) VALUES(" +alarmPropertyComponent.getValue()+")");
+				
+					ResultSet rs1 = con2.smallSELECT("SELECT LAST_INSERT_ID() FROM alarm");
+					try {
+						rs1.next();
+						oldAlarmID = rs1.getInt(1);
+						rs1.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
+				if (roomStripped[0].equals("")) roomStripped[0] = "NULL";
+				
 				con2.smallUPDATEorINSERT("INSERT INTO appointment(AppointmentName, StartTime, EndTime, RoomNumber, Location) VALUES('" + 
 						nameField.getText() + "', '" + new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()).toString() + " " +
 						(String) starTimeHourPropertyComponent.getSelectedItem() + ":" + (String) starTimeMinutesPropertyComponent.getSelectedItem() + ":00', '" +
@@ -442,8 +499,14 @@ public class AppointmentPanel extends JDialog {
 					try { rs.close(); } catch (SQLException e1) { e1.printStackTrace(); }
 					throw new RuntimeException("LOL");
 				}
-				con2.smallUPDATEorINSERT("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status)" +
-						"VALUES ('"+ currentUser.getUsername() +"', " + app.getId() + ", 'host')");
+				if(oldAlarmID == -1){
+					con2.smallUPDATEorINSERT("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status)" +
+							"VALUES ('"+ currentUser.getUsername() +"', " + app.getId() + ", 'host')");
+				}
+				else{
+					con2.smallUPDATEorINSERT("INSERT INTO employeeappointmentalarm(Username, AppointmentNumber,Status, AlarmID)" +
+							"VALUES ('"+ currentUser.getUsername() +"', " + app.getId() + ", 'host', " + oldAlarmID + ")");//TODO
+				}
 			}
 
 			private void deleteParticipantsNotOnAttending(DBConnection con2) {
@@ -764,7 +827,23 @@ public class AppointmentPanel extends JDialog {
 						roomPropertyComponent.setSelectedIndex(i);;
 					}
 				}
-				//				alarmPropertyComponent.setSelectedItem(rsAtLoad.getString("")); TODO
+				rsAtLoad.close();
+				rsAtLoad = con.smallSELECT(	"SELECT AlarmID FROM employeeappointmentalarm " +
+											"WHERE AppointmentNumber = " + app.getId() +
+												" AND Username = '" + currentUser.getUsername() + "'");
+				try {
+					if(rsAtLoad.next())oldAlarmID = rsAtLoad.getInt(1);
+					else oldAlarmID = -1;
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				rsAtLoad.close();
+				rsAtLoad = con.smallSELECT("SELECT AlarmTime FROM alarm WHERE AlarmId = " + oldAlarmID);
+				try {
+					if(rsAtLoad.next()) this.alarmPropertyComponent.setValue(rsAtLoad.getInt(1));
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

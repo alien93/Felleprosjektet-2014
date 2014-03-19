@@ -3,13 +3,14 @@ package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.DefaultListModel;
 
 import models.Appointment;
 import models.AvtaleListModel;
-
 import models.Person;
 
 public class ObjectFactory {
@@ -116,6 +117,41 @@ public class ObjectFactory {
 			connection.close();
 		}
 	}
+	
+	public static ArrayList<String[]> getAlarmAppointments(String username, DBConnection connection){
+		ArrayList<String[]> alarmer= new ArrayList<String[]>();
+		ResultSet rs = null;
+		try {
+			PreparedStatement pst = connection.prepareStatement(
+					"SELECT TIME(AP.StartTime), AP.AppointmentName, A.AlarmID " +
+					"FROM ((alarm as A) NATURAL JOIN (employeeappointmentalarm AS EAA)) NATURAL JOIN (appointment as AP) " +
+					"WHERE EAA.Username = '"+username+"' " +
+							"AND SUBTIME(TIMESTAMP(AP.StartTime), MAKETIME(A.AlarmTime, 0, 0)) < NOW()" +
+							"AND TIMESTAMP(AP.StartTime) > NOW()" +
+							"AND A.Seen = 0"
+			);
+
+				rs = pst.executeQuery();
+				while (rs.next()) {
+					alarmer.add(new String[]{rs.getString(1), rs.getString(2)});
+					connection.smallUPDATEorINSERT("UPDATE alarm SET Seen = 1 WHERE AlarmID = " + rs.getString(3));
+	
+				}
+					
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (rs != null)
+						rs.close();
+
+				} catch (SQLException e) {
+						e.printStackTrace();
+						throw new RuntimeException();
+				}
+			}
+			return alarmer;
+		}
 	
 	public static AvtaleListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){
 		AvtaleListModel<Appointment> model = new AvtaleListModel<Appointment>();
