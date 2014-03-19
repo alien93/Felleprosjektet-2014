@@ -12,28 +12,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-
-import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.StyleContext.SmallAttributeSet;
-
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -54,7 +48,8 @@ public class AppointmentPanel extends JDialog {
 	private JCalendar calender;
 	private JLabel startTimeLabel, endTimeLabel, roomLabel, alarmLabel, alarmHourBeforeLabel;
 	private JButton saveButton, deleteButton, addButton, shallButton, shallNotButton, addExternal;
-	private JComboBox starTimeHourPropertyComponent, starTimeMinutesPropertyComponent, endTimeHourPropertyComponent,endTimeMinutePropertyComponent,roomPropertyComponent, alarmPropertyComponent;
+	private JComboBox starTimeHourPropertyComponent, starTimeMinutesPropertyComponent, endTimeHourPropertyComponent,endTimeMinutePropertyComponent,roomPropertyComponent;
+	private JSpinner alarmPropertyComponent;
 	private JScrollPane participantsPane;
 	private final String[] hourStrings = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16" , "17", "18", "19", "20", "21", "22", "23"}; 
 	private final String[] minuteStrings = { "00","15","30","45"};
@@ -180,7 +175,7 @@ public class AppointmentPanel extends JDialog {
 		endTimeLabel= new JLabel("Sluttid");
 		roomLabel= new JLabel("Møterom");
 		alarmLabel = new JLabel("Alarm");
-		alarmHourBeforeLabel = new JLabel(" timer f�r.");
+		alarmHourBeforeLabel = new JLabel(" timer før start.");
 		saveButton = new JButton("Lagre");
 		deleteButton = new JButton("Slett");
 		addButton= new JButton("Legg til/fjern");
@@ -331,7 +326,8 @@ public class AppointmentPanel extends JDialog {
 		add(roomPropertyComponent, roomPropertyComponentConstraint);
 
 
-		alarmPropertyComponent = new JComboBox(hourStrings);
+		alarmPropertyComponent = new JSpinner();
+		alarmPropertyComponent.setModel(new SpinnerNumberModel(0, 0, 23, 1));
 		alarmPropertyComponentConstraint = new GridBagConstraints();
 		alarmPropertyComponentConstraint.gridx=1;
 		alarmPropertyComponentConstraint.gridy=6;
