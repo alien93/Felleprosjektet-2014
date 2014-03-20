@@ -99,12 +99,11 @@ public class LogInPanel extends JDialog{
 	
 	public void loginAttempt() {
 		ResultSet rs = null;
-		DBConnection connection = null;
+		DBConnection con = new DBConnection("src/db/props.properties", true); // Connect to database
 		try {
-			connection = new DBConnection("src/db/props.properties", true); // Connect to database
 			String username = usernameField.getText();
 			String sha1password = DigestUtils.sha1Hex(passwordField.getText());
-			rs = connection.smallSELECT("SELECT Username, Password FROM employee WHERE Username = '" + username + "'"); // Get credentials from database
+			rs = con.smallSELECT("SELECT Username, Password FROM employee WHERE Username = '" + username + "'"); // Get credentials from database
 			// Using Apache commons codec to easily convert password to sha1 and compare with database
 			if (rs.next()) {
 				if (rs.getString(1).equals(username) && rs.getString(2).equals(sha1password)) { // Check user and pass
@@ -124,12 +123,12 @@ public class LogInPanel extends JDialog{
 			try {
 				if (rs != null)
 					rs.close();
-				connection.close();
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
 				throw new RuntimeException();
 			}
+			con.close();
 		}
 	}
 	

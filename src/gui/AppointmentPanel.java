@@ -81,7 +81,10 @@ public class AppointmentPanel extends JDialog {
 		host = user;
 		oldRows = new HashMap<String, String>();
 
-		makeGui(jf);
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		makeGui(jf, con);
+		con.close();
+		
 		this.deleteButton.setEnabled(false);
 		dateChooser.setDate(new Date());
 		setVisible(true);
@@ -92,10 +95,12 @@ public class AppointmentPanel extends JDialog {
 
 		currentUser = user;
 		this.app = app;
-
-		getInitialParticipants();
-		makeGui(jf);
-		getAppointmentInfo();
+		
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		getInitialParticipants(con);
+		makeGui(jf, con);
+		getAppointmentInfo(con);
+		con.close();
 
 		if (!currentUser.equals(host)) {
 
@@ -153,7 +158,7 @@ public class AppointmentPanel extends JDialog {
 		table.getTableHeader().setResizingAllowed(false);
 	}
 
-	public void makeGui(MainFrame jf) {
+	public void makeGui(MainFrame jf, DBConnection con2) {
 		setSize(610, 400);
 		setResizable(false);
 		setLayout(new GridBagLayout());
@@ -330,7 +335,7 @@ public class AppointmentPanel extends JDialog {
 			}
 		});
 
-		roomPropertyComponent = new JComboBox(getInitialRooms());
+		roomPropertyComponent = new JComboBox(getInitialRooms(con2));
 		roomPropertyComponentConstraint = new GridBagConstraints();
 		roomPropertyComponentConstraint.gridx=1;
 		roomPropertyComponentConstraint.gridy=5;
@@ -388,12 +393,6 @@ public class AppointmentPanel extends JDialog {
 		participantsPaneConstraint.gridheight=5;
 
 
-		/*
-		participantsPaneConstraint.gridwidth=GridBagConstraints.REMAINDER;
-		participantsPaneConstraint.gridheight=GridBagConstraints.REMAINDER;
-		participantsPaneConstraint.fill=GridBagConstraints.HORIZONTAL;
-		participantsPaneConstraint.anchor=GridBagConstraints.NORTHWEST;
-		 */
 		participantsPaneConstraint.insets = new Insets(5, 0, 5, 5);
 		add(participantsPane,participantsPaneConstraint);
 
@@ -563,7 +562,7 @@ public class AppointmentPanel extends JDialog {
 						}
 					}
 					else {
-						throw new RuntimeException("FUUUUUUUUCK!");
+						throw new RuntimeException();
 					}
 
 				} catch (SQLException e) {
@@ -778,15 +777,14 @@ public class AppointmentPanel extends JDialog {
 		setLocationRelativeTo(jf);
 	}
 
-	public void getInitialParticipants() {
+	public void getInitialParticipants(DBConnection con2) {
 		oldRows = new HashMap<String, String>();
 
 		// Push employees who's allready attending into oldRows
-		DBConnection con = new DBConnection("src/db/props.properties", true);
 		ResultSet rsAtLoad = null;
 		try {
-			con.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Edited=0 WHERE AppointmentNumber=" + app.getId() + " AND Username <> '" + currentUser.getUsername() + "'");
-			rsAtLoad = con.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + app.getId());
+			con2.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Edited=0 WHERE AppointmentNumber=" + app.getId() + " AND Username = '" + currentUser.getUsername() + "'");
+			rsAtLoad = con2.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + app.getId());
 			while (rsAtLoad.next()) {
 				if (rsAtLoad.getString("Status").equals("host")) {
 					Person thisHost = new Person(rsAtLoad.getString("Username"));
@@ -815,18 +813,15 @@ public class AppointmentPanel extends JDialog {
 					rsAtLoad.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			con.close();
 		}
 	}
 
-	public void getAppointmentInfo() {
-		DBConnection con = new DBConnection("src/db/props.properties", true);
+	public void getAppointmentInfo(DBConnection con2) {
 		ResultSet rsAtLoad = null;
 		try {
-			rsAtLoad = con.smallSELECT("SELECT AppointmentName, StartTime, EndTime, RoomNumber, Location FROM appointment WHERE AppointmentNumber = " + app.getId());
+			rsAtLoad = con2.smallSELECT("SELECT AppointmentName, StartTime, EndTime, RoomNumber, Location FROM appointment WHERE AppointmentNumber = " + app.getId());
 			if (rsAtLoad.next()) {
 				nameField.setText(rsAtLoad.getString("AppointmentName"));
 				locationField.setText(rsAtLoad.getString("Location"));
@@ -847,7 +842,7 @@ public class AppointmentPanel extends JDialog {
 					}
 				}
 				rsAtLoad.close();
-				rsAtLoad = con.smallSELECT(	"SELECT AlarmID FROM employeeappointmentalarm " +
+				rsAtLoad = con2.smallSELECT(	"SELECT AlarmID FROM employeeappointmentalarm " +
 											"WHERE AppointmentNumber = " + app.getId() +
 												" AND Username = '" + currentUser.getUsername() + "'");
 				try {
@@ -857,7 +852,7 @@ public class AppointmentPanel extends JDialog {
 					e.printStackTrace();
 				}
 				rsAtLoad.close();
-				rsAtLoad = con.smallSELECT("SELECT AlarmTime FROM alarm WHERE AlarmId = " + oldAlarmID);
+				rsAtLoad = con2.smallSELECT("SELECT AlarmTime FROM alarm WHERE AlarmId = " + oldAlarmID);
 				try {
 					if(rsAtLoad.next()) this.alarmPropertyComponent.setValue(rsAtLoad.getInt(1));
 				} catch (SQLException e) {
@@ -872,19 +867,23 @@ public class AppointmentPanel extends JDialog {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			con.close();			
 		}
 	}
 
-	public String[] getInitialRooms() {
+	public String[] getInitialRooms(DBConnection con2) {
 		String[] rooms = null;
-		DBConnection con = new DBConnection("src/db/props.properties", true);
+		ResultSet rs = null;
 		try {
-			ResultSet rs = con.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
+			rs = con2.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
 			rs.next();
 			rooms = new String[rs.getInt(1) + 1];
 			rooms[0] = "";
-			rs = con.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
+			try {
+				rs.close();				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rs = con2.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
 			int i = 1;
 			while (rs.next()) {
 				rooms[i] = rs.getString("RoomNumber") + " (Plass til " + rs.getString("Size") + " personer)";
@@ -892,6 +891,12 @@ public class AppointmentPanel extends JDialog {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return rooms;
 	}
