@@ -685,11 +685,8 @@ public class AppointmentPanel extends JDialog {
 					}else{
 						JOptionPane.showMessageDialog(null, "Ikke en gyldig Epostadresse", "Feilmelding", 1);
 
-						
 					}
 					
-			
-	
 				}
 				catch (EmailException ee) {
 					ee.printStackTrace();
