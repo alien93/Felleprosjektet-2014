@@ -23,16 +23,16 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import db.DBConnection;
-import models.Person;
+import models.ParticipantEntity;
 
 public class LogInPanel extends JDialog{
 	
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JButton logInButton;
-	private Person user;
+	private ParticipantEntity user;
 	
-	public LogInPanel(Person user, JFrame f) {
+	public LogInPanel(ParticipantEntity user, JFrame f) {
 		super(f, "Innlogging", true);
 		
 		
@@ -99,17 +99,16 @@ public class LogInPanel extends JDialog{
 	
 	public void loginAttempt() {
 		ResultSet rs = null;
-		DBConnection connection = null;
+		DBConnection con = new DBConnection("src/db/props.properties", true); // Connect to database
 		try {
-			connection = new DBConnection("src/db/props.properties", true); // Connect to database
 			String username = usernameField.getText();
 			String sha1password = DigestUtils.sha1Hex(passwordField.getText());
-			rs = connection.smallSELECT("SELECT Username, Password FROM employee WHERE Username = '" + username + "'"); // Get credentials from database
+			rs = con.smallSELECT("SELECT Username, Password FROM employee WHERE Username = '" + username + "'"); // Get credentials from database
 			// Using Apache commons codec to easily convert password to sha1 and compare with database
 			if (rs.next()) {
 				if (rs.getString(1).equals(username) && rs.getString(2).equals(sha1password)) { // Check user and pass
 					SwingUtilities.getWindowAncestor(LogInPanel.this).dispose(); // Close login window
-					user = new Person(username); // Set user
+					user = new ParticipantEntity(username); // Set user
 				}
 				else if (rs.isLast()) {
 					JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord!", "Feil", JOptionPane.PLAIN_MESSAGE);
@@ -124,16 +123,16 @@ public class LogInPanel extends JDialog{
 			try {
 				if (rs != null)
 					rs.close();
-				connection.close();
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
 				throw new RuntimeException();
 			}
+			con.close();
 		}
 	}
 	
-	public Person getUser() {
+	public ParticipantEntity getUser() {
 		return user;
 	}
 

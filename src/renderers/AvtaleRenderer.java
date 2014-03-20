@@ -23,7 +23,7 @@ import javax.swing.border.Border;
 import db.DBConnection;
 
 import models.Appointment;
-import models.Person;
+import models.ParticipantEntity;
 
 
 
@@ -50,19 +50,10 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		gc.gridy = 0; // Row
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		add(nameText, gc);
-		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 14));
+		nameText.setFont(new Font(nameText.getFont().getName(), Font.BOLD, 13));
 		nameText.setMinimumSize(new Dimension(100, 22));
 		nameText.setPreferredSize(new Dimension(100, 22));
 		nameText.setForeground(TEXT_COLOR);
-		
-		gc.gridx = 1;
-		gc.anchor = GridBagConstraints.EAST;
-		gc.fill = GridBagConstraints.REMAINDER;
-		add(varselText, gc);
-		varselText.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		//varselText.setForeground(new Color(255, 230, 130));
-		varselText.setForeground(TEXT_COLOR);
-		gc.anchor = GridBagConstraints.WEST;
 		
 		gc.gridx = 0; // Column
 		gc.gridy = 1; // Row
@@ -88,6 +79,14 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 		vertText.setFont(new Font(nameText.getFont().getName(), Font.PLAIN, 11));
 		vertText.setForeground(TEXT_COLOR);
 		
+		gc.gridx = 1;
+		gc.gridy = 0;
+		add(varselText, gc);
+		varselText.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		//varselText.setForeground(new Color(255, 230, 130));
+		varselText.setPreferredSize(new Dimension(65, 22));
+		varselText.setForeground(TEXT_COLOR);
+		
 	}
 	
 	@Override
@@ -104,7 +103,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 			try {
 				ResultSet rsAtLoad = con.smallSELECT("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId() + " AND Status = 'host'");
 				if (rsAtLoad.next()) {
-					Person thisHost = new Person(rsAtLoad.getString("Username"));
+					ParticipantEntity thisHost = new ParticipantEntity(rsAtLoad.getString("Username"));
 					avtale.setHost(thisHost);
 				}
 				rsAtLoad.close();
@@ -114,7 +113,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 				con.close();
 			}
 		}
-		varselText.setText(avtale.isEdited()? "*" : "");
+		varselText.setText(avtale.isEdited()? "       *" : "");
 		
 		
 	

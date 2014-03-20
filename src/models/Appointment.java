@@ -15,7 +15,7 @@ public class Appointment implements Comparable<Appointment>{
 	private int meetingRoomNr;
 	private String currentUserStatus;
 	private boolean edited;
-	private Person host;
+	private ParticipantEntity host;
 	private String location;
 
 	public static final String DECLINED = "declined";
@@ -76,10 +76,10 @@ public class Appointment implements Comparable<Appointment>{
 	public String getStatus(){
 		return this.currentUserStatus;
 	}
-	public Person getHost() {
+	public ParticipantEntity getHost() {
 		return this.host;
 	}
-	public void setHost(Person employee){
+	public void setHost(ParticipantEntity employee){
 		this.host = employee;
 	}
 	public void setLocation(String location){

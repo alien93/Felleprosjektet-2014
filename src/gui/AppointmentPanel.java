@@ -41,7 +41,7 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
 import models.Appointment;
-import models.Person;
+import models.ParticipantEntity;
 
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
@@ -65,7 +65,7 @@ public class AppointmentPanel extends JDialog {
 	private Appointment app;
 	private HashMap<String, String> oldRows;
 	private ArrayList<String> currentRows;
-	private Person currentUser, host;
+	private ParticipantEntity currentUser, host;
 	private DefaultTableModel  tableModel;
 	private String[] tableHeaders = { "Deltakere", "Status" };
 	private GridBagConstraints nameLabelConstraint, nameFieldConstraint, locationLabelConstraint, locationFieldConstraint, dateLabelConstraint, dateChooserConstraint, startTimeLabelConstraint,
@@ -73,33 +73,37 @@ public class AppointmentPanel extends JDialog {
 	starTimeMinutesPropertyComponentConstraint, endTimeHourPropertyComponentConstraint, endTimeMinutePropertyComponentConstraint,
 	roomPropertyComponentConstraint, alarmPropertyComponentConstraint, participantsPaneConstraint, saveButtonConstraints, deleteButtonConstraints,
 	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint, alarmHourBeforeLabelConstraint;
-
-	private boolean isEdited = false;
+	private String oldStatus;
 	private JTable table;
 
 
-	public AppointmentPanel(final MainFrame jf, final Person user){
+	public AppointmentPanel(final MainFrame jf, final ParticipantEntity user){
 		super(jf, "Ny avtale", true);
 
 		currentUser = user;
 		host = user;
 		oldRows = new HashMap<String, String>();
 
-		makeGui(jf);
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		makeGui(jf, con);
+		con.close();
+		
 		this.deleteButton.setEnabled(false);
 		dateChooser.setDate(new Date());
 		setVisible(true);
 	}
 
-	public AppointmentPanel(final MainFrame jf, Appointment app, Person user){
+	public AppointmentPanel(final MainFrame jf, Appointment app, ParticipantEntity user){
 		super(jf, "Rediger avtale", true);
 
 		currentUser = user;
 		this.app = app;
-
-		getInitialParticipants();
-		makeGui(jf);
-		getAppointmentInfo();
+		
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		getInitialParticipants(con);
+		makeGui(jf, con);
+		getAppointmentInfo(con);
+		con.close();
 
 		if (!currentUser.equals(host)) {
 
@@ -157,7 +161,7 @@ public class AppointmentPanel extends JDialog {
 		table.getTableHeader().setResizingAllowed(false);
 	}
 
-	public void makeGui(MainFrame jf) {
+	public void makeGui(MainFrame jf, DBConnection con2) {
 		setSize(610, 400);
 		setResizable(false);
 		setLayout(new GridBagLayout());
@@ -251,7 +255,7 @@ public class AppointmentPanel extends JDialog {
 		roomLabelConstraint.gridy=5;
 		roomLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		roomLabelConstraint.anchor=GridBagConstraints.NORTH;
-		roomLabelConstraint.insets = new Insets(5, 5, 5, 5);
+		roomLabelConstraint.insets = new Insets(9, 5, 5, 5);
 		add(roomLabel,roomLabelConstraint);
 
 		alarmLabelConstraint = new GridBagConstraints();
@@ -259,10 +263,11 @@ public class AppointmentPanel extends JDialog {
 		alarmLabelConstraint.gridy=6;
 		alarmLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		alarmLabelConstraint.anchor = GridBagConstraints.NORTH;
-		alarmLabelConstraint.insets = new Insets(5, 5, 5, 5);
+		alarmLabelConstraint.insets = new Insets(9, 5, 5, 5);
 		add(alarmLabel,alarmLabelConstraint);
 		
 		alarmHourBeforeLabelConstraint = new GridBagConstraints();
+		alarmHourBeforeLabelConstraint.insets = new Insets(8, 0, 0, 0);
 		alarmHourBeforeLabelConstraint.gridx=2;
 		alarmHourBeforeLabelConstraint.gridy=6;
 		alarmHourBeforeLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
@@ -333,7 +338,7 @@ public class AppointmentPanel extends JDialog {
 			}
 		});
 
-		roomPropertyComponent = new JComboBox(getInitialRooms());
+		roomPropertyComponent = new JComboBox(getInitialRooms(con2));
 		roomPropertyComponentConstraint = new GridBagConstraints();
 		roomPropertyComponentConstraint.gridx=1;
 		roomPropertyComponentConstraint.gridy=5;
@@ -391,38 +396,35 @@ public class AppointmentPanel extends JDialog {
 		participantsPaneConstraint.gridheight=5;
 
 
-		/*
-		participantsPaneConstraint.gridwidth=GridBagConstraints.REMAINDER;
-		participantsPaneConstraint.gridheight=GridBagConstraints.REMAINDER;
-		participantsPaneConstraint.fill=GridBagConstraints.HORIZONTAL;
-		participantsPaneConstraint.anchor=GridBagConstraints.NORTHWEST;
-		 */
 		participantsPaneConstraint.insets = new Insets(5, 0, 5, 5);
 		add(participantsPane,participantsPaneConstraint);
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String roomAvail = parseDateAndCheckRoom();
-				if (roomAvail != null) {
-					JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 0);
-				}
-				else if (isEndTimeAfterStartTime()) {
-					DBConnection con = new DBConnection("src/db/props.properties", true);
-					if (app != null) {
-						deleteParticipantsNotOnAttending(con);
-						updateAppointment(con);
+				if (currentUser.equals(host) || currentRows.contains(currentUser)) {
+					
+					String roomAvail = parseDateAndCheckRoom();
+					if (roomAvail != null) {
+						JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 0);
 					}
-					else
-						createAppointment(con);
-					saveParticipantsOnAttending(con);
-					updateParticipantStatus(con);
-					if (isEdited)
-						setEdited(con);
-					con.close();
-					dispose();
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Sluttid kan ikke være før starttid!", "Feil", 2);
+					else if (isEndTimeAfterStartTime()) {
+						DBConnection con = new DBConnection("src/db/props.properties", true);
+						if (app != null) {
+							deleteParticipantsNotOnAttending(con);
+							updateAppointment(con);
+						}
+						else
+							createAppointment(con);
+						saveParticipantsOnAttending(con);
+						updateParticipantStatus(con);
+						if (currentUser.equals(host) || !tableModel.getValueAt(currentRows.indexOf(currentUser.getUsername()), 1).equals(oldStatus))
+							setEdited(con);
+						con.close();
+						dispose();
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Sluttid kan ikke være før starttid!", "Feil", 2);
+					}
 				}
 			}
 
@@ -566,7 +568,7 @@ public class AppointmentPanel extends JDialog {
 						}
 					}
 					else {
-						throw new RuntimeException("FUUUUUUUUCK!");
+						throw new RuntimeException();
 					}
 
 				} catch (SQLException e) {
@@ -679,7 +681,6 @@ public class AppointmentPanel extends JDialog {
 								+ "opprettet av bruker " + currentUser.getUsername());
 						email.addTo(emailField.getText());
 						email.send();
-						isEdited = true;
 						emailField.setText("");
 						JOptionPane.showMessageDialog(null, "Ekstern deltager lagt til!", "Opptatt", 1);
 					}else{
@@ -722,7 +723,6 @@ public class AppointmentPanel extends JDialog {
 					}
 					deleteButton.setEnabled(false);		
 				}
-				isEdited = true;
 			}
 		});
 
@@ -756,7 +756,6 @@ public class AppointmentPanel extends JDialog {
 					deleteButton.setEnabled(true);
 
 				}
-				isEdited = true;
 			}
 		});
 		add(shallNotButton,shallNotButtonConstraints);
@@ -791,30 +790,35 @@ public class AppointmentPanel extends JDialog {
 		setLocationRelativeTo(jf);
 	}
 
-	public void getInitialParticipants() {
+	public void getInitialParticipants(DBConnection con2) {
 		oldRows = new HashMap<String, String>();
 
 		// Push employees who's allready attending into oldRows
-		DBConnection con = new DBConnection("src/db/props.properties", true);
 		ResultSet rsAtLoad = null;
 		try {
-			con.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Edited=0 WHERE AppointmentNumber=" + app.getId() + " AND Username <> '" + currentUser.getUsername() + "'");
-			rsAtLoad = con.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + app.getId());
+			con2.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Edited=0 WHERE AppointmentNumber=" + app.getId() + " AND Username = '" + currentUser.getUsername() + "'");
+			rsAtLoad = con2.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + app.getId());
 			while (rsAtLoad.next()) {
 				if (rsAtLoad.getString("Status").equals("host")) {
-					Person thisHost = new Person(rsAtLoad.getString("Username"));
+					ParticipantEntity thisHost = new ParticipantEntity(rsAtLoad.getString("Username"));
 					this.host = thisHost;
 					app.setHost(thisHost);
 				}
 				else {
 					switch (rsAtLoad.getString("Status")) {
 					case Appointment.CONFIRMED:
+						if (rsAtLoad.getString("Username").equals(currentUser.getUsername()))
+							oldStatus = Appointment.CONFIRMED;
 						oldRows.put(rsAtLoad.getString("Username"), "Deltar");
 						break;
 					case Appointment.DECLINED:
+						if (rsAtLoad.getString("Username").equals(currentUser.getUsername()))
+							oldStatus = Appointment.DECLINED;
 						oldRows.put(rsAtLoad.getString("Username"), "Deltar ikke");
 						break;
 					case Appointment.NOT_RESPONDED:
+						if (rsAtLoad.getString("Username").equals(currentUser.getUsername()))
+							oldStatus = Appointment.NOT_RESPONDED;
 						oldRows.put(rsAtLoad.getString("Username"), "Avventer svar");
 						break;
 					}
@@ -828,18 +832,15 @@ public class AppointmentPanel extends JDialog {
 					rsAtLoad.close();
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			con.close();
 		}
 	}
 
-	public void getAppointmentInfo() {
-		DBConnection con = new DBConnection("src/db/props.properties", true);
+	public void getAppointmentInfo(DBConnection con2) {
 		ResultSet rsAtLoad = null;
 		try {
-			rsAtLoad = con.smallSELECT("SELECT AppointmentName, StartTime, EndTime, RoomNumber, Location FROM appointment WHERE AppointmentNumber = " + app.getId());
+			rsAtLoad = con2.smallSELECT("SELECT AppointmentName, StartTime, EndTime, RoomNumber, Location FROM appointment WHERE AppointmentNumber = " + app.getId());
 			if (rsAtLoad.next()) {
 				nameField.setText(rsAtLoad.getString("AppointmentName"));
 				locationField.setText(rsAtLoad.getString("Location"));
@@ -860,7 +861,7 @@ public class AppointmentPanel extends JDialog {
 					}
 				}
 				rsAtLoad.close();
-				rsAtLoad = con.smallSELECT(	"SELECT AlarmID FROM employeeappointmentalarm " +
+				rsAtLoad = con2.smallSELECT(	"SELECT AlarmID FROM employeeappointmentalarm " +
 											"WHERE AppointmentNumber = " + app.getId() +
 												" AND Username = '" + currentUser.getUsername() + "'");
 				try {
@@ -870,7 +871,7 @@ public class AppointmentPanel extends JDialog {
 					e.printStackTrace();
 				}
 				rsAtLoad.close();
-				rsAtLoad = con.smallSELECT("SELECT AlarmTime FROM alarm WHERE AlarmId = " + oldAlarmID);
+				rsAtLoad = con2.smallSELECT("SELECT AlarmTime FROM alarm WHERE AlarmId = " + oldAlarmID);
 				try {
 					if(rsAtLoad.next()) this.alarmPropertyComponent.setValue(rsAtLoad.getInt(1));
 				} catch (SQLException e) {
@@ -885,19 +886,23 @@ public class AppointmentPanel extends JDialog {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			con.close();			
 		}
 	}
 
-	public String[] getInitialRooms() {
+	public String[] getInitialRooms(DBConnection con2) {
 		String[] rooms = null;
-		DBConnection con = new DBConnection("src/db/props.properties", true);
+		ResultSet rs = null;
 		try {
-			ResultSet rs = con.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
+			rs = con2.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
 			rs.next();
 			rooms = new String[rs.getInt(1) + 1];
 			rooms[0] = "";
-			rs = con.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
+			try {
+				rs.close();				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			rs = con2.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
 			int i = 1;
 			while (rs.next()) {
 				rooms[i] = rs.getString("RoomNumber") + " (Plass til " + rs.getString("Size") + " personer)";
@@ -905,6 +910,12 @@ public class AppointmentPanel extends JDialog {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return rooms;
 	}
@@ -951,7 +962,7 @@ public class AppointmentPanel extends JDialog {
 
 	public String parseDateAndCheckRoom() {
 		String roomTemp = (String) roomPropertyComponent.getSelectedItem();
-		Person hostTemp = null;
+		ParticipantEntity hostTemp = null;
 		try {
 			hostTemp = app.getHost();
 		} catch (NullPointerException npe) {
@@ -1009,7 +1020,6 @@ public class AppointmentPanel extends JDialog {
 
 	public void makeAppointment(String id) {
 		app = new Appointment(Integer.parseInt(id));
-		isEdited = true;
 	}
 
 }

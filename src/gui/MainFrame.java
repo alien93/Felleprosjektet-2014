@@ -12,11 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import models.Person;
+import models.ParticipantEntity;
 
 public class MainFrame extends JFrame {
 
-	private Person user;
+	private ParticipantEntity user;
 
 	public MainFrame() {
 		super("Avtalebok");
@@ -34,8 +34,7 @@ public class MainFrame extends JFrame {
 				int confirm = JOptionPane.showOptionDialog(null, "Er du sikker på at du vil logge ut?", "Bekreftelse", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 				if (confirm == 0) { // If user is sure,
 					setVisible(false);
-					
-					loginGUI();
+					System.exit(-1);
 				}
 			}
 		};

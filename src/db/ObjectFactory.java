@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import models.Appointment;
 import models.AvtaleListModel;
-import models.Person;
+import models.ParticipantEntity;
 
 public class ObjectFactory {
 
-	public static ArrayList<Person> getAllEmployees() {
-		ArrayList<Person> retList = new ArrayList<Person>();
+	public static ArrayList<ParticipantEntity> getAllEmployees() {
+		ArrayList<ParticipantEntity> retList = new ArrayList<ParticipantEntity>();
 		DBConnection con = new DBConnection("src/db/props.properties", true);
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -22,7 +22,7 @@ public class ObjectFactory {
 			rs = pst.executeQuery();
 			
 			while (rs.next()) {
-				retList.add(new Person(rs.getString(1)));
+				retList.add(new ParticipantEntity(rs.getString(1)));
 			}
 			
 			return retList;
@@ -43,16 +43,16 @@ public class ObjectFactory {
 		}
 	}
 	
-	public static HashMap<Integer, ArrayList<Person>> getAllGroups() {
-		HashMap<Integer, ArrayList<Person>> retMap = new HashMap<Integer, ArrayList<Person>>();
+	public static HashMap<Integer, ArrayList<ParticipantEntity>> getAllGroups() {
+		HashMap<Integer, ArrayList<ParticipantEntity>> retMap = new HashMap<Integer, ArrayList<ParticipantEntity>>();
 		DBConnection con = new DBConnection("src/db/props.properties", true);
 		ResultSet rs = con.smallSELECT("SELECT Username, GruppeNumber FROM employeegruppe");
 		
 		try {
 			while (rs.next()) {
 				if (!retMap.containsKey(rs.getInt("GruppeNumber")))
-					retMap.put(rs.getInt("GruppeNumber"), new ArrayList<Person>());
-				retMap.get(rs.getInt("GruppeNumber")).add(new Person(rs.getString("Username")));
+					retMap.put(rs.getInt("GruppeNumber"), new ArrayList<ParticipantEntity>());
+				retMap.get(rs.getInt("GruppeNumber")).add(new ParticipantEntity(rs.getString("Username")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -70,7 +70,7 @@ public class ObjectFactory {
 		return retMap;
 	}
 	
-	public static void getEmployeeAppointments(Person employee) {
+	public static void getEmployeeAppointments(ParticipantEntity employee) {
 		ArrayList<Appointment> retList = new ArrayList<Appointment>();
 		DBConnection con = new DBConnection("src/db/props.properties", true);
 		PreparedStatement pst = null;
@@ -176,11 +176,11 @@ public class ObjectFactory {
 			return alarmer;
 		}
 	
-	public static AvtaleListModel<Appointment> getEmpsApps(ArrayList<Person> emps, String date, DBConnection connection){
+	public static AvtaleListModel<Appointment> getEmpsApps(ArrayList<ParticipantEntity> emps, String date, DBConnection connection){
 		AvtaleListModel<Appointment> model = new AvtaleListModel<Appointment>();
 		//Hente avtaler fra databasen
 		String employeesString = "";
-		for (Person employee : emps){
+		for (ParticipantEntity employee : emps){
 			employeesString += "EAA.Username = '"+employee+"' ";
 			if(!employee.equals(emps.get(emps.size()-1)))employeesString += " OR ";
 		}
@@ -197,7 +197,7 @@ public class ObjectFactory {
 					Appointment app = new Appointment(rs.getInt(1), rs.getString(2), rs.getString(3),
 							rs.getString(4), rs.getInt(5), rs.getString(6), rs.getInt(7));
 					app.setLocation(rs.getString(9));
-					if(rs.getString(6).equals(Appointment.HOST))app.setHost(new Person(rs.getString(8)));
+					if(rs.getString(6).equals(Appointment.HOST))app.setHost(new ParticipantEntity(rs.getString(8)));
 					if(!rs.getString(8).equals(emps.get(0).getUsername()))app.setStatus(Appointment.GJEST);
 					if (rs.getInt("Eaa.Hide") == 1) continue;
 					if (!model.contains(app)){
