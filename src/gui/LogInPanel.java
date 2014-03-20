@@ -23,16 +23,16 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import db.DBConnection;
-import models.Person;
+import models.ParticipantEntity;
 
 public class LogInPanel extends JDialog{
 	
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JButton logInButton;
-	private Person user;
+	private ParticipantEntity user;
 	
-	public LogInPanel(Person user, JFrame f) {
+	public LogInPanel(ParticipantEntity user, JFrame f) {
 		super(f, "Innlogging", true);
 		
 		
@@ -108,7 +108,7 @@ public class LogInPanel extends JDialog{
 			if (rs.next()) {
 				if (rs.getString(1).equals(username) && rs.getString(2).equals(sha1password)) { // Check user and pass
 					SwingUtilities.getWindowAncestor(LogInPanel.this).dispose(); // Close login window
-					user = new Person(username); // Set user
+					user = new ParticipantEntity(username); // Set user
 				}
 				else if (rs.isLast()) {
 					JOptionPane.showMessageDialog(null, "Feil brukernavn og/eller passord!", "Feil", JOptionPane.PLAIN_MESSAGE);
@@ -132,7 +132,7 @@ public class LogInPanel extends JDialog{
 		}
 	}
 	
-	public Person getUser() {
+	public ParticipantEntity getUser() {
 		return user;
 	}
 

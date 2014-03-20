@@ -21,31 +21,30 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import models.Person;
-import renderers.PersonRenderer;
+import models.ParticipantEntity;
 import db.ObjectFactory;
 
 public class Participants extends JDialog {
 
 	private JTextField searchInput;
 	private JLabel searchResultLabel, attendingLabel;
-	private JList<Person> searchResult, attendingList;
+	private JList<ParticipantEntity> searchResult, attendingList;
 	private JButton attendButton, undoAttendButton, saveButton;
-	private DefaultListModel<Person> unattendingEmployeesModel, attendingEmployeesModel;
-	private ArrayList<Person> unattendingEmployees, attendingEmployees;
+	private DefaultListModel<ParticipantEntity> unattendingEmployeesModel, attendingEmployeesModel;
+	private ArrayList<ParticipantEntity> unattendingEmployees, attendingEmployees;
 	private JScrollPane searchResultPane, attendingListPane;
-	private HashMap<Integer, ArrayList<Person>> groups = null;
-	private Person user;
+	private HashMap<Integer, ArrayList<ParticipantEntity>> groups = null;
+	private ParticipantEntity user;
 
-	public Participants(final AppointmentPanel appointmentPanel, final Person person, final HashMap<String, String> attendingEmpAtLoad) {
+	public Participants(final AppointmentPanel appointmentPanel, final ParticipantEntity person, final HashMap<String, String> attendingEmpAtLoad) {
 
 		super(appointmentPanel, "Deltagere", true);
 		user = person;
 
-		attendingEmployees = new ArrayList<Person>();
+		attendingEmployees = new ArrayList<ParticipantEntity>();
 		
 		for (String user : attendingEmpAtLoad.keySet()) {
-			attendingEmployees.add(new Person(user));
+			attendingEmployees.add(new ParticipantEntity(user));
 		}
 		
 		initGUI();
@@ -64,13 +63,13 @@ public class Participants extends JDialog {
 				
 				HashMap<String, String> attendingMap = new HashMap<String, String>(attendingEmpAtLoad);
 				
-				for (Person pers : unattendingEmployees) {
+				for (ParticipantEntity pers : unattendingEmployees) {
 					if (attendingMap.containsKey(pers.getUsername())) {
 						attendingMap.remove(pers.getUsername());
 					}
 				}
 				
-				for (Person pers : attendingEmployees) {
+				for (ParticipantEntity pers : attendingEmployees) {
 					if (!attendingMap.containsKey(pers.getUsername()))
 						attendingMap.put(pers.getUsername(), "Avventer svar");
 				}
@@ -84,10 +83,10 @@ public class Participants extends JDialog {
 		addGUI(appointmentPanel);
 	}
 	
-	public Participants(final MainFrame frame, final AvtaleBok avtaleBok, ArrayList<Person> employees) {
+	public Participants(final MainFrame frame, final AvtaleBok avtaleBok, ArrayList<ParticipantEntity> employees) {
 		super(frame, "Multivisning", true);
 		user = employees.get(0);
-		attendingEmployees = new ArrayList<Person>(employees);
+		attendingEmployees = new ArrayList<ParticipantEntity>(employees);
 		
 		initGUI();
 		unattendingEmployees.remove(user);
@@ -105,7 +104,7 @@ public class Participants extends JDialog {
 
 	public void updateUnattendingEmployeesModel() {
 		unattendingEmployeesModel.clear(); // Clear model list
-		for (Person p : unattendingEmployees) { // Iterate through selected employees
+		for (ParticipantEntity p : unattendingEmployees) { // Iterate through selected employees
 			if (! unattendingEmployeesModel.contains(p) && p.getUsername().toLowerCase().contains(searchInput.getText().toLowerCase())) {
 				unattendingEmployeesModel.addElement(p); // Add employee to unattending list if the above requirements are fulfilled
 			}
@@ -114,7 +113,7 @@ public class Participants extends JDialog {
 
 	public void updateAttendingEmployeesModel() {
 		attendingEmployeesModel.clear();
-		for (Person p : attendingEmployees) {
+		for (ParticipantEntity p : attendingEmployees) {
 			attendingEmployeesModel.addElement(p);
 		}
 	}
@@ -122,9 +121,9 @@ public class Participants extends JDialog {
 	public void updateGroups() {
 		if (groups != null) {
 			for (int groupNumber : groups.keySet()) {
-				Person potential = new Person("Gruppe " + groupNumber, groups.get(groupNumber));
+				ParticipantEntity potential = new ParticipantEntity("Gruppe " + groupNumber, groups.get(groupNumber));
 				if (!unattendingEmployees.contains(potential)) {
-					for (Person per : groups.get(groupNumber)) {
+					for (ParticipantEntity per : groups.get(groupNumber)) {
 						if (unattendingEmployees.contains(per)) {
 							unattendingEmployees.add(0, potential);
 							break;
@@ -133,7 +132,7 @@ public class Participants extends JDialog {
 				}
 				else {
 					boolean existsInUnattending = false;
-					for (Person per : groups.get(groupNumber)) {
+					for (ParticipantEntity per : groups.get(groupNumber)) {
 						if (unattendingEmployees.contains(per)) {
 							existsInUnattending = true;
 							break;
@@ -153,7 +152,7 @@ public class Participants extends JDialog {
 		searchInput = new JTextField(25);
 		searchResultLabel = new JLabel("Ansatte");
 		attendingLabel = new JLabel("Lagt til");
-		searchResult = new JList<Person>() {
+		searchResult = new JList<ParticipantEntity>() {
 			@Override
 			public String getToolTipText(MouseEvent event) {
 				int index = locationToIndex(event.getPoint());
@@ -162,13 +161,10 @@ public class Participants extends JDialog {
 				return null;
 			}
 		};
-		attendingList = new JList<Person>();
+		attendingList = new JList<ParticipantEntity>();
 		attendButton = new JButton(">");
 		undoAttendButton = new JButton("<");
 		saveButton = new JButton("Lagre");
-
-		searchResult.setCellRenderer(new PersonRenderer()); // Add list renderers
-		attendingList.setCellRenderer(new PersonRenderer());
 
 		searchResultPane = new JScrollPane(searchResult); // Add lists to scrollpanes
 		attendingListPane = new JScrollPane(attendingList);
@@ -176,8 +172,8 @@ public class Participants extends JDialog {
 		searchResultPane.setPreferredSize(new Dimension(150, 150)); // Set pane sizes
 		attendingListPane.setPreferredSize(new Dimension(150, 150));
 
-		unattendingEmployeesModel = new DefaultListModel<Person>(); // Create models
-		attendingEmployeesModel = new DefaultListModel<Person>();
+		unattendingEmployeesModel = new DefaultListModel<ParticipantEntity>(); // Create models
+		attendingEmployeesModel = new DefaultListModel<ParticipantEntity>();
 
 		searchResult.setModel(unattendingEmployeesModel); // Set JList models
 		attendingList.setModel(attendingEmployeesModel);
@@ -203,10 +199,10 @@ public class Participants extends JDialog {
 
 		attendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List<Person> selectedEmployees = searchResult.getSelectedValuesList();
-				for (Person p : selectedEmployees) {
+				List<ParticipantEntity> selectedEmployees = searchResult.getSelectedValuesList();
+				for (ParticipantEntity p : selectedEmployees) {
 					if (p.getGroupMembers() != null) {
-						for (Person per : p.getGroupMembers()) {
+						for (ParticipantEntity per : p.getGroupMembers()) {
 							if (!attendingEmployees.contains(per) && !per.equals(user)) {
 								attendingEmployees.add(per);
 								unattendingEmployees.remove(per);
@@ -224,8 +220,8 @@ public class Participants extends JDialog {
 		});
 		undoAttendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List<Person> selectedEmployees = attendingList.getSelectedValuesList();
-				for (Person p : selectedEmployees) {
+				List<ParticipantEntity> selectedEmployees = attendingList.getSelectedValuesList();
+				for (ParticipantEntity p : selectedEmployees) {
 					unattendingEmployees.add(p);
 					attendingEmployees.remove(p);
 				}

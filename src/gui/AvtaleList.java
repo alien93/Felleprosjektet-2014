@@ -15,7 +15,7 @@ import javax.swing.event.ListSelectionListener;
 
 import models.Appointment;
 import models.AvtaleListModel;
-import models.Person;
+import models.ParticipantEntity;
 import renderers.AvtaleRenderer;
 import db.DBConnection;
 import db.ObjectFactory;
@@ -26,7 +26,7 @@ public class AvtaleList extends JList{
 	public AvtaleList(String date){
 		this(date, new AvtaleListModel<Appointment>());
 	}
-	public AvtaleList(String date, ArrayList<Person> employees){
+	public AvtaleList(String date, ArrayList<ParticipantEntity> employees){
 		this.date = date;
 		this.setCellRenderer((ListCellRenderer<? super Appointment>) new AvtaleRenderer());
 		this.setModel(new AvtaleListModel<Appointment>());
@@ -45,11 +45,11 @@ public class AvtaleList extends JList{
 		this.date = date;
 	}
 
-	public void fetchApps(ArrayList<Person> employees){
+	public void fetchApps(ArrayList<ParticipantEntity> employees){
 		((DefaultListModel<Appointment>) this.getModel()).clear();
 		//Hente avtaler fra databasen
 		String employeesString = "";
-		for (Person employee : employees){
+		for (ParticipantEntity employee : employees){
 			employeesString += "EAA.Username = '"+employee+"' ";
 			if(!employee.equals(employees.get(employees.size()-1)))employeesString += " OR ";
 		}
@@ -87,8 +87,8 @@ public class AvtaleList extends JList{
 			}
 		}
 	}
-	public void fetchApps(Person employee){
-		ArrayList<Person> empList = new ArrayList<Person>();
+	public void fetchApps(ParticipantEntity employee){
+		ArrayList<ParticipantEntity> empList = new ArrayList<ParticipantEntity>();
 		empList.add(employee);
 		fetchApps(empList);
 	}

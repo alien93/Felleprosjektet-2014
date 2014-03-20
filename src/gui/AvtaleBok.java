@@ -26,7 +26,7 @@ import db.ObjectFactory;
 import models.Appointment;
 import models.AvtaleBokModel;
 import models.AvtaleListModel;
-import models.Person;
+import models.ParticipantEntity;
 
 
 public class AvtaleBok extends JPanel {
@@ -40,10 +40,10 @@ public class AvtaleBok extends JPanel {
 	private JScrollPane[] scrollere = new JScrollPane[7];
 	private JLabel ukeLabel;
 	private JLabel[] fargeLabels = new JLabel[5];
-	private ArrayList<Person> employees;
+	private ArrayList<ParticipantEntity> employees;
 	
-	public AvtaleBok(Person person, final MainFrame frame) {
-		employees = new ArrayList<Person>();
+	public AvtaleBok(ParticipantEntity person, final MainFrame frame) {
+		employees = new ArrayList<ParticipantEntity>();
 		employees.add(person);
 		setLayout(new GridBagLayout());
 		model = new AvtaleBokModel();
@@ -194,15 +194,15 @@ public class AvtaleBok extends JPanel {
 		
 	}
 	
-	public void addEmployees(ArrayList<Person> elist) {
-		for (Person p : elist) {
+	public void addEmployees(ArrayList<ParticipantEntity> elist) {
+		for (ParticipantEntity p : elist) {
 			if (! employees.contains(p)) {
 				employees.add(p);
 			}
 		}
 	}
 	
-	public void removeEmployees(ArrayList<Person> elist) {
+	public void removeEmployees(ArrayList<ParticipantEntity> elist) {
 		employees.removeAll(elist);
 	}
 	
