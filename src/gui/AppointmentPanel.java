@@ -81,7 +81,10 @@ public class AppointmentPanel extends JDialog {
 		host = user;
 		oldRows = new HashMap<String, String>();
 
-		makeGui(jf);
+		DBConnection con = new DBConnection("src/db/props.properties", true);
+		makeGui(jf, con);
+		con.close();
+		
 		this.deleteButton.setEnabled(false);
 		dateChooser.setDate(new Date());
 		setVisible(true);
@@ -94,9 +97,8 @@ public class AppointmentPanel extends JDialog {
 		this.app = app;
 		
 		DBConnection con = new DBConnection("src/db/props.properties", true);
-
 		getInitialParticipants(con);
-		makeGui(jf);
+		makeGui(jf, con);
 		getAppointmentInfo(con);
 		con.close();
 
@@ -156,7 +158,7 @@ public class AppointmentPanel extends JDialog {
 		table.getTableHeader().setResizingAllowed(false);
 	}
 
-	public void makeGui(MainFrame jf) {
+	public void makeGui(MainFrame jf, DBConnection con2) {
 		setSize(610, 400);
 		setResizable(false);
 		setLayout(new GridBagLayout());
@@ -332,7 +334,7 @@ public class AppointmentPanel extends JDialog {
 			}
 		});
 
-		roomPropertyComponent = new JComboBox(getInitialRooms());
+		roomPropertyComponent = new JComboBox(getInitialRooms(con2));
 		roomPropertyComponentConstraint = new GridBagConstraints();
 		roomPropertyComponentConstraint.gridx=1;
 		roomPropertyComponentConstraint.gridy=5;
@@ -390,12 +392,6 @@ public class AppointmentPanel extends JDialog {
 		participantsPaneConstraint.gridheight=5;
 
 
-		/*
-		participantsPaneConstraint.gridwidth=GridBagConstraints.REMAINDER;
-		participantsPaneConstraint.gridheight=GridBagConstraints.REMAINDER;
-		participantsPaneConstraint.fill=GridBagConstraints.HORIZONTAL;
-		participantsPaneConstraint.anchor=GridBagConstraints.NORTHWEST;
-		 */
 		participantsPaneConstraint.insets = new Insets(5, 0, 5, 5);
 		add(participantsPane,participantsPaneConstraint);
 
@@ -873,12 +869,11 @@ public class AppointmentPanel extends JDialog {
 		}
 	}
 
-	public String[] getInitialRooms() {
+	public String[] getInitialRooms(DBConnection con2) {
 		String[] rooms = null;
-		DBConnection con = new DBConnection("src/db/props.properties", true);
 		ResultSet rs = null;
 		try {
-			rs = con.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
+			rs = con2.smallSELECT("SELECT count(RoomNumber) FROM meetingroom");
 			rs.next();
 			rooms = new String[rs.getInt(1) + 1];
 			rooms[0] = "";
@@ -887,7 +882,7 @@ public class AppointmentPanel extends JDialog {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			rs = con.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
+			rs = con2.smallSELECT("SELECT RoomNumber, Size FROM meetingroom");
 			int i = 1;
 			while (rs.next()) {
 				rooms[i] = rs.getString("RoomNumber") + " (Plass til " + rs.getString("Size") + " personer)";
@@ -901,7 +896,6 @@ public class AppointmentPanel extends JDialog {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			con.close();
 		}
 		return rooms;
 	}
