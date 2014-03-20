@@ -2,17 +2,17 @@ package models;
 
 import java.util.ArrayList;
 
-public class Person {
+public class ParticipantEntity {
 
 	private String username;
-	private ArrayList<Person> groupMembers;
+	private ArrayList<ParticipantEntity> groupMembers;
 	
-	public Person(String username) {
+	public ParticipantEntity(String username) {
 		this.username = username;
 		this.groupMembers = null;
 	}
 	
-	public Person(String userString, ArrayList<Person> isGroup) {
+	public ParticipantEntity(String userString, ArrayList<ParticipantEntity> isGroup) {
 		this.username = userString;
 		this.groupMembers = isGroup;
 	}
@@ -25,18 +25,18 @@ public class Person {
 		this.username = username;
 	}
 	
-	public ArrayList<Person> getGroupMembers() {
+	public ArrayList<ParticipantEntity> getGroupMembers() {
 		return groupMembers;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Person))
+		if (!(obj instanceof ParticipantEntity))
 			return false;
 		if (this.groupMembers != null)
-			return username.equals(((Person) obj).getUsername()) && groupMembers.equals(((Person) obj).getGroupMembers());
+			return username.equals(((ParticipantEntity) obj).getUsername()) && groupMembers.equals(((ParticipantEntity) obj).getGroupMembers());
 		else
-			return ((Person) obj).getGroupMembers() == null && username.equals(((Person) obj).getUsername());
+			return ((ParticipantEntity) obj).getGroupMembers() == null && username.equals(((ParticipantEntity) obj).getUsername());
 	}
 	
 	public String toString(){

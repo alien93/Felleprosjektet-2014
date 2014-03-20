@@ -37,7 +37,7 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
 import models.Appointment;
-import models.Person;
+import models.ParticipantEntity;
 
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
@@ -61,7 +61,7 @@ public class AppointmentPanel extends JDialog {
 	private Appointment app;
 	private HashMap<String, String> oldRows;
 	private ArrayList<String> currentRows;
-	private Person currentUser, host;
+	private ParticipantEntity currentUser, host;
 	private DefaultTableModel  tableModel;
 	private String[] tableHeaders = { "Deltakere", "Status" };
 	private GridBagConstraints nameLabelConstraint, nameFieldConstraint, locationLabelConstraint, locationFieldConstraint, dateLabelConstraint, dateChooserConstraint, startTimeLabelConstraint,
@@ -69,12 +69,11 @@ public class AppointmentPanel extends JDialog {
 	starTimeMinutesPropertyComponentConstraint, endTimeHourPropertyComponentConstraint, endTimeMinutePropertyComponentConstraint,
 	roomPropertyComponentConstraint, alarmPropertyComponentConstraint, participantsPaneConstraint, saveButtonConstraints, deleteButtonConstraints,
 	addButtonConstraints, shallButtonConstraints, shallNotButtonConstraints, emailLabelConstraint, emailFieldConstraint, addExternalConstraint, alarmHourBeforeLabelConstraint;
-
-	private boolean isEdited = false;
+	private String oldStatus;
 	private JTable table;
 
 
-	public AppointmentPanel(final MainFrame jf, final Person user){
+	public AppointmentPanel(final MainFrame jf, final ParticipantEntity user){
 		super(jf, "Ny avtale", true);
 
 		currentUser = user;
@@ -87,7 +86,7 @@ public class AppointmentPanel extends JDialog {
 		setVisible(true);
 	}
 
-	public AppointmentPanel(final MainFrame jf, Appointment app, Person user){
+	public AppointmentPanel(final MainFrame jf, Appointment app, ParticipantEntity user){
 		super(jf, "Rediger avtale", true);
 
 		currentUser = user;
@@ -398,27 +397,30 @@ public class AppointmentPanel extends JDialog {
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String roomAvail = parseDateAndCheckRoom();
-				if (roomAvail != null) {
-					JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 0);
-				}
-				else if (isEndTimeAfterStartTime()) {
-					DBConnection con = new DBConnection("src/db/props.properties", true);
-					if (app != null) {
-						deleteParticipantsNotOnAttending(con);
-						updateAppointment(con);
+				if (currentUser.equals(host) || currentRows.contains(currentUser)) {
+					
+					String roomAvail = parseDateAndCheckRoom();
+					if (roomAvail != null) {
+						JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 0);
 					}
-					else
-						createAppointment(con);
-					saveParticipantsOnAttending(con);
-					updateParticipantStatus(con);
-					if (isEdited)
-						setEdited(con);
-					con.close();
-					dispose();
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Sluttid kan ikke være før starttid!", "Feil", 2);
+					else if (isEndTimeAfterStartTime()) {
+						DBConnection con = new DBConnection("src/db/props.properties", true);
+						if (app != null) {
+							deleteParticipantsNotOnAttending(con);
+							updateAppointment(con);
+						}
+						else
+							createAppointment(con);
+						saveParticipantsOnAttending(con);
+						updateParticipantStatus(con);
+						if (currentUser.equals(host) || !tableModel.getValueAt(currentRows.indexOf(currentUser.getUsername()), 1).equals(oldStatus))
+							setEdited(con);
+						con.close();
+						dispose();
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Sluttid kan ikke være før starttid!", "Feil", 2);
+					}
 				}
 			}
 
@@ -670,7 +672,6 @@ public class AppointmentPanel extends JDialog {
 							+ "opprettet av bruker " + currentUser.getUsername());
 					email.addTo(emailField.getText());
 					email.send();
-					isEdited = true;
 					emailField.setText("");
 					JOptionPane.showMessageDialog(null, "Ekstern deltager lagt til!", "Opptatt", 1);
 				}
@@ -708,7 +709,6 @@ public class AppointmentPanel extends JDialog {
 					}
 					deleteButton.setEnabled(false);		
 				}
-				isEdited = true;
 			}
 		});
 
@@ -742,7 +742,6 @@ public class AppointmentPanel extends JDialog {
 					deleteButton.setEnabled(true);
 
 				}
-				isEdited = true;
 			}
 		});
 		add(shallNotButton,shallNotButtonConstraints);
@@ -788,19 +787,25 @@ public class AppointmentPanel extends JDialog {
 			rsAtLoad = con.smallSELECT("SELECT Username, Status FROM employeeappointmentalarm WHERE AppointmentNumber = " + app.getId());
 			while (rsAtLoad.next()) {
 				if (rsAtLoad.getString("Status").equals("host")) {
-					Person thisHost = new Person(rsAtLoad.getString("Username"));
+					ParticipantEntity thisHost = new ParticipantEntity(rsAtLoad.getString("Username"));
 					this.host = thisHost;
 					app.setHost(thisHost);
 				}
 				else {
 					switch (rsAtLoad.getString("Status")) {
 					case Appointment.CONFIRMED:
+						if (rsAtLoad.getString("Username").equals(currentUser.getUsername()))
+							oldStatus = Appointment.CONFIRMED;
 						oldRows.put(rsAtLoad.getString("Username"), "Deltar");
 						break;
 					case Appointment.DECLINED:
+						if (rsAtLoad.getString("Username").equals(currentUser.getUsername()))
+							oldStatus = Appointment.DECLINED;
 						oldRows.put(rsAtLoad.getString("Username"), "Deltar ikke");
 						break;
 					case Appointment.NOT_RESPONDED:
+						if (rsAtLoad.getString("Username").equals(currentUser.getUsername()))
+							oldStatus = Appointment.NOT_RESPONDED;
 						oldRows.put(rsAtLoad.getString("Username"), "Avventer svar");
 						break;
 					}
@@ -937,7 +942,7 @@ public class AppointmentPanel extends JDialog {
 
 	public String parseDateAndCheckRoom() {
 		String roomTemp = (String) roomPropertyComponent.getSelectedItem();
-		Person hostTemp = null;
+		ParticipantEntity hostTemp = null;
 		try {
 			hostTemp = app.getHost();
 		} catch (NullPointerException npe) {
@@ -995,7 +1000,6 @@ public class AppointmentPanel extends JDialog {
 
 	public void makeAppointment(String id) {
 		app = new Appointment(Integer.parseInt(id));
-		isEdited = true;
 	}
 
 }

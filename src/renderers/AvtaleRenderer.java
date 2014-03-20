@@ -23,7 +23,7 @@ import javax.swing.border.Border;
 import db.DBConnection;
 
 import models.Appointment;
-import models.Person;
+import models.ParticipantEntity;
 
 
 
@@ -104,7 +104,7 @@ public class AvtaleRenderer extends JPanel implements ListCellRenderer<Appointme
 			try {
 				ResultSet rsAtLoad = con.smallSELECT("SELECT Username FROM employeeappointmentalarm WHERE AppointmentNumber = " + avtale.getId() + " AND Status = 'host'");
 				if (rsAtLoad.next()) {
-					Person thisHost = new Person(rsAtLoad.getString("Username"));
+					ParticipantEntity thisHost = new ParticipantEntity(rsAtLoad.getString("Username"));
 					avtale.setHost(thisHost);
 				}
 				rsAtLoad.close();
