@@ -416,7 +416,7 @@ public class AppointmentPanel extends JDialog {
 							createAppointment(con);
 						saveParticipantsOnAttending(con);
 						updateParticipantStatus(con);
-						if (currentUser.equals(host) || !tableModel.getValueAt(currentRows.indexOf(currentUser.getUsername()), 1).equals(oldStatus))
+						if (currentUser.equals(host) || !tableModel.getValueAt(currentRows.indexOf(currentUser.getUsername()) + 1, 1).equals(oldStatus))
 							setEdited(con);
 						con.close();
 						dispose();
@@ -429,6 +429,8 @@ public class AppointmentPanel extends JDialog {
 
 			private void setEdited(DBConnection con2) {
 				con2.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Edited=1 WHERE AppointmentNumber=" + app.getId() + " AND Username <> '" + currentUser.getUsername() + "'");
+				if (!currentUser.equals(host) && tableModel.getValueAt(currentRows.indexOf(currentUser.getUsername()) + 1, 1).equals("Deltar"))
+					con2.smallUPDATEorINSERT("UPDATE employeeappointmentalarm SET Hide=0 WHERE AppointmentNumber=" + app.getId() + " AND Username = '" + currentUser.getUsername() + "'");
 			}
 
 			private void updateAppointment(DBConnection con2) {
