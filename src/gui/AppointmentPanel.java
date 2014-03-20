@@ -247,7 +247,7 @@ public class AppointmentPanel extends JDialog {
 		roomLabelConstraint.gridy=5;
 		roomLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		roomLabelConstraint.anchor=GridBagConstraints.NORTH;
-		roomLabelConstraint.insets = new Insets(5, 5, 5, 5);
+		roomLabelConstraint.insets = new Insets(9, 5, 5, 5);
 		add(roomLabel,roomLabelConstraint);
 
 		alarmLabelConstraint = new GridBagConstraints();
@@ -255,10 +255,11 @@ public class AppointmentPanel extends JDialog {
 		alarmLabelConstraint.gridy=6;
 		alarmLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
 		alarmLabelConstraint.anchor = GridBagConstraints.NORTH;
-		alarmLabelConstraint.insets = new Insets(5, 5, 5, 5);
+		alarmLabelConstraint.insets = new Insets(9, 5, 5, 5);
 		add(alarmLabel,alarmLabelConstraint);
 		
 		alarmHourBeforeLabelConstraint = new GridBagConstraints();
+		alarmHourBeforeLabelConstraint.insets = new Insets(8, 0, 0, 0);
 		alarmHourBeforeLabelConstraint.gridx=2;
 		alarmHourBeforeLabelConstraint.gridy=6;
 		alarmHourBeforeLabelConstraint.fill=GridBagConstraints.HORIZONTAL;
