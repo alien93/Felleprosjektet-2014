@@ -401,8 +401,7 @@ public class AppointmentPanel extends JDialog {
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (currentUser.equals(host) || currentRows.contains(currentUser)) {
-					
+				if (currentUser.equals(host) || currentRows.contains(currentUser.getUsername())) {
 					String roomAvail = parseDateAndCheckRoom();
 					if (roomAvail != null) {
 						JOptionPane.showMessageDialog(null, roomAvail, "Opptatt", 0);
