@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -31,6 +34,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -658,21 +662,34 @@ public class AppointmentPanel extends JDialog {
 		addExternal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Email email = new SimpleEmail();
-					email.setHostName("smtp.googlemail.com");
-					email.setSmtpPort(465);
-					email.setAuthenticator(new DefaultAuthenticator("ikkesvar.fellesprosjektet", "Fellesprosjekt26"));
-					email.setSSLOnConnect(true);
-					email.setFrom("ikkesvar.fellesprosjektet@gmail.com");
-					email.setSubject("Du har blitt lagt til i en avtale");
-					email.setMsg("Heisann!\n\n"
-							+ "Du har blitt lagt til som deltager i en avtale "
-							+ "opprettet av bruker " + currentUser.getUsername());
-					email.addTo(emailField.getText());
-					email.send();
-					isEdited = true;
-					emailField.setText("");
-					JOptionPane.showMessageDialog(null, "Ekstern deltager lagt til!", "Opptatt", 1);
+					String typedEmail= emailField.getText();
+					Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
+					Matcher m = p.matcher(typedEmail);
+					boolean matchFound = m.matches();
+					if (matchFound) {
+						Email email = new SimpleEmail();
+						email.setHostName("smtp.googlemail.com");
+						email.setSmtpPort(465);
+						email.setAuthenticator(new DefaultAuthenticator("ikkesvar.fellesprosjektet", "Fellesprosjekt26"));
+						email.setSSLOnConnect(true);
+						email.setFrom("ikkesvar.fellesprosjektet@gmail.com");
+						email.setSubject("Du har blitt lagt til i en avtale");
+						email.setMsg("Heisann!\n\n"
+								+ "Du har blitt lagt til som deltager i en avtale "
+								+ "opprettet av bruker " + currentUser.getUsername());
+						email.addTo(emailField.getText());
+						email.send();
+						isEdited = true;
+						emailField.setText("");
+						JOptionPane.showMessageDialog(null, "Ekstern deltager lagt til!", "Opptatt", 1);
+					}else{
+						JOptionPane.showMessageDialog(null, "Ikke en gyldig Epostadresse", "Feilmelding", 1);
+
+						
+					}
+					
+			
+	
 				}
 				catch (EmailException ee) {
 					ee.printStackTrace();
