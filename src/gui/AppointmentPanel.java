@@ -90,6 +90,7 @@ public class AppointmentPanel extends JDialog {
 		
 		this.deleteButton.setEnabled(false);
 		dateChooser.setDate(new Date());
+		dateChooser.getCalendarButton().setEnabled(true);
 		setVisible(true);
 	}
 
@@ -126,7 +127,8 @@ public class AppointmentPanel extends JDialog {
 				this.deleteButton.setEnabled(true);
 			else
 				this.deleteButton.setEnabled(false);
-		}
+		} else
+			this.dateChooser.getCalendarButton().setEnabled(true);
 		setVisible(true);
 	}
 
@@ -233,6 +235,7 @@ public class AppointmentPanel extends JDialog {
 		dateChooserConstraint.fill =GridBagConstraints.HORIZONTAL;
 		dateChooserConstraint.gridwidth=2;
 		dateChooserConstraint.insets = new Insets(5, 5, 5, 5);
+		dateChooser.setEnabled(false);
 		add(dateChooser,dateChooserConstraint);
 
 
